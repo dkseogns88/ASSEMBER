@@ -3,7 +3,6 @@
 #include "Service.h"
 #include "Session.h"
 #include "BufferReader.h"
-#include "ServerPacketHandler.h"
 
 char sendData[] = "Hello World";
 
@@ -17,18 +16,28 @@ public:
 
 	virtual void OnConnected() override
 	{
-		Protocol::C_LOGIN pkt;
-		auto sendBuffer = ServerPacketHandler::MakeSendBuffer(pkt);
-		Send(sendBuffer);
+		//cout << "Connected To Server" << endl;
 	}
 
-	virtual void OnRecvPacket(BYTE* buffer, int32 len) override
+	virtual int32 OnRecvPacket(BYTE* buffer, int32 len) override
 	{
-		PacketSessionRef session = GetPacketSessionRef();
-		PacketHeader* header = reinterpret_cast<PacketHeader*>(buffer);
+		BufferReader br(buffer, len);
 
-		// TODO : packetId 대역 체크
-		ServerPacketHandler::HandlePacket(session, buffer, len);
+		PacketHeader header;
+		br >> header;
+
+		uint64 id;
+		uint32 hp;
+		uint16 attack;
+		br >> id >> hp >> attack;
+
+		// cout << "ID: " << id << " HP : " << hp << " ATT : " << attack << endl;
+
+		char recvBuffer[4096];
+		br.Read(recvBuffer, header.size - sizeof(PacketHeader) - 8 - 4 - 2);
+		cout << recvBuffer << endl;
+
+		return len;
 	}
 
 	virtual void OnSend(int32 len) override
@@ -44,15 +53,13 @@ public:
 
 int main()
 {
-	ServerPacketHandler::Init();
-
-	this_thread::sleep_for(1s);
+	this_thread::sleep_for(3s);
 
 	ClientServiceRef service = MakeShared<ClientService>(
 		NetAddress(L"127.0.0.1", 7777),
 		MakeShared<IocpCore>(),
 		MakeShared<ServerSession>, // TODO : SessionManager 등
-		1);
+		10);
 
 	ASSERT_CRASH(service->Start());
 
@@ -65,16 +72,6 @@ int main()
 					service->GetIocpCore()->Dispatch();
 				}
 			});
-	}
-
-	Protocol::C_CHAT chatPkt;
-	chatPkt.set_msg(u8"Hello World !");
-	auto sendBuffer = ServerPacketHandler::MakeSendBuffer(chatPkt);
-
-	while (true)
-	{
-		service->Broadcast(sendBuffer);
-		this_thread::sleep_for(1s);
 	}
 
 	GThreadManager->Join();

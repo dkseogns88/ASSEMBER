@@ -1,7 +1,6 @@
 #pragma once
 #include <mutex>
 
-/*
 template<class T>
 class LockQueue {
 public:
@@ -285,4 +284,3 @@ private:
 	atomic<CountedNodePtr> _head;
 	atomic<CountedNodePtr> _tail;
 };
-*/

@@ -1,29 +1,26 @@
 #pragma once
-
 #include <thread>
 #include <functional>
 
-/*------------------
-	ThreadManager
--------------------*/
+/*----------------------
+	  ThreadManager
+------------------------*/
 
 class ThreadManager
 {
 public:
 	ThreadManager();
 	~ThreadManager();
-
-	void	Launch(function<void(void)> callback);
-	void	Join();
+	
+	void Launch(function<void(void)>);
+	void Join();
 
 	static void InitTLS();
 	static void DestroyTLS();
 
-	static void DoGlobalQueueWork();
-	static void DistributeReservedJobs();
-
 private:
 	Mutex			_lock;
 	vector<thread>	_threads;
+
 };
 

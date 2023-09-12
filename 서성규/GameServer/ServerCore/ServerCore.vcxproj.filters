@@ -16,9 +16,6 @@
     <Filter Include="Memory">
       <UniqueIdentifier>{69541c0b-3949-4021-8331-b67d5394b626}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Job">
-      <UniqueIdentifier>{08249131-2df3-46eb-928f-70ebae6f8dbf}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CorePch.h">
@@ -105,21 +102,6 @@
     <ClInclude Include="BufferReader.h">
       <Filter>Utils</Filter>
     </ClInclude>
-    <ClInclude Include="Job.h">
-      <Filter>Job</Filter>
-    </ClInclude>
-    <ClInclude Include="JobQueue.h">
-      <Filter>Job</Filter>
-    </ClInclude>
-    <ClInclude Include="LockQueue.h">
-      <Filter>Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="GlobalQueue.h">
-      <Filter>Job</Filter>
-    </ClInclude>
-    <ClInclude Include="JobTimer.h">
-      <Filter>Job</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CorePch.cpp">
@@ -187,21 +169,6 @@
     </ClCompile>
     <ClCompile Include="BufferWriter.cpp">
       <Filter>Utils</Filter>
-    </ClCompile>
-    <ClCompile Include="Job.cpp">
-      <Filter>Job</Filter>
-    </ClCompile>
-    <ClCompile Include="JobQueue.cpp">
-      <Filter>Job</Filter>
-    </ClCompile>
-    <ClCompile Include="LockQueue.cpp">
-      <Filter>Utils</Filter>
-    </ClCompile>
-    <ClCompile Include="GlobalQueue.cpp">
-      <Filter>Job</Filter>
-    </ClCompile>
-    <ClCompile Include="JobTimer.cpp">
-      <Filter>Job</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

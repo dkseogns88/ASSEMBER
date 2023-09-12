@@ -5,45 +5,14 @@
 #include "GameSession.h"
 #include "GameSessionManager.h"
 #include "BufferWriter.h"
-#include "ClientPacketHandler.h"
-#include "Protocol.pb.h"
-#include "Room.h"
 
 // ======================================================================================
 // 
 // ======================================================================================
 
 
-enum
-{
-	WORKER_TICK = 64
-};
-
-void DoWorkerJob(ServerServiceRef& service)
-{
-	while (true)
-	{
-		LEndTickCount = ::GetTickCount64() + WORKER_TICK;
-
-		// 네트워크 입출력 처리 -> 인게임 로직까지 (패킷 핸들러에 의해)
-		service->GetIocpCore()->Dispatch(10);
-
-		// 예약된 일감 처리
-		ThreadManager::DistributeReservedJobs();
-
-		// 글로벌 큐
-		ThreadManager::DoGlobalQueueWork();
-	}
-}
-
 int main()
 {
-	GRoom->DoTimer(1000, [] { cout << "Hello 1000" << endl; });
-	GRoom->DoTimer(2000, [] { cout << "Hello 2000" << endl; });
-	GRoom->DoTimer(3000, [] { cout << "Hello 3000" << endl; });
-
-	ClientPacketHandler::Init();
-
 	ServerServiceRef service = MakeShared<ServerService>(
 		NetAddress(L"127.0.0.1", 7777),
 		MakeShared<IocpCore>(),
@@ -54,14 +23,37 @@ int main()
 
 	for (int32 i = 0; i < 5; i++)
 	{
-		GThreadManager->Launch([&service]()
+		GThreadManager->Launch([=]()
 			{
-				DoWorkerJob(service);
+				while (true)
+				{
+					service->GetIocpCore()->Dispatch();
+				}
 			});
 	}
 
-	// Main Thread
-	DoWorkerJob(service);
+	char sendData[1000] = "Hello World";
+
+	while (true)
+	{
+		SendBufferRef sendBuffer = GSendBufferManager->Open(4096);
+
+		BufferWriter bw(sendBuffer->Buffer(), 4096);
+
+		PacketHeader* header = bw.Reserve<PacketHeader>();
+		// id(uint64), 체력(uint32), 공격력(uint16)
+		bw << (uint64)1001 << (uint32)100 << (uint16)10;
+		bw.Write(sendData, sizeof(sendData));
+
+		header->size = bw.WriteSize();
+		header->id = 1; // 1 : Test Msg
+
+		sendBuffer->Close(bw.WriteSize());
+
+		GSessionManager.Broadcast(sendBuffer);
+
+		this_thread::sleep_for(250ms);
+	}
 
 	GThreadManager->Join();
 }
