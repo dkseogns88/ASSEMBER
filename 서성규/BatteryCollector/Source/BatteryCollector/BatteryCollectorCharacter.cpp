@@ -81,6 +81,13 @@ void ABatteryCollectorCharacter::BeginPlay()
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
 	}
+
+	// ¼ÒÄÏ ¿¬°á
+	socket.InitSocket();
+	if (socket.Connect("127.0.0.1", 8000)) {
+		IsConnected = true;
+		UE_LOG(LogClass, Log, TEXT("Battery Server Character Connect Success"));
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -128,6 +135,18 @@ void ABatteryCollectorCharacter::Move(const FInputActionValue& Value)
 		// add movement 
 		AddMovementInput(ForwardDirection, MovementVector.Y);
 		AddMovementInput(RightDirection, MovementVector.X);
+
+		// ·£´ý À§Ä¡¸¦ °¡Á®¿È
+		FVector SpawnLocation;
+
+		if (IsConnected)
+		{
+			SpawnLocation = socket.RequestLocation();
+		}
+		else {
+			//printf("¹º°¡ Àß¸øµÊ\n");
+			// SpawnLocation = GetRandomPointInVolume();
+		}
 	}
 }
 

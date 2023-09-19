@@ -5,7 +5,9 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
+#include "cSocket.h"
 #include "BatteryCollectorCharacter.generated.h"
+
 
 
 UCLASS(config=Game)
@@ -96,6 +98,9 @@ private:
 	// 캐릭터의 현재 파워값
 	UPROPERTY(VisibleAnywhere, Category = "Power")
 	float CharacterPower;
+
+	cSocket socket;
+	bool IsConnected;
 
 public:
 	/** Returns CameraBoom subobject **/
