@@ -16,7 +16,6 @@ using namespace std;
 
 mutex m;
 
-static int gid = 0;
 enum PacketType {
 	P_LOGIN,
 	P_STATE,
@@ -24,9 +23,6 @@ enum PacketType {
 	NONE,
 };
 
-struct PacketLogin {
-	int id;
-};
 
 struct PacketCordinate {
 	int id;
@@ -34,8 +30,8 @@ struct PacketCordinate {
 };
 
 std::unordered_map<PacketType, size_t> g_packet_size{
-	{P_LOGIN, sizeof(PacketLogin)},
 	{P_STATE, sizeof(PacketCordinate)},
+	{P_LOGIN, sizeof(PacketCordinate)},
 };
 
 struct Player
@@ -63,17 +59,13 @@ void Send(SOCKET Socket, PacketType pt, void* packet)
 	send(Socket, (const char*)packet, g_packet_size[pt], 0);
 }
 
-struct location {
-	float x{};
-	float y{};
-	float z{};
-};
-
 void ProcessClient(SOCKET socket)
 {
 	while (1) {
-		PacketType pt{NONE};
-		int characterid{};
+
+		PacketType pt;
+
+		PacketCordinate sendCordinate{};
 		if (SOCKET_ERROR == recv(socket, reinterpret_cast<char*>(&pt), sizeof(pt), 0)) {
 			cout << "Recv 오류! 오류 코드: " << WSAGetLastError() << endl;
 			break;
@@ -82,41 +74,38 @@ void ProcessClient(SOCKET socket)
 		switch (pt)
 		{
 		case P_LOGIN:
-			PacketLogin Login;
+			PacketCordinate Login;
 			if (SOCKET_ERROR == recv(socket, reinterpret_cast<char*>(&Login), sizeof(Login), 0)) {
-				cout << "Recv 오류!" << endl;
+				cout << "Recv 오류! 오류 코드: " << WSAGetLastError() << endl;
 			}
+			sendCordinate.id = Login.id;
+			sendCordinate.x = Login.x;
+			sendCordinate.y = Login.y;
+			sendCordinate.z = Login.z;
+			players.push_back(Player(Login.id, Login.x, Login.y, Login.z));
 			break;
 		case P_STATE:
 			PacketCordinate cordinate;
 			if (SOCKET_ERROR == recv(socket, reinterpret_cast<char*>(&cordinate), sizeof(cordinate), 0)) {
-				cout << "Recv 오류!" << endl;
+				cout << "Recv 오류! 오류 코드: " << WSAGetLastError() << endl;
 			}
-			characterid = cordinate.id;
-			players[cordinate.id]._x = cordinate.x;
-			players[cordinate.id]._y = cordinate.y;
-			players[cordinate.id]._z = cordinate.z;
+			for (Player& player : players) {
+				if (player._id == cordinate.id) {
+					player._x = cordinate.x;
+					player._y = cordinate.y;
+					player._z = cordinate.z;
+
+					sendCordinate.id = cordinate.id;
+					sendCordinate.x = cordinate.x;
+					sendCordinate.y = cordinate.y;
+					sendCordinate.z = cordinate.z;
+					break;
+				}
+			}
 			break;
 		default:
 			break;
 		}
-
-		if(pt == P_LOGIN){
-			PacketLogin Login;
-			Login.id = gid++;
-			Send(socket, pt, &Login);
-		}
-
-		PacketCordinate cordinate;
-		cordinate.id = characterid;
-		cordinate.x = players[characterid]._x;
-		cordinate.y = players[characterid]._y;
-		cordinate.z = players[characterid]._z;
-
-		cout << "id - " << cordinate.id << endl;
-		cout << "x - " << cordinate.x << endl;
-		cout << "y - " << cordinate.y << endl;
-		cout << "z - " << cordinate.z << endl;
 
 		for (SOCKET csocket : sockets) {
 			struct sockaddr_in clientaddr;
@@ -124,8 +113,11 @@ void ProcessClient(SOCKET socket)
 			int addrlen = sizeof(clientaddr);
 			switch (pt)
 			{
+			case P_LOGIN:
+				Send(csocket, pt, &sendCordinate);
+				break;
 			case P_STATE:
-				Send(csocket, pt, &cordinate);
+				Send(csocket, pt, &sendCordinate);
 				break;
 			case NONE:
 				break;
@@ -186,7 +178,6 @@ int main(int argc, char* argv[])
 			return -1;
 		}
 		sockets.push_back(client_sock);
-		players.push_back(Player(gid));
 		char addr[INET_ADDRSTRLEN];
 
 		inet_ntop(AF_INET, &clientaddr.sin_addr, addr, sizeof(addr));
