@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <None Include="..\..\SSG.uproject" />
+    <Filter Include="Source">
+      <UniqueIdentifier>{F31BBDD1-B3E8-3BCC-9652-680E16935819}</UniqueIdentifier>
+    </Filter>
+    <None Include="..\..\Source\SSG.Target.cs">
+      <Filter>Source</Filter>
+    </None>
+    <None Include="..\..\Source\SSGEditor.Target.cs">
+      <Filter>Source</Filter>
+    </None>
+    <None Include="..\..\.gitignore" />
+    <Filter Include="Config">
+      <UniqueIdentifier>{FA535FFB-25E1-3D20-B416-52F9BE21E06E}</UniqueIdentifier>
+    </Filter>
+    <None Include="..\..\Config\DefaultEditor.ini">
+      <Filter>Config</Filter>
+    </None>
+    <None Include="..\..\Config\DefaultEditorPerProjectUserSettings.ini">
+      <Filter>Config</Filter>
+    </None>
+    <None Include="..\..\Config\DefaultEngine.ini">
+      <Filter>Config</Filter>
+    </None>
+    <None Include="..\..\Config\DefaultGame.ini">
+      <Filter>Config</Filter>
+    </None>
+    <None Include="..\..\Config\DefaultInput.ini">
+      <Filter>Config</Filter>
+    </None>
+    <Filter Include="Source\SSG">
+      <UniqueIdentifier>{23CD71E6-0092-3AF3-8E9D-F52FB8B6A313}</UniqueIdentifier>
+    </Filter>
+    <ClCompile Include="..\..\Source\SSG\ClientSocket.cpp">
+      <Filter>Source\SSG</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\SSG\ClientSocket.h">
+      <Filter>Source\SSG</Filter>
+    </ClInclude>
+    <None Include="..\..\Source\SSG\SSG.Build.cs">
+      <Filter>Source\SSG</Filter>
+    </None>
+    <ClCompile Include="..\..\Source\SSG\SSG.cpp">
+      <Filter>Source\SSG</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\SSG\SSG.h">
+      <Filter>Source\SSG</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\SSG\SSGCharacter.cpp">
+      <Filter>Source\SSG</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\SSG\SSGCharacter.h">
+      <Filter>Source\SSG</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\SSG\SSGGameMode.cpp">
+      <Filter>Source\SSG</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\SSG\SSGGameMode.h">
+      <Filter>Source\SSG</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\SSG\SSGPlayerController.cpp">
+      <Filter>Source\SSG</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\SSG\SSGPlayerController.h">
+      <Filter>Source\SSG</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
