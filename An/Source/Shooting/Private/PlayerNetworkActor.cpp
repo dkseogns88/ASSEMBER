@@ -4,6 +4,8 @@
 #include "PlayerNetworkActor.h"
 #include "Net/UnrealNetwork.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "GameFramework/SpringArmComponent.h"
+#include "Camera/CameraComponent.h"
 // Sets default values
 APlayerNetworkActor::APlayerNetworkActor()
 {
@@ -18,6 +20,17 @@ APlayerNetworkActor::APlayerNetworkActor()
 	{
 		GetMesh()->SetSkeletalMesh(MeshAsset.Object);
 	}
+
+	// 카메라 붐 생성 및 설정
+	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
+	CameraBoom->SetupAttachment(RootComponent);
+	CameraBoom->TargetArmLength = 300.0f; // 카메라와의 거리
+	CameraBoom->bUsePawnControlRotation = true;
+
+	// 카메라 컴포넌트 생성 및 설정
+	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
+	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
+	FollowCamera->bUsePawnControlRotation = false;
 
 }
 
