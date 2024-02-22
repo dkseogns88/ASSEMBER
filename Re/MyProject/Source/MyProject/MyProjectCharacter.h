@@ -4,8 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "Logging/LogMacros.h"
 #include "MyProjectCharacter.generated.h"
+
 
 class UInputComponent;
 class USkeletalMeshComponent;
@@ -40,6 +42,12 @@ class AMyProjectCharacter : public ACharacter
 	/** Move Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
 	UInputAction* MoveAction1P;
+
+	
+	
+
+	//MyMesh·Î ½ºÄÌ·¹Å» ¸Þ½¬ÄÄÆ÷³ÍÆ®¿¡ Á¢±Ù
+	USkeletalMeshComponent* MyMesh = GetMesh();
 	
 public:
 	AMyProjectCharacter();
@@ -56,6 +64,8 @@ public:
 	/** Bool for AnimBP to switch to another animation set */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon)
 	bool bHasRifle;
+	
+
 
 	/** Setter to set the bool */
 	UFUNCTION(BlueprintCallable, Category = Weapon)
@@ -64,6 +74,8 @@ public:
 	/** Getter for the bool */
 	UFUNCTION(BlueprintCallable, Category = Weapon)
 	bool GetHasRifle();
+
+	
 
 protected:
 	/** Called for movement input */
@@ -82,6 +94,11 @@ public:
 	USkeletalMeshComponent* GetMesh1P() const { return Mesh1P; }
 	/** Returns FirstPersonCameraComponent subobject **/
 	UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent1P; }
+	//spring arm
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	USpringArmComponent* CameraBoom;
+	/** Returns CameraBoom subobject **/
+	USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 
 };
 
