@@ -96,9 +96,9 @@ public:
 	UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent1P; }
 	//spring arm
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	USpringArmComponent* CameraBoom;
+	USpringArmComponent* CameraBoom1P;
 	/** Returns CameraBoom subobject **/
-	USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
+	USpringArmComponent* GetCameraBoom() const { return CameraBoom1P; }
 
 };
 
