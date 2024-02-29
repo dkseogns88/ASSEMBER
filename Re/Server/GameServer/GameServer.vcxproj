@@ -218,6 +218,8 @@
     <ClInclude Include="Utils.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\..\An\Content\RealMap.umap" />
+    <None Include="..\..\..\An\Content\RealMap_BuiltData.uasset" />
     <None Include="..\Common\Protobuf\bin\Enum.proto" />
     <None Include="..\Common\Protobuf\bin\GenPackets.bat" />
     <None Include="..\Common\Protobuf\bin\Protocol.proto" />

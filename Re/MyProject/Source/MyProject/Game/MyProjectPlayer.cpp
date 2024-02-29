@@ -78,6 +78,8 @@ void AMyProjectPlayer::Tick(float DeltaSeconds)
 	auto* GameInstance = Cast<UMyProjectGameInstance>(GWorld->GetGameInstance());
 	if (GameInstance->MyPlayer != this)
 		MyPlayer = false;
+	else
+		MyPlayer = true;
 
 	if (MyPlayer == false)
 	{
