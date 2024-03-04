@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "NewCharacter.generated.h"
 
 class UInputComponent;
@@ -52,5 +53,10 @@ public:
 	USkeletalMeshComponent* GetMesh2P() const { return Mesh2P; }
 	/** Returns FirstPersonCameraComponent subobject **/
 	UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent2P; }
+	//spring arm
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	USpringArmComponent* CameraBoom2P;
+	/** Returns CameraBoom subobject **/
+	USpringArmComponent* GetCameraBoom() const { return CameraBoom2P; }
 
 };
