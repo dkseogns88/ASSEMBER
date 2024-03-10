@@ -30,7 +30,7 @@ void AMyProjectPlayerController::ChangeCharacter(TSubclassOf<APawn> NewCharacter
     GetPawn()->Destroy();
 
     // 새캐릭터 스폰위치 및 회전설정
-    FVector NewSpawnLocation = FVector(0, 0, 0);
+    FVector NewSpawnLocation = FVector(0, 0, 100);
     FRotator NewSpawnRotation = FRotator(0, 0, 0);
 
     // 새캐릭터 스폰
@@ -39,6 +39,18 @@ void AMyProjectPlayerController::ChangeCharacter(TSubclassOf<APawn> NewCharacter
     {
         // 새캐릭터 소유
         Possess(NewSpawnCharacter);
+        // 캐릭터 변경 후 UI 숨기기
+        if (CharacterSelectWidgetInstance != nullptr)
+        {
+            CharacterSelectWidgetInstance->RemoveFromViewport();
+            CharacterSelectWidgetInstance = nullptr;
+            bShowMouseCursor = false; // 마우스 커서 숨김
+            SetInputMode(FInputModeGameOnly()); // 게임 입력 모드로 복귀
+        }
+    }
+    else
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Character spawn failed"));
     }
 }
 
