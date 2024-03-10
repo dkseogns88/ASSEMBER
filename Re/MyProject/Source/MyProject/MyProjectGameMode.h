@@ -11,4 +11,6 @@ class AMyProjectGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
 
+
+
 };
