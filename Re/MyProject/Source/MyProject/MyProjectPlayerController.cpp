@@ -6,6 +6,15 @@
 #include "Blueprint/UserWidget.h"
 #include "MyProjectMyPlayer.h"
 #include "Components/InputComponent.h"
+
+
+
+void AMyProjectPlayerController::NotifyServerOfCharacterChange(const FCharacterChangeInfo& ChangeInfo)
+{
+    // 서버와 통신하여 캐릭터 변경 정보 전달
+    // 구현은 서버 팀과 협의 필요
+}
+
 void AMyProjectPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
@@ -29,17 +38,21 @@ void AMyProjectPlayerController::ChangeCharacter(TSubclassOf<APawn> NewCharacter
     // 현재 캐릭터 파괴
     GetPawn()->Destroy();
 
-    // 새캐릭터 스폰위치 및 회전설정
+    // 새 캐릭터 스폰 위치 및 회전 설정
     FVector NewSpawnLocation = FVector(0, 0, 100);
     FRotator NewSpawnRotation = FRotator(0, 0, 0);
 
-    // 새캐릭터 스폰
+    // 새 캐릭터 스폰
     APawn* NewSpawnCharacter = GetWorld()->SpawnActor<APawn>(NewCharacterClass, NewSpawnLocation, NewSpawnRotation);
     if (NewSpawnCharacter)
     {
-        // 새캐릭터 소유
+        // 새 캐릭터 소유
         Possess(NewSpawnCharacter);
-        // 캐릭터 변경 후 UI 숨기기
+
+        // 캐릭터 이름 로그로 출력
+        UE_LOG(LogTemp, Log, TEXT("Character Changed to: %s"), *NewSpawnCharacter->GetName());
+
+        // 캐릭터 변경 후 UI 숨기기 로직
         if (CharacterSelectWidgetInstance != nullptr)
         {
             CharacterSelectWidgetInstance->RemoveFromViewport();
@@ -47,6 +60,11 @@ void AMyProjectPlayerController::ChangeCharacter(TSubclassOf<APawn> NewCharacter
             bShowMouseCursor = false; // 마우스 커서 숨김
             SetInputMode(FInputModeGameOnly()); // 게임 입력 모드로 복귀
         }
+
+        // 서버에 캐릭터 변경 정보 전달
+        FCharacterChangeInfo ChangeInfo;
+        ChangeInfo.CharacterName = NewSpawnCharacter->GetName(); // GetName()으로 캐릭터 이름 설정
+        NotifyServerOfCharacterChange(ChangeInfo);
     }
     else
     {

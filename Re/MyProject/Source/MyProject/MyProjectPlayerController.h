@@ -8,6 +8,12 @@
 
 class UInputMappingContext;
 
+//캐릭터변경정보 
+struct FCharacterChangeInfo
+{
+	FString CharacterName; // 캐릭터 이름
+
+};
 /**
  *
  */
@@ -20,12 +26,12 @@ class MYPROJECT_API AMyProjectPlayerController : public APlayerController
 public:
 	// 캐릭터 변경 함수
 	UFUNCTION(BlueprintCallable, Category = "Character")
-	
 
 	void ChangeCharacter(TSubclassOf<APawn> NewCharacterClass);
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputMappingContext* InputMappingContext;
+
 	
 	virtual void SetupInputComponent() override;
 	
@@ -47,6 +53,8 @@ protected:
 	
 	// Begin Actor interface
 protected:
+
+	void NotifyServerOfCharacterChange(const FCharacterChangeInfo& ChangeInfo);
 
 	virtual void BeginPlay() override;
 
