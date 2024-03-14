@@ -11,8 +11,10 @@
 
 void AMyProjectPlayerController::NotifyServerOfCharacterChange(const FCharacterChangeInfo& ChangeInfo)
 {
-    // 서버와 통신하여 캐릭터 변경 정보 전달
-    // 구현은 서버 팀과 협의 필요
+    /* 서버와 통신하여 캐릭터 변경 정보 전달
+    형이 구현할부분 , ChangeInfo에 변경된 캐릭터 정보가 저장되어있음.변경될때마다 새로저장. 현재는 CharacterName하나만 저장. 
+    필요에따라 추가적인 정보 저장할예정
+    */
 }
 
 void AMyProjectPlayerController::BeginPlay()
