@@ -17,7 +17,7 @@ bool Handle_S_LOGIN(PacketSessionRef& session, Protocol::S_LOGIN& pkt)
 {
 	for (int32 i = 0; i < pkt.players_size(); ++i)
 	{
-		const Protocol::PlayerInfo& player = pkt.players(i);
+		const Protocol::ObjectInfo& player = pkt.players(i);
 	}
 
 	Protocol::C_ENTER_GAME EnterGamePkt;

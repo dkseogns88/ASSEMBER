@@ -26,7 +26,6 @@ class MYPROJECT_API AMyProjectPlayerController : public APlayerController
 public:
 	// 캐릭터 변경 함수
 	UFUNCTION(BlueprintCallable, Category = "Character")
-
 	void ChangeCharacter(TSubclassOf<APawn> NewCharacterClass);
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)

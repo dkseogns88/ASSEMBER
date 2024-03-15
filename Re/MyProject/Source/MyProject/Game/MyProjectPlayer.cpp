@@ -35,8 +35,8 @@ AMyProjectPlayer::AMyProjectPlayer()
 	
 	GetCharacterMovement()->bRunPhysicsWithNoController = true;
 
-	PlayerInfo = new Protocol::PlayerInfo();
-	DestInfo = new Protocol::PlayerInfo();
+	PlayerInfo = new Protocol::PosInfo();
+	DestInfo = new Protocol::PosInfo();
 }
 
 AMyProjectPlayer::~AMyProjectPlayer()
@@ -99,11 +99,10 @@ void AMyProjectPlayer::Tick(float DeltaSeconds)
 
 bool AMyProjectPlayer::IsMyPlayer()
 {
-	bool IsMyPlayer;
+	bool IsMyPlayer = false;;
 	if (Cast<AMyProjectMyPlayer>(this) != nullptr)
 		IsMyPlayer = true;
-	else
-		IsMyPlayer = false;
+
 
 	return IsMyPlayer;
 }
@@ -118,7 +117,7 @@ void AMyProjectPlayer::SetMoveState(Protocol::MoveState State)
 	// TODO
 }
 
-void AMyProjectPlayer::SetPlayerInfo(const Protocol::PlayerInfo& Info)
+void AMyProjectPlayer::SetPlayerInfo(const Protocol::PosInfo& Info)
 {
 	if (PlayerInfo->object_id() != 0)
 	{
@@ -131,7 +130,7 @@ void AMyProjectPlayer::SetPlayerInfo(const Protocol::PlayerInfo& Info)
 	SetActorLocation(Location);
 }
 
-void AMyProjectPlayer::SetDestInfo(const Protocol::PlayerInfo& Info)
+void AMyProjectPlayer::SetDestInfo(const Protocol::PosInfo& Info)
 {
 	if (PlayerInfo->object_id() != 0)
 	{

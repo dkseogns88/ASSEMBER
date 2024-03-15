@@ -15,6 +15,8 @@ void AMyProjectPlayerController::NotifyServerOfCharacterChange(const FCharacterC
     형이 구현할부분 , ChangeInfo에 변경된 캐릭터 정보가 저장되어있음.변경될때마다 새로저장. 현재는 CharacterName하나만 저장. 
     필요에따라 추가적인 정보 저장할예정
     */
+
+
 }
 
 void AMyProjectPlayerController::BeginPlay()

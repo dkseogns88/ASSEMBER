@@ -21,11 +21,13 @@ bool Handle_C_LOGIN(PacketSessionRef& session, Protocol::C_LOGIN& pkt)
 	Protocol::S_LOGIN loginPkt;
 	
 	for (int32 i = 0; i < 2; ++i) {
-		Protocol::PlayerInfo* player = loginPkt.add_players();
-		player->set_x(Utils::GetRandom(0.f, 100.f));
-		player->set_y(Utils::GetRandom(0.f, 100.f));
-		player->set_z(Utils::GetRandom(0.f, 100.f));
-		player->set_yaw(Utils::GetRandom(0.f, 100.f));
+		Protocol::ObjectInfo* player = loginPkt.add_players();
+		Protocol::PosInfo* posInfo = player->mutable_pos_info();
+
+		posInfo->set_x(Utils::GetRandom(0.f, 100.f));
+		posInfo->set_y(Utils::GetRandom(0.f, 100.f));
+		posInfo->set_z(Utils::GetRandom(0.f, 100.f));
+		posInfo->set_yaw(Utils::GetRandom(0.f, 100.f));
 	}
 
 	loginPkt.set_success(true);

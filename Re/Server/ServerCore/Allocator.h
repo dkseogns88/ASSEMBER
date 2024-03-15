@@ -20,7 +20,7 @@ public:
 
 class StompAllocator
 {
-	enum { PAGE_SIZE = 0x1000 }; // 0x1000(16진수) = 4096
+	enum { PAGE_SIZE = 0x400 }; // 0x1000(16진수) = 4096
 
 
 public:
