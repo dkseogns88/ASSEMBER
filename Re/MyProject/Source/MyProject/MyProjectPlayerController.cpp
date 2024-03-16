@@ -68,6 +68,7 @@ void AMyProjectPlayerController::ChangeCharacter(TSubclassOf<APawn> NewCharacter
         // 서버에 캐릭터 변경 정보 전달
         FCharacterChangeInfo ChangeInfo;
         ChangeInfo.CharacterName = NewSpawnCharacter->GetName(); // GetName()으로 캐릭터 이름 설정
+        ChangeInfo.CharacterClass = NewSpawnCharacter->GetClass(); //캐릭터 클래스 정보 설정
         NotifyServerOfCharacterChange(ChangeInfo);
     }
     else

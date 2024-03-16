@@ -12,7 +12,7 @@ class UInputMappingContext;
 struct FCharacterChangeInfo
 {
 	FString CharacterName; // 캐릭터 이름
-
+	UClass* CharacterClass; // 캐릭터의 클래스 정보
 };
 /**
  *
