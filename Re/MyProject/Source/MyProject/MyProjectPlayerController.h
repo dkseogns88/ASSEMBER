@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h" 
+#include "Blueprint/UserWidget.h"
 #include "MyProjectPlayerController.generated.h"
 
 class UInputMappingContext;
@@ -13,6 +14,7 @@ struct FCharacterChangeInfo
 {
 	FString CharacterName; // 캐릭터 이름
 	UClass* CharacterClass; // 캐릭터의 클래스 정보
+    UClass* CharacterParentClass;
 };
 /**
  *
@@ -27,6 +29,7 @@ public:
 	// 캐릭터 변경 함수
 	UFUNCTION(BlueprintCallable, Category = "Character")
 	void ChangeCharacter(TSubclassOf<APawn> NewCharacterClass);
+    
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputMappingContext* InputMappingContext;
