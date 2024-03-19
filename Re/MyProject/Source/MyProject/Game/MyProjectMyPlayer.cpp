@@ -26,6 +26,7 @@ AMyProjectMyPlayer::AMyProjectMyPlayer()
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
+	
 }
 
 void AMyProjectMyPlayer::BeginPlay()
@@ -47,38 +48,38 @@ void AMyProjectMyPlayer::Tick(float DeltaTime)
 
 	
 	// Send 판정
-	bool ForceSendPacket = false;
+	//bool ForceSendPacket = false;
 
-	if (LastDesiredInput != DesiredInput)
-	{
-		ForceSendPacket = true;
-		LastDesiredInput = DesiredInput;
-	}
+	//if (LastDesiredInput != DesiredInput)
+	//{
+	//	ForceSendPacket = true;
+	//	LastDesiredInput = DesiredInput;
+	//}
 
-	// State 정보
-	if (DesiredInput == FVector2D::Zero())
-		SetMoveState(Protocol::MOVE_STATE_IDLE);
-	else
-		SetMoveState(Protocol::MOVE_STATE_RUN);
+	//// State 정보
+	//if (DesiredInput == FVector2D::Zero())
+	//	SetMoveState(Protocol::MOVE_STATE_IDLE);
+	//else
+	//	SetMoveState(Protocol::MOVE_STATE_RUN);
 
-	MovePacketSendTimer -= DeltaTime;
+	//MovePacketSendTimer -= DeltaTime;
 
-	if (MovePacketSendTimer <= 0 || ForceSendPacket)
-	{
-		MovePacketSendTimer = MOVE_PACKET_SEND_DELAY;
+	//if (MovePacketSendTimer <= 0 || ForceSendPacket)
+	//{
+	//	MovePacketSendTimer = MOVE_PACKET_SEND_DELAY;
 
-		Protocol::C_MOVE MovePkt;
+	//	Protocol::C_MOVE MovePkt;
 
-		// 현재 위치 정보
-		{
-			Protocol::PosInfo* Info = MovePkt.mutable_info();
-			Info->CopyFrom(*PlayerInfo);
-			Info->set_yaw(DesiredYaw);
-			Info->set_state(GetMoveState());
-		}
+	//	// 현재 위치 정보
+	//	{
+	//		Protocol::PosInfo* Info = MovePkt.mutable_info();
+	//		Info->CopyFrom(*PlayerInfo);
+	//		Info->set_yaw(DesiredYaw);
+	//		Info->set_state(GetMoveState());
+	//	}
 
-		SEND_PACKET(MovePkt);
-	}
+	//	SEND_PACKET(MovePkt);
+	//}
 	
 }
 
@@ -90,12 +91,12 @@ void AMyProjectMyPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent)) {
 	
 		// Jumping
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
+		//EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
+		//EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 	
 		// Moving
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AMyProjectMyPlayer::Move);
-		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Completed, this, &AMyProjectMyPlayer::Move);
+		//EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Completed, this, &AMyProjectMyPlayer::Move);
 
 		// Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AMyProjectMyPlayer::Look);
