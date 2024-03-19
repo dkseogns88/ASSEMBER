@@ -88,7 +88,8 @@ void AMyProjectPlayer::Tick(float DeltaSeconds)
 		if (State == Protocol::MOVE_STATE_RUN)
 		{
 			SetActorRotation(FRotator(0, DestInfo->yaw(), 0));
-			AddMovementInput(GetActorForwardVector());
+			AddMovementInput(GetActorForwardVector());  // 바라보는 방향으로 가게 된다. 그러면 안된다.
+			                                            // 도착 목적지에서 현재 위치를 빼서 노말라이즈한 것을 이동 벡터로 해야 한다.
 		}
 		else
 		{
