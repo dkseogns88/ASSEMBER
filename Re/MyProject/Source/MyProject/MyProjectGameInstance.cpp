@@ -79,7 +79,7 @@ void UMyProjectGameInstance::SendPacket(SendBufferRef SendBuffer)
 	GameServerSession->SendPacket(SendBuffer);
 }
 
-void UMyProjectGameInstance::HandleSpawn(const Protocol::PlayerInfo& PlayerInfo, bool IsMine)
+void UMyProjectGameInstance::HandleSpawn(const Protocol::ObjectInfo& objectInfo, bool IsMine)
 {
 	if (Socket == nullptr || GameServerSession == nullptr)
 		return;
@@ -89,11 +89,11 @@ void UMyProjectGameInstance::HandleSpawn(const Protocol::PlayerInfo& PlayerInfo,
 		return;
 
 	// 중복 처리 체크
-	const uint64 ObjectId = PlayerInfo.object_id();
+	const uint64 ObjectId = objectInfo.object_id();
 	if (Players.Find(ObjectId) != nullptr)
 		return;
 
-	FVector SpawnLocation(PlayerInfo.x(), PlayerInfo.y(), PlayerInfo.z());
+	FVector SpawnLocation(objectInfo.pos_info().x(), objectInfo.pos_info().y(), objectInfo.pos_info().z());
 
 	if (IsMine)
 	{
@@ -102,15 +102,15 @@ void UMyProjectGameInstance::HandleSpawn(const Protocol::PlayerInfo& PlayerInfo,
 		if (Player == nullptr)
 			return;
 
-		Player->SetPlayerInfo(PlayerInfo);
+		Player->SetPlayerInfo(objectInfo.pos_info());
 		MyPlayer = Player;
-		Players.Add(PlayerInfo.object_id(), Player);
+		Players.Add(objectInfo.object_id(), Player);
 	}
 	else
 	{
 		AMyProjectPlayer* Player = Cast<AMyProjectPlayer>(World->SpawnActor(OtherPlayerClass, &SpawnLocation));
-		Player->SetPlayerInfo(PlayerInfo);
-		Players.Add(PlayerInfo.object_id(), Player);
+		Player->SetPlayerInfo(objectInfo.pos_info());
+		Players.Add(objectInfo.object_id(), Player);
 	}
 
 }
@@ -168,13 +168,12 @@ void UMyProjectGameInstance::HandleMove(const Protocol::S_MOVE& MovePkt)
 		return;
 
 	AMyProjectPlayer* Player = (*FindActor);
-	if (Player == MyPlayer)
+	//if (Player == MyPlayer)
+	//	return;
+	if (Player->IsMyPlayer())
 		return;
 
-	/*if (Player->IsMyPlayer())
-		return;*/
-
-	const Protocol::PlayerInfo& Info = MovePkt.info();
+	const Protocol::PosInfo& Info = MovePkt.info();
 	//Player->SetPlayerInfo(Info);
 	Player->SetDestInfo(Info);
 }

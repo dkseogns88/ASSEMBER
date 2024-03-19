@@ -3,7 +3,8 @@ package Protocol;
 
 import "Enum.proto";
 
-message PlayerInfo
+// 간단한 오브젝트의 좌표
+message PosInfo
 {
 	uint64 object_id = 1;
 	float x = 2;
@@ -11,4 +12,13 @@ message PlayerInfo
 	float z = 4;
 	float yaw = 5;
 	MoveState state = 6;
+}
+
+// 전체 오브젝트 정보
+message ObjectInfo
+{
+	uint64 object_id = 1;
+	ObjectType object_type = 2;
+	PosInfo pos_Info = 3;
+
 }

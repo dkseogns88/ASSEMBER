@@ -18,7 +18,7 @@ public:
 	virtual void OnConnected() override
 	{
 		Protocol::C_LOGIN pkt;
-		auto sendBuffer = ServerPacketHandler::MakeSendBuffer(pkt);
+		auto sendBuffer = ClientPacketHandler::MakeSendBuffer(pkt);
 		Send(sendBuffer);
 	}
 
@@ -28,7 +28,7 @@ public:
 		PacketHeader* header = reinterpret_cast<PacketHeader*>(buffer);
 
 		// TODO : packetId 대역 체크
-		ServerPacketHandler::HandlePacket(session, buffer, len);
+		ClientPacketHandler::HandlePacket(session, buffer, len);
 	}
 
 	virtual void OnSend(int32 len) override
@@ -44,7 +44,7 @@ public:
 
 int main()
 {
-	ServerPacketHandler::Init();
+	ClientPacketHandler::Init();
 
 	this_thread::sleep_for(1s);
 
@@ -69,7 +69,7 @@ int main()
 
 	Protocol::C_CHAT chatPkt;
 	chatPkt.set_msg(u8"Hello World !");
-	auto sendBuffer = ServerPacketHandler::MakeSendBuffer(chatPkt);
+	auto sendBuffer = ClientPacketHandler::MakeSendBuffer(chatPkt);
 
 	while (true)
 	{
