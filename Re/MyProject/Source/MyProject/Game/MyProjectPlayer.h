@@ -34,6 +34,6 @@ public:
 	Protocol::PosInfo* GetPlayerInfo() { return PlayerInfo; }
 
 protected:
-	class Protocol::PosInfo* PlayerInfo; // ÇöÀç À§Ä¡
-	class Protocol::PosInfo* DestInfo; // ¸ñÀûÁö
+	class Protocol::PosInfo* PlayerInfo; // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡
+	class Protocol::PosInfo* DestInfo; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 };

@@ -34,7 +34,7 @@ void UMyProjectGameInstance::ConnectToGameServer()
 		GameServerSession = MakeShared<PacketSession>(Socket);
 		GameServerSession->Run();
 
-		// �α��� �õ�(���Ŀ� ���̵�, ��� �߰�?)
+		// �α��� �õ�(���Ŀ� ���̵�, ��� �߰�?)
 		Protocol::C_LOGIN Pkt;
 		SendBufferRef SendBuffer = ServerPacketHandler::MakeSendBuffer(Pkt);
 		SendPacket(SendBuffer);
@@ -88,7 +88,7 @@ void UMyProjectGameInstance::HandleSpawn(const Protocol::ObjectInfo& objectInfo,
 	if (World == nullptr)
 		return;
 
-	// �ߺ� ó�� üũ
+	// �ߺ� ó�� üũ
 	const uint64 ObjectId = objectInfo.object_id();
 	if (Players.Find(ObjectId) != nullptr)
 		return;
@@ -176,4 +176,12 @@ void UMyProjectGameInstance::HandleMove(const Protocol::S_MOVE& MovePkt)
 	const Protocol::PosInfo& Info = MovePkt.info();
 	//Player->SetPlayerInfo(Info);
 	Player->SetDestInfo(Info);
+}
+
+void UMyProjectGameInstance::HandleChange()
+{
+	// 여기서 캐릭터 삭제 후 생성
+	// 해결해야 할 건 기존의 캐릭터가 가지고 있던 위치같은 정보들을
+	// 다시 새로운 캐릭터에 넘겨줘야 한다. 이거를 서버에서? 아니면 클라에서?
+	
 }

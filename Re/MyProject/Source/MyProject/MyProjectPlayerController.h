@@ -9,11 +9,11 @@
 
 class UInputMappingContext;
 
-//Ä³¸¯ÅÍº¯°æÁ¤º¸ 
+//Ä³ï¿½ï¿½ï¿½Íºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
 struct FCharacterChangeInfo
 {
-	FString CharacterName; // Ä³¸¯ÅÍ ÀÌ¸§
-	UClass* CharacterClass; // Ä³¸¯ÅÍÀÇ Å¬·¡½º Á¤º¸
+	FString CharacterName; // Ä³ï¿½ï¿½ï¿½ï¿½ ï¿½Ì¸ï¿½
+	UClass* CharacterClass; // Ä³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Å¬ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     UClass* CharacterParentClass;
 };
 /**
@@ -26,13 +26,13 @@ class MYPROJECT_API AMyProjectPlayerController : public APlayerController
 
 
 public:
-	// Ä³¸¯ÅÍ º¯°æ ÇÔ¼ö
+	// Ä³ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½
 	UFUNCTION(BlueprintCallable, Category = "Character")
 	
 
 	void RequestServerForCharacterChange(FString CharacterName);
 
-	// ¼­¹ö·ÎºÎÅÍ Ä³¸¯ÅÍ º¯°æ ½ÂÀÎ ÀÀ´äÀ» ¹Þ¾ÒÀ» ¶§ È£ÃâµÇ´Â ÇÔ¼ö
+	// ï¿½ï¿½ï¿½ï¿½ï¿½Îºï¿½ï¿½ï¿½ Ä³ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¾ï¿½ï¿½ï¿½ ï¿½ï¿½ È£ï¿½ï¿½Ç´ï¿½ ï¿½Ô¼ï¿½
 	void OnServerCharacterChangeResponse(bool bIsChangeApproved, FString CharacterName, FString AdditionalInfo);
 
     
@@ -43,14 +43,14 @@ protected:
 	
 	virtual void SetupInputComponent() override;
 	
-	// UI Ç¥½Ã ¹× ¼û±â±â ÇÔ¼ö
+	// UI Ç¥ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½
 	void ToggleCharacterSelectUI();
 
 	
 
 	
 
-	// ¼­¹ö·ÎºÎÅÍ Ä³¸¯ÅÍ º¯°æ¿¡ ´ëÇÑ ÀÀ´äÀ» ¹Þ¾ÒÀ» ¶§ Ã³¸®
+	// ï¿½ï¿½ï¿½ï¿½ï¿½Îºï¿½ï¿½ï¿½ Ä³ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½æ¿¡ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¾ï¿½ï¿½ï¿½ ï¿½ï¿½ Ã³ï¿½ï¿½
 	
 	void ExecuteCharacterChange(FString CharacterName);
 
@@ -60,13 +60,13 @@ protected:
 
 	
 	
-	//UI À§Á¬ ÀÎ½ºÅÏ½º¸¦ °ü¸®
+	//UI ï¿½ï¿½ï¿½ï¿½ ï¿½Î½ï¿½ï¿½Ï½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	UPROPERTY()
 	UUserWidget* CharacterSelectWidgetInstance;
 	
 	
 
-	// UI À§Á¬ Å¬·¡½º Å¸ÀÔ
+	// UI ï¿½ï¿½ï¿½ï¿½ Å¬ï¿½ï¿½ï¿½ï¿½ Å¸ï¿½ï¿½
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UUserWidget> CharacterSelectWidgetClass;
 

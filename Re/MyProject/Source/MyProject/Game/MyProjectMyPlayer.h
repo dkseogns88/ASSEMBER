@@ -41,13 +41,14 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* LookAction;
 
-
-
 protected:
 
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 
+	bool isJump = false;
+	void Jump();
+	void StopJumping();
 
 protected:
 	// APawn interface

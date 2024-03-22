@@ -47,39 +47,39 @@ void AMyProjectMyPlayer::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	
-	// Send ÆÇÁ¤
-	//bool ForceSendPacket = false;
-
-	//if (LastDesiredInput != DesiredInput)
-	//{
-	//	ForceSendPacket = true;
-	//	LastDesiredInput = DesiredInput;
-	//}
-
-	//// State Á¤º¸
-	//if (DesiredInput == FVector2D::Zero())
-	//	SetMoveState(Protocol::MOVE_STATE_IDLE);
-	//else
-	//	SetMoveState(Protocol::MOVE_STATE_RUN);
-
-	//MovePacketSendTimer -= DeltaTime;
-
-	//if (MovePacketSendTimer <= 0 || ForceSendPacket)
-	//{
-	//	MovePacketSendTimer = MOVE_PACKET_SEND_DELAY;
-
-	//	Protocol::C_MOVE MovePkt;
-
-	//	// ÇöÀç À§Ä¡ Á¤º¸
-	//	{
-	//		Protocol::PosInfo* Info = MovePkt.mutable_info();
-	//		Info->CopyFrom(*PlayerInfo);
-	//		Info->set_yaw(DesiredYaw);
-	//		Info->set_state(GetMoveState());
-	//	}
-
-	//	SEND_PACKET(MovePkt);
-	//}
+	// Send ï¿½ï¿½ï¿½ï¿½
+	bool ForceSendPacket = false;
+	
+	if (LastDesiredInput != DesiredInput)
+	{
+		ForceSendPacket = true;
+		LastDesiredInput = DesiredInput;
+	}
+	
+	// State ï¿½ï¿½ï¿½ï¿½
+	if (DesiredInput == FVector2D::Zero())
+		SetMoveState(Protocol::MOVE_STATE_IDLE);
+	else
+		SetMoveState(Protocol::MOVE_STATE_RUN);
+	
+	MovePacketSendTimer -= DeltaTime;
+	
+	if (MovePacketSendTimer <= 0 || ForceSendPacket)
+	{
+		MovePacketSendTimer = MOVE_PACKET_SEND_DELAY;
+	
+		Protocol::C_MOVE MovePkt;
+	
+		// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½
+		{
+			Protocol::PosInfo* Info = MovePkt.mutable_info();
+			Info->CopyFrom(*PlayerInfo);
+			Info->set_yaw(DesiredYaw);
+			Info->set_state(GetMoveState());
+		}
+	
+		SEND_PACKET(MovePkt);
+	}
 	
 }
 
@@ -91,12 +91,12 @@ void AMyProjectMyPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent)) {
 	
 		// Jumping
-		//EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
-		//EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &AMyProjectMyPlayer::Jump);
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &AMyProjectMyPlayer::StopJumping);
 	
 		// Moving
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AMyProjectMyPlayer::Move);
-		//EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Completed, this, &AMyProjectMyPlayer::Move);
+		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Completed, this, &AMyProjectMyPlayer::Move);
 
 		// Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AMyProjectMyPlayer::Look);
@@ -149,4 +149,19 @@ void AMyProjectMyPlayer::Look(const FInputActionValue& Value)
 		AddControllerYawInput(LookAxisVector.X);
 		AddControllerPitchInput(LookAxisVector.Y);
 	}
+}
+
+void AMyProjectMyPlayer::Jump()
+{
+	Super::Jump();
+	
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Player Jump")));
+
+}
+
+void AMyProjectMyPlayer::StopJumping()
+{
+	Super::StopJumping();
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Player Jump End!")));
+
 }

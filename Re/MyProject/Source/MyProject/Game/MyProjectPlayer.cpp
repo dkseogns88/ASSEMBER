@@ -88,8 +88,8 @@ void AMyProjectPlayer::Tick(float DeltaSeconds)
 		if (State == Protocol::MOVE_STATE_RUN)
 		{
 			SetActorRotation(FRotator(0, DestInfo->yaw(), 0));
-			AddMovementInput(GetActorForwardVector());  // ╣┘╢є║╕┤┬ ╣ц╟т└╕╖╬ ░б░╘ ╡╚┤┘. ▒╫╖п╕щ ╛╚╡╚┤┘.
-			                                            // ╡╡┬° ╕ё└√┴Ў┐б╝н ╟Ў└ч └з─б╕ж ╗й╝н │ы╕╗╢є└╠┴ю╟╤ ░═└╗ └╠╡┐ ║д┼═╖╬ ╟╪╛▀ ╟╤┤┘.
+			AddMovementInput(GetActorForwardVector());  // я┐╜┘╢є║╕┤я┐╜ я┐╜я┐╜я┐╜я┐╜я┐╜я┐╜я┐╜я┐╜ я┐╜я┐╜я┐╜я┐╜ я┐╜╚┤я┐╜. я┐╜╫╖я┐╜я┐╜я┐╜ я┐╜╚╡╚┤я┐╜.
+			                                            // я┐╜я┐╜я┐╜я┐╜ я┐╜я┐╜я┐╜я┐╜я┐╜я┐╜я┐╜я┐╜я┐╜я┐╜ я┐╜я┐╜я┐╜я┐╜ я┐╜я┐╜─бя┐╜я┐╜ я┐╜я┐╜я┐╜я┐╜ я┐╜ы╕╗я┐╜я┐╜я┐╜я┐╜я┐╜я┐╜я┐╜я┐╜ я┐╜я┐╜я┐╜я┐╜ я┐╜╠╡я┐╜ я┐╜я┐╜я┐╜═╖я┐╜ я┐╜╪╛я┐╜ я┐╜╤┤я┐╜.
 		}
 		else
 		{
@@ -138,9 +138,9 @@ void AMyProjectPlayer::SetDestInfo(const Protocol::PosInfo& Info)
 		assert(PlayerInfo->object_id() == Info.object_id());
 	}
 
-	// Dest┐б ├╓┴╛ ╗є┼┬ ║╣╗ч.
+	// Destя┐╜я┐╜ я┐╜я┐╜я┐╜я┐╜ я┐╜я┐╜я┐╜я┐╜ я┐╜я┐╜я┐╜я┐╜.
 	DestInfo->CopyFrom(Info);
 
-	// ╗є┼┬╕╕ ╣┘╖╬ └√┐ы╟╧└┌.
+	// я┐╜я┐╜я┐╜┬╕я┐╜ я┐╜┘╖я┐╜ я┐╜я┐╜я┐╜я┐╜я┐╜я┐╜я┐╜я┐╜.
 	SetMoveState(Info.state());
 }

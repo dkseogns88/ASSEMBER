@@ -39,7 +39,7 @@ bool Handle_S_LEAVE_GAME(PacketSessionRef& session, Protocol::S_LEAVE_GAME& pkt)
 {
 	if (auto* GameInstance = Cast<UMyProjectGameInstance>(GWorld->GetGameInstance()))
 	{
-		// TODO : °ÔÀÓ Á¾·á? ·Îºñ·Î?
+		// TODO : ê²Œìž„ ì¢…ë£Œ? ë¡œë¹„ë¡œ?
 	}
 
 	return true;
@@ -69,6 +69,19 @@ bool Handle_S_MOVE(PacketSessionRef& session, Protocol::S_MOVE& pkt)
 	if (auto* GameInstance = Cast<UMyProjectGameInstance>(GWorld->GetGameInstance()))
 	{
 		GameInstance->HandleMove(pkt);
+	}
+
+	return true;
+}
+
+bool Handle_S_SELECT(PacketSessionRef& session, Protocol::S_SELECT& pkt)
+{
+	if (pkt.success())
+	{
+		if (auto* GameInstance = Cast<UMyProjectGameInstance>(GWorld->GetGameInstance()))
+		{
+			GameInstance->HandleChange();
+		}
 	}
 
 	return true;

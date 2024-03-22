@@ -46,7 +46,7 @@ void AMyProjectMyPlayerSida::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 
-	// Send ÆÇÁ¤
+	// Send ï¿½ï¿½ï¿½ï¿½
 	bool ForceSendPacket = false;
 
 	if (LastDesiredInput != DesiredInput)
@@ -55,7 +55,7 @@ void AMyProjectMyPlayerSida::Tick(float DeltaTime)
 		LastDesiredInput = DesiredInput;
 	}
 
-	// State Á¤º¸
+	// State ï¿½ï¿½ï¿½ï¿½
 	if (DesiredInput == FVector2D::Zero())
 		SetMoveState(Protocol::MOVE_STATE_IDLE);
 	else
@@ -69,7 +69,7 @@ void AMyProjectMyPlayerSida::Tick(float DeltaTime)
 
 		Protocol::C_MOVE MovePkt;
 
-		// ÇöÀç À§Ä¡ Á¤º¸
+		// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½
 		{
 			Protocol::PosInfo* Info = MovePkt.mutable_info();
 			Info->CopyFrom(*PlayerInfo);

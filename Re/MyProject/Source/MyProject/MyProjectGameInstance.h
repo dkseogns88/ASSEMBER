@@ -39,6 +39,8 @@ public:
 
 	void HandleMove(const Protocol::S_MOVE& MovePkt);
 
+	void HandleChange();
+
 public:
 	class FSocket* Socket;
 	FString IpAddress = TEXT("127.0.0.1");
@@ -47,9 +49,9 @@ public:
 
 public:
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<AMyProjectPlayer> OtherPlayerClass;		// ´Ù¸¥ Ä³¸¯ÅÍ
+	TSubclassOf<AMyProjectPlayer> OtherPlayerClass;		// ï¿½Ù¸ï¿½ Ä³ï¿½ï¿½ï¿½ï¿½
 
-	AMyProjectPlayer* MyPlayer;							// ³» Ä³¸¯ÅÍ
-	TMap<uint64, AMyProjectPlayer*> Players;			// Ä³¸¯ÅÍµé ´ã¾Æ³õÀº°Å
+	AMyProjectPlayer* MyPlayer;							// ï¿½ï¿½ Ä³ï¿½ï¿½ï¿½ï¿½
+	TMap<uint64, AMyProjectPlayer*> Players;			// Ä³ï¿½ï¿½ï¿½Íµï¿½ ï¿½ï¿½Æ³ï¿½ï¿½ï¿½ï¿½ï¿½
 
 };
