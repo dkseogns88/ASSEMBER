@@ -5,19 +5,83 @@
 #include "EnhancedInputSubsystems.h"
 #include "Blueprint/UserWidget.h"
 #include "MyProjectMyPlayer.h"
+#include "MyProjectMyPlayerSida.h"
 #include "Components/InputComponent.h"
 
 
 
-void AMyProjectPlayerController::NotifyServerOfCharacterChange(const FCharacterChangeInfo& ChangeInfo)
+
+void AMyProjectPlayerController::ExecuteCharacterChange(FString CharacterName)
 {
-    /* 서버와 통신하여 캐릭터 변경 정보 전달
-    형이 구현할부분 , ChangeInfo에 변경된 캐릭터 정보가 저장되어있음.변경될때마다 새로저장.
-    필요에따라 추가적인 정보 저장할예정
-    */
+    //캐릭터 이름으로 클래스 찾기
+    TSubclassOf<APawn> NewCharacterClass = FindCharacterClassByName(CharacterName);
+    if (NewCharacterClass == nullptr)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Unable to find character class for: %s"), *CharacterName);
+        return;
+    }
 
+    // 현재 캐릭터 파괴
+    APawn* CurrentPawn = GetPawn();
+    if (CurrentPawn)
+    {
+        CurrentPawn->Destroy();
+    }
 
+    // 새 캐릭터 스폰
+    FVector NewSpawnLocation = FVector(0, 0, 100); // 예시 위치
+    FRotator SpawnRotation = FRotator(0, 0, 0); // 예시 회전
+    APawn* NewCharacter = GetWorld()->SpawnActor<APawn>(NewCharacterClass, NewSpawnLocation, SpawnRotation);
+    if (NewCharacter == nullptr)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Failed to spawn new character: %s"), *CharacterName);
+        return;
+    }
+
+    // 새 캐릭터로 플레이어 소유권 변경
+    Possess(NewCharacter);
+
+    UE_LOG(LogTemp, Log, TEXT("Character successfully changed to: %s"), *CharacterName);
+
+    // 캐릭터 변경 후 UI 숨기기
+    if (CharacterSelectWidgetInstance != nullptr)
+    {
+        CharacterSelectWidgetInstance->RemoveFromViewport();
+        CharacterSelectWidgetInstance = nullptr;
+        bShowMouseCursor = false;
+        SetInputMode(FInputModeGameOnly());
+    }
 }
+
+//캐릭터 이름에 해당하는 클래스를 찾아서 반환
+TSubclassOf<APawn> AMyProjectPlayerController::FindCharacterClassByName(FString CharacterName)
+{
+    // 캐릭터 이름과 클래스를 연결하는 맵 key - value 쌍으로 저장함
+    static TMap<FString, TSubclassOf<APawn>> CharacterClassMap;
+
+    //Map에 저장
+    if (CharacterClassMap.IsEmpty())
+    {
+        CharacterClassMap.Add("Rinty", AMyProjectMyPlayer::StaticClass());
+        CharacterClassMap.Add("Sida", AMyProjectMyPlayerSida::StaticClass());
+        
+    }
+
+    // 맵에서 캐릭터 이름에 해당하는 클래스 찾기
+    TSubclassOf<APawn>* FoundClass = CharacterClassMap.Find(CharacterName);
+    if (FoundClass)
+    {
+        return *FoundClass;
+    }
+    else
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Character class not found for name: %s"), *CharacterName);
+        return nullptr;
+    }
+}
+
+
+
 
 void AMyProjectPlayerController::BeginPlay()
 {
@@ -34,52 +98,29 @@ void AMyProjectPlayerController::BeginPlay()
 	}
 }
 
-void AMyProjectPlayerController::ChangeCharacter(TSubclassOf<APawn> NewCharacterClass)
+
+
+void AMyProjectPlayerController::RequestServerForCharacterChange(FString CharacterName)
 {
-    if (!GetPawn() || !NewCharacterClass) return;
+    // 서버에 캐릭터 변경 요청
+ 
+    UE_LOG(LogTemp, Log, TEXT("Requesting server for character change to: %s"), *CharacterName);
+}
 
-    // 현재 캐릭터 파괴
-    GetPawn()->Destroy();
-
-    // 새 캐릭터 스폰 위치 및 회전 설정
-    FVector NewSpawnLocation = FVector(0, 0, 100);
-    FRotator NewSpawnRotation = FRotator(0, 0, 0);
-
-    // 새 캐릭터 스폰
-    APawn* NewSpawnCharacter = GetWorld()->SpawnActor<APawn>(NewCharacterClass, NewSpawnLocation, NewSpawnRotation);
-    if (NewSpawnCharacter)
+void AMyProjectPlayerController::OnServerCharacterChangeResponse(bool bIsChangeApproved, FString CharacterName, FString AdditionalInfo)
+{
+    if (bIsChangeApproved)
     {
-        // 새 캐릭터 소유
-        Possess(NewSpawnCharacter);
+        // 서버로부터 캐릭터 변경 승인
 
-        // 서버에 캐릭터 변경 정보 전달
-        FCharacterChangeInfo ChangeInfo;
-        ChangeInfo.CharacterName = NewSpawnCharacter->GetName();
-        ChangeInfo.CharacterClass = NewSpawnCharacter->GetClass();
-        ChangeInfo.CharacterParentClass = NewSpawnCharacter->GetClass()->GetSuperClass();
-
-        // 부모 클래스 이름 로그로 출력 (부모 클래스 정보가 있을 경우만)
-        if (ChangeInfo.CharacterParentClass != nullptr)
-        {
-            FString ParentClassName = ChangeInfo.CharacterParentClass->GetName();
-            UE_LOG(LogTemp, Log, TEXT("Character Changed to: %s, Parent Class: %s"), *ChangeInfo.CharacterName, *ParentClassName);
-        }
-
-        NotifyServerOfCharacterChange(ChangeInfo);
-
-        // 캐릭터 변경 후 UI 숨기기
-        if (CharacterSelectWidgetInstance != nullptr)
-        {
-            CharacterSelectWidgetInstance->RemoveFromViewport();
-            CharacterSelectWidgetInstance = nullptr;
-            bShowMouseCursor = false;
-            SetInputMode(FInputModeGameOnly());
-        }
+        ExecuteCharacterChange(CharacterName);
     }
     else
     {
-        UE_LOG(LogTemp, Warning, TEXT("Character spawn failed"));
+        // 거절
+        UE_LOG(LogTemp, Warning, TEXT("Server denied character change request: %s"), *AdditionalInfo);
     }
+
 }
 
 
