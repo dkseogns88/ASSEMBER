@@ -73,6 +73,15 @@ bool Handle_S_MOVE(PacketSessionRef& session, Protocol::S_MOVE& pkt)
 
 	return true;
 }
+bool Handle_S_JUMP(PacketSessionRef& session, Protocol::S_JUMP& pkt)
+{
+	if (auto* GameInstance = Cast<UMyProjectGameInstance>(GWorld->GetGameInstance()))
+	{
+		GameInstance->HandleJump(pkt);
+	}
+
+	return true;
+}
 
 bool Handle_S_SELECT(PacketSessionRef& session, Protocol::S_SELECT& pkt)
 {

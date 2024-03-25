@@ -88,8 +88,16 @@ void AMyProjectPlayer::Tick(float DeltaSeconds)
 		if (State == Protocol::MOVE_STATE_RUN)
 		{
 			SetActorRotation(FRotator(0, DestInfo->yaw(), 0));
-			AddMovementInput(GetActorForwardVector());  // �ٶ󺸴� �������� ���� �ȴ�. �׷��� �ȵȴ�.
-			                                            // ���� ���������� ���� ��ġ�� ���� �븻�������� ���� �̵� ���ͷ� �ؾ� �Ѵ�.
+			AddMovementInput(GetActorForwardVector()); // 바라보는 방향으로 가게 된다. 그러면 안된다.
+			                                           // 도착 목적지에서 현재 위치를 빼서 노말라이즈한 것을 이동 벡터로 해야 한다.
+		}
+		else if (State == Protocol::MOVE_STATE_JUMP)
+		{
+			FVector JumpLocation;
+			JumpLocation.X = DestInfo->x();
+			JumpLocation.Y = DestInfo->y();
+			JumpLocation.Z = DestInfo->z();
+			SetActorLocation(JumpLocation);
 		}
 		else
 		{
@@ -100,12 +108,11 @@ void AMyProjectPlayer::Tick(float DeltaSeconds)
 
 bool AMyProjectPlayer::IsMyPlayer()
 {
-	bool IsMyPlayer = false;;
 	if (Cast<AMyProjectMyPlayer>(this) != nullptr)
-		IsMyPlayer = true;
+		return true;
 
 
-	return IsMyPlayer;
+	return false;
 }
 
 void AMyProjectPlayer::SetMoveState(Protocol::MoveState State)
@@ -138,9 +145,7 @@ void AMyProjectPlayer::SetDestInfo(const Protocol::PosInfo& Info)
 		assert(PlayerInfo->object_id() == Info.object_id());
 	}
 
-	// Dest�� ���� ���� ����.
 	DestInfo->CopyFrom(Info);
 
-	// ���¸� �ٷ� ��������.
 	SetMoveState(Info.state());
 }

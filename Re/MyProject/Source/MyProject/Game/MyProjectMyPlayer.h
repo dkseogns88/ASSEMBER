@@ -46,7 +46,6 @@ protected:
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 
-	bool isJump = false;
 	void Jump();
 	void StopJumping();
 
@@ -65,6 +64,10 @@ public:
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 	
+
+protected:
+	
+
 protected:
 	const float MOVE_PACKET_SEND_DELAY = 0.2f;
 	float MovePacketSendTimer = MOVE_PACKET_SEND_DELAY;
@@ -76,4 +79,7 @@ protected:
 
 	// Dirty Flag Test
 	FVector2D LastDesiredInput;
+
+	// Jump
+	bool IsJump = false;
 };

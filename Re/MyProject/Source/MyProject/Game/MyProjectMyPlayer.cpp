@@ -45,42 +45,60 @@ void AMyProjectMyPlayer::BeginPlay()
 void AMyProjectMyPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 	
-	// Send ����
 	bool ForceSendPacket = false;
 	
-	if (LastDesiredInput != DesiredInput)
+	if ((LastDesiredInput != DesiredInput) || IsJump)
 	{
 		ForceSendPacket = true;
 		LastDesiredInput = DesiredInput;
 	}
 	
-	// State ����
-	if (DesiredInput == FVector2D::Zero())
+	if (GetCharacterMovement()->IsFalling())
+	{
+		IsJump = true;
+	}
+	else {
+		IsJump = false;
+
+	}
+
+	if (DesiredInput == FVector2D::Zero() && (IsJump == false))
 		SetMoveState(Protocol::MOVE_STATE_IDLE);
-	else
+	else if((DesiredInput != FVector2D::Zero()) && (IsJump == false))
 		SetMoveState(Protocol::MOVE_STATE_RUN);
-	
+	else if(IsJump == true)
+		SetMoveState(Protocol::MOVE_STATE_JUMP);
+
 	MovePacketSendTimer -= DeltaTime;
 	
 	if (MovePacketSendTimer <= 0 || ForceSendPacket)
 	{
 		MovePacketSendTimer = MOVE_PACKET_SEND_DELAY;
-	
-		Protocol::C_MOVE MovePkt;
-	
-		// ���� ��ġ ����
+
+		if (IsJump == false)
 		{
-			Protocol::PosInfo* Info = MovePkt.mutable_info();
-			Info->CopyFrom(*PlayerInfo);
-			Info->set_yaw(DesiredYaw);
-			Info->set_state(GetMoveState());
+			Protocol::C_MOVE MovePkt;
+			{
+				Protocol::PosInfo* Info = MovePkt.mutable_info();
+				Info->CopyFrom(*PlayerInfo);
+				Info->set_yaw(DesiredYaw);
+				Info->set_state(GetMoveState());
+			}
+			SEND_PACKET(MovePkt);
 		}
-	
-		SEND_PACKET(MovePkt);
+		else if(IsJump == true)
+		{
+			Protocol::C_JUMP JumpPkt;
+			{
+				Protocol::PosInfo* Info = JumpPkt.mutable_info();
+				Info->CopyFrom(*PlayerInfo);
+				Info->set_yaw(DesiredYaw);
+				Info->set_state(GetMoveState());
+			}
+			SEND_PACKET(JumpPkt);
+		}
 	}
-	
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -92,7 +110,7 @@ void AMyProjectMyPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 	
 		// Jumping
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &AMyProjectMyPlayer::Jump);
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &AMyProjectMyPlayer::StopJumping);
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &AMyProjectMyPlayer::StopJumping);
 	
 		// Moving
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AMyProjectMyPlayer::Move);
@@ -154,14 +172,11 @@ void AMyProjectMyPlayer::Look(const FInputActionValue& Value)
 void AMyProjectMyPlayer::Jump()
 {
 	Super::Jump();
-	
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Player Jump")));
-
+	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Player Jump")));
 }
 
 void AMyProjectMyPlayer::StopJumping()
 {
 	Super::StopJumping();
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Player Jump End!")));
-
+	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Player Jump End!")));
 }

@@ -154,7 +154,6 @@ void UMyProjectGameInstance::HandleDespawn(const Protocol::S_DESPAWN& DespawnPkt
 
 void UMyProjectGameInstance::HandleMove(const Protocol::S_MOVE& MovePkt)
 {
-
 	if (Socket == nullptr || GameServerSession == nullptr)
 		return;
 
@@ -174,7 +173,28 @@ void UMyProjectGameInstance::HandleMove(const Protocol::S_MOVE& MovePkt)
 		return;
 
 	const Protocol::PosInfo& Info = MovePkt.info();
-	//Player->SetPlayerInfo(Info);
+	Player->SetDestInfo(Info);
+}
+
+void UMyProjectGameInstance::HandleJump(const Protocol::S_JUMP& JumpPkt)
+{
+	if (Socket == nullptr || GameServerSession == nullptr)
+		return;
+
+	auto* World = GetWorld();
+	if (World == nullptr)
+		return;
+
+	const uint64 ObjectId = JumpPkt.info().object_id();
+	AMyProjectPlayer** FindActor = Players.Find(ObjectId);
+	if (FindActor == nullptr)
+		return;
+
+	AMyProjectPlayer* Player = (*FindActor);
+	if (Player->IsMyPlayer())
+		return;
+
+	const Protocol::PosInfo& Info = JumpPkt.info();
 	Player->SetDestInfo(Info);
 }
 

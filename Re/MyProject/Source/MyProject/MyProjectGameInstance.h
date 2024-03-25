@@ -38,6 +38,8 @@ public:
 	void HandleDespawn(const Protocol::S_DESPAWN& DespawnPkt);
 
 	void HandleMove(const Protocol::S_MOVE& MovePkt);
+		
+	void HandleJump(const Protocol::S_JUMP& JumpPkt);
 
 	void HandleChange();
 
