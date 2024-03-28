@@ -144,6 +144,7 @@ void Room::HandleJump(Protocol::C_JUMP pkt)
 		SendBufferRef sendBuffer = ClientPacketHandler::MakeSendBuffer(jumpPkt);
 		Broadcast(sendBuffer);
 	}
+
 }
 
 void Room::HandleSelect(Protocol::C_SELECT pkt)

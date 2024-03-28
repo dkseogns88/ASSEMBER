@@ -65,7 +65,7 @@ TSubclassOf<APawn> AMyProjectPlayerController::FindCharacterClassByName(FString 
     //Map에 저장
     if (CharacterClassMap.IsEmpty())
     {
-        CharacterClassMap.Add("Rinty", AMyProjectMyPlayer::StaticClass());
+        CharacterClassMap.Add("Rinty", AMyProjectMyPlayerSida::StaticClass());
         CharacterClassMap.Add("Sida", AMyProjectMyPlayerSida::StaticClass());
 
     }

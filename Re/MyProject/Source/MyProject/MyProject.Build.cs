@@ -16,7 +16,7 @@ public class MyProject : ModuleRules
         {
             "MyProject/",
             "MyProject/Network/",
-            "MyProject/Game/",
+            "MyProject/Character/",
         });
     }
 }

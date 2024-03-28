@@ -9,7 +9,7 @@
 #include "PacketSession.h"
 #include "Protocol.pb.h"
 #include "ServerPacketHandler.h"
-#include "Game/MyProjectPlayer.h"
+#include "MyProjectPlayer.h"
 
 
 void UMyProjectGameInstance::ConnectToGameServer()

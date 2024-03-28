@@ -99,7 +99,11 @@ bool Handle_C_JUMP(PacketSessionRef& session, Protocol::C_JUMP& pkt)
 	room->DoAsync(&Room::HandleJump, pkt);
 	//room->HandleMove(pkt);
 	return true;
+
+
+	return true;
 }
+
 
 bool Handle_C_SELECT(PacketSessionRef& session, Protocol::C_SELECT& pkt)
 {
