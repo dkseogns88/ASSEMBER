@@ -23,7 +23,7 @@ void AMyProjectPlayerController::ExecuteCharacterChange(FString CharacterName)
 
 
 
-
+    
     // 현재 캐릭터 파괴
     APawn* CurrentPawn = GetPawn();
     if (CurrentPawn)
@@ -119,7 +119,6 @@ void AMyProjectPlayerController::OnServerCharacterChangeResponse(bool bIsChangeA
     if (bIsChangeApproved)
     {
         // 서버로부터 캐릭터 변경 승인
-
         ExecuteCharacterChange(CharacterName);
     }
     else

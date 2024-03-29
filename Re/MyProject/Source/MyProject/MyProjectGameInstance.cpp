@@ -10,7 +10,11 @@
 #include "Protocol.pb.h"
 #include "ServerPacketHandler.h"
 #include "MyProjectPlayer.h"
-
+#include "GameFramework/PlayerController.h"
+#include "Kismet/GameplayStatics.h"
+#include "GameFramework/Pawn.h"
+#include "MyProjectMyPlayer.h"
+#include "MyProjectMyPlayerSida.h"
 
 void UMyProjectGameInstance::ConnectToGameServer()
 {
@@ -198,10 +202,61 @@ void UMyProjectGameInstance::HandleJump(const Protocol::S_JUMP& JumpPkt)
 	Player->SetDestInfo(Info);
 }
 
-void UMyProjectGameInstance::HandleChange()
+
+void UMyProjectGameInstance::Init()
+{
+	Super::Init();
+
+	// 캐릭터 클래스 매핑 초기화
+	CharacterClassMap.Add("Rinty", AMyProjectMyPlayer::StaticClass());
+	CharacterClassMap.Add("Sida", AMyProjectMyPlayerSida::StaticClass());
+}
+
+TSubclassOf<APawn> UMyProjectGameInstance::FindCharacterClassByName(FString CharacterName)
+{
+	if (CharacterClassMap.Contains(CharacterName))
+	{
+		return CharacterClassMap[CharacterName];
+	}
+
+	return nullptr;
+}
+
+void UMyProjectGameInstance::HandleChange(FString CharacterName)
 {
 	// 여기서 캐릭터 삭제 후 생성
 	// 해결해야 할 건 기존의 캐릭터가 가지고 있던 위치같은 정보들을
 	// 다시 새로운 캐릭터에 넘겨줘야 한다. 이거를 서버에서? 아니면 클라에서?
+	// 현재 활성화된 플레이어 컨트롤러를 얻음
+
+	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, 0);
+	if (!PlayerController) return;
+
+	// 캐릭터 클래스 찾기 로직을 여기에 추가
+	TSubclassOf<APawn> NewCharacterClass = FindCharacterClassByName(CharacterName); 
+	if (NewCharacterClass == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Unable to find character class for: %s"), *CharacterName);
+		return;
+	}
+
+	// 현재 캐릭터 파괴 및 새 캐릭터 스폰
+	APawn* CurrentPawn = PlayerController->GetPawn();
+	if (CurrentPawn)
+	{
+		CurrentPawn->Destroy();
+	}
+
+	FVector NewSpawnLocation = FVector(0, 0, 100); 
+	FRotator NewSpawnRotation = FRotator(0, 0, 0); 
+	APawn* NewCharacter = GetWorld()->SpawnActor<APawn>(NewCharacterClass, NewSpawnLocation, NewSpawnRotation);
+	if (!NewCharacter)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Failed to spawn new character: %s"), *CharacterName);
+		return;
+	}
+
+	PlayerController->Possess(NewCharacter);
+	UE_LOG(LogTemp, Log, TEXT("Character successfully changed to: %s"), *CharacterName);
 	
 }

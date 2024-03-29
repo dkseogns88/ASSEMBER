@@ -29,6 +29,8 @@ public:
 
 	void SendPacket(SendBufferRef SendBuffer);
 
+	
+
 public:
 	void HandleSpawn(const Protocol::ObjectInfo& objectInfo, bool IsMine);
 	void HandleSpawn(const Protocol::S_ENTER_GAME& EnterGamePkt);
@@ -41,7 +43,17 @@ public:
 		
 	void HandleJump(const Protocol::S_JUMP& JumpPkt);
 
-	void HandleChange();
+	void HandleChange(FString CharacterName);
+	// 캐릭터 클래스 찾기 함수
+	TSubclassOf<APawn> FindCharacterClassByName(FString CharacterName);
+
+	// 초기화 함수
+	virtual void Init() override;
+
+
+private:
+	// 캐릭터 이름과 클래스를 매핑하는 맵
+	TMap<FString, TSubclassOf<APawn>> CharacterClassMap;
 
 public:
 	class FSocket* Socket;
