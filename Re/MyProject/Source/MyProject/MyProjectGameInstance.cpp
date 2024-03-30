@@ -239,16 +239,19 @@ void UMyProjectGameInstance::HandleChange(FString CharacterName)
 		UE_LOG(LogTemp, Warning, TEXT("Unable to find character class for: %s"), *CharacterName);
 		return;
 	}
+	FVector NewSpawnLocation;
+	FRotator NewSpawnRotation;
 
 	// 현재 캐릭터 파괴 및 새 캐릭터 스폰
 	APawn* CurrentPawn = PlayerController->GetPawn();
 	if (CurrentPawn)
 	{
+		NewSpawnLocation = CurrentPawn->GetActorLocation();
+		NewSpawnRotation = CurrentPawn->GetActorRotation();
 		CurrentPawn->Destroy();
 	}
 
-	FVector NewSpawnLocation = FVector(0, 0, 100); 
-	FRotator NewSpawnRotation = FRotator(0, 0, 0); 
+
 	APawn* NewCharacter = GetWorld()->SpawnActor<APawn>(NewCharacterClass, NewSpawnLocation, NewSpawnRotation);
 	if (!NewCharacter)
 	{

@@ -2178,8 +2178,23 @@ class S_SELECT final :
   // accessors -------------------------------------------------------
 
   enum : int {
+    kMsgFieldNumber = 2,
     kSuccessFieldNumber = 1,
   };
+  // string msg = 2;
+  void clear_msg();
+  const std::string& msg() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_msg(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_msg();
+  PROTOBUF_NODISCARD std::string* release_msg();
+  void set_allocated_msg(std::string* msg);
+  private:
+  const std::string& _internal_msg() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_msg(const std::string& value);
+  std::string* _internal_mutable_msg();
+  public:
+
   // bool success = 1;
   void clear_success();
   bool success() const;
@@ -2197,6 +2212,7 @@ class S_SELECT final :
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
   struct Impl_ {
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr msg_;
     bool success_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   };
@@ -3257,6 +3273,56 @@ inline void S_SELECT::_internal_set_success(bool value) {
 inline void S_SELECT::set_success(bool value) {
   _internal_set_success(value);
   // @@protoc_insertion_point(field_set:Protocol.S_SELECT.success)
+}
+
+// string msg = 2;
+inline void S_SELECT::clear_msg() {
+  _impl_.msg_.ClearToEmpty();
+}
+inline const std::string& S_SELECT::msg() const {
+  // @@protoc_insertion_point(field_get:Protocol.S_SELECT.msg)
+  return _internal_msg();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void S_SELECT::set_msg(ArgT0&& arg0, ArgT... args) {
+ 
+ _impl_.msg_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:Protocol.S_SELECT.msg)
+}
+inline std::string* S_SELECT::mutable_msg() {
+  std::string* _s = _internal_mutable_msg();
+  // @@protoc_insertion_point(field_mutable:Protocol.S_SELECT.msg)
+  return _s;
+}
+inline const std::string& S_SELECT::_internal_msg() const {
+  return _impl_.msg_.Get();
+}
+inline void S_SELECT::_internal_set_msg(const std::string& value) {
+  
+  _impl_.msg_.Set(value, GetArenaForAllocation());
+}
+inline std::string* S_SELECT::_internal_mutable_msg() {
+  
+  return _impl_.msg_.Mutable(GetArenaForAllocation());
+}
+inline std::string* S_SELECT::release_msg() {
+  // @@protoc_insertion_point(field_release:Protocol.S_SELECT.msg)
+  return _impl_.msg_.Release();
+}
+inline void S_SELECT::set_allocated_msg(std::string* msg) {
+  if (msg != nullptr) {
+    
+  } else {
+    
+  }
+  _impl_.msg_.SetAllocated(msg, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.msg_.IsDefault()) {
+    _impl_.msg_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:Protocol.S_SELECT.msg)
 }
 
 // -------------------------------------------------------------------

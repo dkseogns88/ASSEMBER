@@ -154,6 +154,7 @@ void Room::HandleSelect(Protocol::C_SELECT pkt)
 	{
 		Protocol::S_SELECT selectPkt;
 		selectPkt.set_success(true);
+		selectPkt.set_msg(msg_pkt);
 
 		SendBufferRef sendBuffer = ClientPacketHandler::MakeSendBuffer(selectPkt);
 		Broadcast(sendBuffer);

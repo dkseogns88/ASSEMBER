@@ -73,7 +73,8 @@ message C_SELECT
 
 message S_SELECT
 {
-	bool success =1;
+	bool success = 1;
+	string msg = 2;
 }
 
 message C_CHAT

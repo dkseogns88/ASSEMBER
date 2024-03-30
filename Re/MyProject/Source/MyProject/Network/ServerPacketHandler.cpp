@@ -87,7 +87,8 @@ bool Handle_S_SELECT(PacketSessionRef& session, Protocol::S_SELECT& pkt)
 {
 	if (pkt.success())
 	{
-		FString CharacterName =  // 패킷에서 캐릭터 이름정보 가져오기 
+		std::string SeletName = pkt.msg();
+		FString CharacterName = ANSI_TO_TCHAR(SeletName.c_str());// 패킷에서 캐릭터 이름정보 가져오기 
 		if (auto* GameInstance = Cast<UMyProjectGameInstance>(GWorld->GetGameInstance()))
 		{
 			GameInstance->HandleChange(CharacterName);
