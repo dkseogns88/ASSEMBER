@@ -43,9 +43,9 @@ public:
 		
 	void HandleJump(const Protocol::S_JUMP& JumpPkt);
 
-	void HandleChange(FString CharacterName);
+	void HandleChange(const FString& CharacterName);
 	// 캐릭터 클래스 찾기 함수
-	TSubclassOf<APawn> FindCharacterClassByName(FString CharacterName);
+	TSubclassOf<APawn> FindCharacterClassByName(const FString& CharacterName);
 
 	// 초기화 함수
 	virtual void Init() override;
@@ -53,7 +53,7 @@ public:
 
 private:
 	// 캐릭터 이름과 클래스를 매핑하는 맵
-	TMap<FString, TSubclassOf<APawn>> CharacterClassMap;
+	TMap<FString, FString> CharacterBlueprintPaths;
 
 public:
 	class FSocket* Socket;

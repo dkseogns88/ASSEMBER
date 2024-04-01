@@ -148,6 +148,7 @@ void AMyProjectPlayerController::ToggleCharacterSelectUI()
             CharacterSelectWidgetInstance->AddToViewport();
             bShowMouseCursor = true; // 마우스 커서 표시
             SetInputMode(FInputModeUIOnly()); // UI 입력 모드 설정
+            UE_LOG(LogTemp, Log, TEXT("Change to UIMODE "));
         }
     }
     else
@@ -157,6 +158,15 @@ void AMyProjectPlayerController::ToggleCharacterSelectUI()
         CharacterSelectWidgetInstance = nullptr;
         bShowMouseCursor = false; // 마우스 커서 숨김
         SetInputMode(FInputModeGameOnly()); // 게임 입력 모드로 복귀
+        UE_LOG(LogTemp, Log, TEXT("Change to GameMODE "));
     }
 }
 
+/*
+기본적인 이동동기화 잘됨
+
+문제 1. U키눌렀을때 캐릭터창 안사라짐
+문제 2. 시다누르면 모든플레이어 시점 같은곳으로 초기화, 작동먹통, 새캐릭터스폰 x
+
+
+*/

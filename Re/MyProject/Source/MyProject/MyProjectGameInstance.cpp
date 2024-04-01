@@ -208,21 +208,24 @@ void UMyProjectGameInstance::Init()
 	Super::Init();
 
 	// 캐릭터 클래스 매핑 초기화
-	CharacterClassMap.Add("Rinty", AMyProjectMyPlayer::StaticClass());
-	CharacterClassMap.Add("Sida", AMyProjectMyPlayerSida::StaticClass());
+	CharacterBlueprintPaths.Add("Rinty", "Blueprint'/Game/MyBP/BP_Class/BP_MyPlayer.BP_MyPlayer_C'");
+	CharacterBlueprintPaths.Add("Sida", "Blueprint'/Game/MyBP/BP_Class/BP_MyPlayer_sida.BP_MyPlayer_sida_C'");
+	
 }
 
-TSubclassOf<APawn> UMyProjectGameInstance::FindCharacterClassByName(FString CharacterName)
+TSubclassOf<APawn> UMyProjectGameInstance::FindCharacterClassByName(const FString& CharacterName)
 {
-	if (CharacterClassMap.Contains(CharacterName))
+	if (CharacterBlueprintPaths.Contains(CharacterName))
 	{
-		return CharacterClassMap[CharacterName];
+		FString Path = CharacterBlueprintPaths[CharacterName];
+		UClass* Class = LoadClass<APawn>(nullptr, *Path);
+		return Class;
 	}
 
 	return nullptr;
 }
 
-void UMyProjectGameInstance::HandleChange(FString CharacterName)
+void UMyProjectGameInstance::HandleChange(const FString& CharacterName)
 {
 	// 여기서 캐릭터 삭제 후 생성
 	// 해결해야 할 건 기존의 캐릭터가 가지고 있던 위치같은 정보들을
@@ -233,33 +236,53 @@ void UMyProjectGameInstance::HandleChange(FString CharacterName)
 	if (!PlayerController) return;
 
 	// 캐릭터 클래스 찾기 로직을 여기에 추가
-	TSubclassOf<APawn> NewCharacterClass = FindCharacterClassByName(CharacterName); 
-	if (NewCharacterClass == nullptr)
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn; // 충돌과 무관하게 항상 스폰
+
+	TSubclassOf<APawn> NewCharacterClassInInstance = FindCharacterClassByName(CharacterName); 
+	if (NewCharacterClassInInstance == nullptr)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Unable to find character class for: %s"), *CharacterName);
 		return;
 	}
-	FVector NewSpawnLocation;
-	FRotator NewSpawnRotation;
+	else
+	{
+		UE_LOG(LogTemp, Log, TEXT("Success to find character class for: %s"), *CharacterName);
+		
+	}
+	FVector NewSpawnLocationAtInstance = FVector(0, 0, 100); 
+	FRotator NewSpawnRotationAtInstance = FRotator(0, 0, 0); 
 
 	// 현재 캐릭터 파괴 및 새 캐릭터 스폰
 	APawn* CurrentPawn = PlayerController->GetPawn();
 	if (CurrentPawn)
 	{
-		NewSpawnLocation = CurrentPawn->GetActorLocation();
-		NewSpawnRotation = CurrentPawn->GetActorRotation();
 		CurrentPawn->Destroy();
 	}
 
+	UE_LOG(LogTemp, Log, TEXT("Attempting to spawn character at Location: %s, Rotation: %s"),
+		*NewSpawnLocationAtInstance.ToString(), *NewSpawnRotationAtInstance.ToString());
 
-	APawn* NewCharacter = GetWorld()->SpawnActor<APawn>(NewCharacterClass, NewSpawnLocation, NewSpawnRotation);
-	if (!NewCharacter)
+	APawn* NewSpawnCharacter = GetWorld()->SpawnActor<APawn>(NewCharacterClassInInstance, NewSpawnLocationAtInstance, NewSpawnRotationAtInstance,SpawnParams);
+	if (!NewSpawnCharacter)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Failed to spawn new character: %s"), *CharacterName);
 		return;
 	}
+	else
+	{
+		// Checking if the NewCharacterClassInInstance is valid after spawn
+		UE_LOG(LogTemp, Log, TEXT("New character class is: %s"), *NewCharacterClassInInstance->GetName());
 
-	PlayerController->Possess(NewCharacter);
-	UE_LOG(LogTemp, Log, TEXT("Character successfully changed to: %s"), *CharacterName);
-	
+		// Checking the NewSpawnLocationAtInstance after spawn
+		UE_LOG(LogTemp, Log, TEXT("New character spawned at Location: %s"), *NewSpawnCharacter->GetActorLocation().ToString());
+
+		// 새 캐릭터로 플레이어 소유권 변경
+		PlayerController->Possess(NewSpawnCharacter);
+		UE_LOG(LogTemp, Log, TEXT("INSTANCE : Character successfully changed to: %s"), *CharacterName);
+		
+		
+
+		
+	}
 }
