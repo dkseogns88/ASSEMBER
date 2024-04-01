@@ -216,22 +216,38 @@ void UMyProjectGameInstance::Init()
 
 TSubclassOf<APawn> UMyProjectGameInstance::FindCharacterClassByName(const FString& CharacterName)
 {
+	// 캐릭터 이름으로 함수 호출 확인 로그 출력
+	UE_LOG(LogTemp, Log, TEXT("FindCharacterClassByName called with CharacterName: %s"), *CharacterName);
+
 	if (CharacterBlueprintPaths.Contains(CharacterName))
 	{
 		FString Path = CharacterBlueprintPaths[CharacterName];
+		// 경로를 찾았을 때의 로그 출력
+		UE_LOG(LogTemp, Log, TEXT("Path found for %s: %s"), *CharacterName, *Path);
+
 		UClass* Class = LoadClass<APawn>(nullptr, *Path);
-		return Class;
+		if (Class)
+		{
+			// 클래스 로드 성공 로그 출력
+			UE_LOG(LogTemp, Log, TEXT("Successfully loaded class for %s"), *CharacterName);
+			return Class;
+		}
+		else
+		{
+			// 클래스 로드 실패 로그 출력
+			UE_LOG(LogTemp, Warning, TEXT("Failed to load class for %s"), *CharacterName);
+		}
+	}
+	else
+	{
+		// 캐릭터 이름에 해당하는 경로를 찾지 못했을 때의 로그 출력
+		UE_LOG(LogTemp, Warning, TEXT("No path found for character name: %s"), *CharacterName);
 	}
 
 	return nullptr;
 }
-
 void UMyProjectGameInstance::HandleChange(const FString& CharacterName)
 {
-	// 여기서 캐릭터 삭제 후 생성
-	// 해결해야 할 건 기존의 캐릭터가 가지고 있던 위치같은 정보들을
-	// 다시 새로운 캐릭터에 넘겨줘야 한다. 이거를 서버에서? 아니면 클라에서?
-	// 현재 활성화된 플레이어 컨트롤러를 얻음
 
 	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, 0);
 	if (!PlayerController) return;
@@ -272,23 +288,23 @@ void UMyProjectGameInstance::HandleChange(const FString& CharacterName)
 	}
 	else
 	{
-		// Checking if the NewCharacterClassInInstance is valid after spawn
+		
 		UE_LOG(LogTemp, Log, TEXT("New character class is: %s"), *NewCharacterClassInInstance->GetName());
 
-		// Checking the NewSpawnLocationAtInstance after spawn
+		
 		UE_LOG(LogTemp, Log, TEXT("New character spawned at Location: %s"), *NewSpawnCharacter->GetActorLocation().ToString());
 
 		// 새 캐릭터로 플레이어 소유권 변경
 		PlayerController->Possess(NewSpawnCharacter);
 		UE_LOG(LogTemp, Log, TEXT("INSTANCE : Character successfully changed to: %s"), *CharacterName);
 		
-		// AMyProjectPlayerController로 캐스팅
+		
 		AMyProjectPlayerController* MyController = Cast<AMyProjectPlayerController>(PlayerController);
 		if (MyController)
 		{
 			// UI 비활성화 및 게임 모드로 전환
 			MyController->bIsUIActive = false;
-			MyController->ToggleCharacterSelectUI(); // 필요에 따라 UI를 명시적으로 토글
+			MyController->ToggleCharacterSelectUI(); 
 		}
 
 		

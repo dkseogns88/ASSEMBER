@@ -42,7 +42,9 @@ void AMyProjectPlayerController::RequestServerForCharacterChange(FString Charact
     SelectPkt.set_msg(SeletName);
 
     SEND_PACKET(SelectPkt);
+    
 
+    UE_LOG(LogTemp, Log, TEXT("Requested server for character change to: %s"), *CharacterName);
 }
 
 
@@ -89,11 +91,4 @@ void AMyProjectPlayerController::ToggleCharacterSelectUI()
 }
 
 
-/*
-기본적인 이동동기화 잘됨
-
-문제 1. U키눌렀을때 캐릭터창 안사라짐
-문제 2. 시다누르면 모든플레이어 시점 같은곳으로 초기화, 작동먹통
-
-
-*/
+/* Rinty가 서버로 정보가 넘어가지 않음*/
