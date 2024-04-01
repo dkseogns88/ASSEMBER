@@ -32,10 +32,12 @@ public:
 
 	void RequestServerForCharacterChange(FString CharacterName);
 
-	// �����κ��� ĳ���� ���� ���� ������ �޾��� �� ȣ��Ǵ� �Լ�
-	void OnServerCharacterChangeResponse(bool bIsChangeApproved, FString CharacterName, FString AdditionalInfo);
+	bool bIsUIActive = false;
+	void ToggleCharacterSelectUI();
+private:
+	// UI가 현재 활성화되어 있는지 여부를 나타내는 변수
+	
 
-    
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputMappingContext* InputMappingContext;
@@ -43,18 +45,14 @@ protected:
 	
 	virtual void SetupInputComponent() override;
 	
-	// UI ǥ�� �� ����� �Լ�
-	void ToggleCharacterSelectUI();
-
+	
 	
 
 	
 
-	// �����κ��� ĳ���� ���濡 ���� ������ �޾��� �� ó��
 	
-	void ExecuteCharacterChange(FString CharacterName);
 
-	TSubclassOf<APawn> FindCharacterClassByName(FString CharacterName);
+
 
 	
 

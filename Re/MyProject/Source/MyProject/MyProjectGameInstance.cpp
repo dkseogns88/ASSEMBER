@@ -15,6 +15,7 @@
 #include "GameFramework/Pawn.h"
 #include "MyProjectMyPlayer.h"
 #include "MyProjectMyPlayerSida.h"
+#include "MyProjectPlayerController.h"
 
 void UMyProjectGameInstance::ConnectToGameServer()
 {
@@ -281,7 +282,14 @@ void UMyProjectGameInstance::HandleChange(const FString& CharacterName)
 		PlayerController->Possess(NewSpawnCharacter);
 		UE_LOG(LogTemp, Log, TEXT("INSTANCE : Character successfully changed to: %s"), *CharacterName);
 		
-		
+		// AMyProjectPlayerController로 캐스팅
+		AMyProjectPlayerController* MyController = Cast<AMyProjectPlayerController>(PlayerController);
+		if (MyController)
+		{
+			// UI 비활성화 및 게임 모드로 전환
+			MyController->bIsUIActive = false;
+			MyController->ToggleCharacterSelectUI(); // 필요에 따라 UI를 명시적으로 토글
+		}
 
 		
 	}

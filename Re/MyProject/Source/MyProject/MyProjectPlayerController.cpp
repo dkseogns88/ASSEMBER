@@ -11,77 +11,8 @@
 #include "Protocol.pb.h"
 
 
-void AMyProjectPlayerController::ExecuteCharacterChange(FString CharacterName)
-{
-    //캐릭터 이름으로 클래스 찾기
-    TSubclassOf<APawn> NewCharacterClass = FindCharacterClassByName(CharacterName);
-    if (NewCharacterClass == nullptr)
-    {
-        UE_LOG(LogTemp, Warning, TEXT("Unable to find character class for: %s"), *CharacterName);
-        return;
-    }
 
 
-
-    
-    // 현재 캐릭터 파괴
-    APawn* CurrentPawn = GetPawn();
-    if (CurrentPawn)
-    {
-        CurrentPawn->Destroy();
-    }
-
-    // 새 캐릭터 스폰
-    FVector NewSpawnLocation = FVector(0, 0, 100); // 예시 위치
-    FRotator SpawnRotation = FRotator(0, 0, 0); // 예시 회전
-    APawn* NewCharacter = GetWorld()->SpawnActor<APawn>(NewCharacterClass, NewSpawnLocation, SpawnRotation);
-    if (NewCharacter == nullptr)
-    {
-        UE_LOG(LogTemp, Warning, TEXT("Failed to spawn new character: %s"), *CharacterName);
-        return;
-    }
-
-    // 새 캐릭터로 플레이어 소유권 변경
-    Possess(NewCharacter);
-
-    UE_LOG(LogTemp, Log, TEXT("Character successfully changed to: %s"), *CharacterName);
-
-    // 캐릭터 변경 후 UI 숨기기
-    if (CharacterSelectWidgetInstance != nullptr)
-    {
-        CharacterSelectWidgetInstance->RemoveFromViewport();
-        CharacterSelectWidgetInstance = nullptr;
-        bShowMouseCursor = false;
-        SetInputMode(FInputModeGameOnly());
-    }
-}
-
-//캐릭터 이름에 해당하는 클래스를 찾아서 반환
-TSubclassOf<APawn> AMyProjectPlayerController::FindCharacterClassByName(FString CharacterName)
-{
-    // 캐릭터 이름과 클래스를 연결하는 맵 key - value 쌍으로 저장함
-    static TMap<FString, TSubclassOf<APawn>> CharacterClassMap;
-
-    //Map에 저장
-    if (CharacterClassMap.IsEmpty())
-    {
-        CharacterClassMap.Add("Rinty", AMyProjectMyPlayerSida::StaticClass());
-        CharacterClassMap.Add("Sida", AMyProjectMyPlayerSida::StaticClass());
-
-    }
-
-    // 맵에서 캐릭터 이름에 해당하는 클래스 찾기
-    TSubclassOf<APawn>* FoundClass = CharacterClassMap.Find(CharacterName);
-    if (FoundClass)
-    {
-        return *FoundClass;
-    }
-    else
-    {
-        UE_LOG(LogTemp, Warning, TEXT("Character class not found for name: %s"), *CharacterName);
-        return nullptr;
-    }
-}
 
 
 
@@ -114,59 +45,55 @@ void AMyProjectPlayerController::RequestServerForCharacterChange(FString Charact
 
 }
 
-void AMyProjectPlayerController::OnServerCharacterChangeResponse(bool bIsChangeApproved, FString CharacterName, FString AdditionalInfo)
-{
-    if (bIsChangeApproved)
-    {
-        // 서버로부터 캐릭터 변경 승인
-        ExecuteCharacterChange(CharacterName);
-    }
-    else
-    {
-        // 거절
-        UE_LOG(LogTemp, Warning, TEXT("Server denied character change request: %s"), *AdditionalInfo);
-    }
-
-}
 
 
 void AMyProjectPlayerController::SetupInputComponent()
 {
     Super::SetupInputComponent();
     InputComponent->BindAction("CharacterSelect", IE_Pressed, this, &AMyProjectPlayerController::ToggleCharacterSelectUI);
+    
 }
 
 void AMyProjectPlayerController::ToggleCharacterSelectUI()
 {
-
-    if (CharacterSelectWidgetInstance == nullptr)
+    //UI의 기본 false
+    if (!bIsUIActive)   //UI가 켜지면
     {
-        // UI 위젯이 아직 생성되지 않았다면 생성
-        CharacterSelectWidgetInstance = CreateWidget<UUserWidget>(this, CharacterSelectWidgetClass);
-        if (CharacterSelectWidgetInstance != nullptr)
+        if (!CharacterSelectWidgetInstance) //UI없을때
         {
-            CharacterSelectWidgetInstance->AddToViewport();
-            bShowMouseCursor = true; // 마우스 커서 표시
-            SetInputMode(FInputModeUIOnly()); // UI 입력 모드 설정
-            UE_LOG(LogTemp, Log, TEXT("Change to UIMODE "));
+            CharacterSelectWidgetInstance = CreateWidget<UUserWidget>(this, CharacterSelectWidgetClass);    //UI생성
+        }
+
+        if (CharacterSelectWidgetInstance)  //UI가있을때
+        {
+            if (!CharacterSelectWidgetInstance->IsInViewport())
+            {
+                CharacterSelectWidgetInstance->AddToViewport();
+                bShowMouseCursor = true;
+                SetInputMode(FInputModeGameAndUI());
+                UE_LOG(LogTemp, Log, TEXT("Changed to UIMODE"));
+                bIsUIActive = true; // UI가 활성화되었다고 상태 업데이트
+                UE_LOG(LogTemp, Log, TEXT("bisUIActive is true"));
+            }
+            else
+            {
+                CharacterSelectWidgetInstance->RemoveFromViewport();
+                bShowMouseCursor = false;
+                SetInputMode(FInputModeGameOnly());
+                UE_LOG(LogTemp, Log, TEXT("Changed to GameMODE"));
+                bIsUIActive = false; // UI가 비활성화되었다고 상태 업데이트
+                UE_LOG(LogTemp, Log, TEXT("bisUIActive is false"));
+            }
         }
     }
-    else
-    {
-        // UI가 이미 표시되어 있다면 숨김
-        CharacterSelectWidgetInstance->RemoveFromViewport();
-        CharacterSelectWidgetInstance = nullptr;
-        bShowMouseCursor = false; // 마우스 커서 숨김
-        SetInputMode(FInputModeGameOnly()); // 게임 입력 모드로 복귀
-        UE_LOG(LogTemp, Log, TEXT("Change to GameMODE "));
-    }
 }
+
 
 /*
 기본적인 이동동기화 잘됨
 
 문제 1. U키눌렀을때 캐릭터창 안사라짐
-문제 2. 시다누르면 모든플레이어 시점 같은곳으로 초기화, 작동먹통, 새캐릭터스폰 x
+문제 2. 시다누르면 모든플레이어 시점 같은곳으로 초기화, 작동먹통
 
 
 */

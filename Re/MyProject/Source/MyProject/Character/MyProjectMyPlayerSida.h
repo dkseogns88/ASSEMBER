@@ -49,6 +49,9 @@ protected:
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 
+	void Jump();
+	void StopJumping();
+
 
 protected:
 	// APawn interface
@@ -77,4 +80,6 @@ protected:
 	// Dirty Flag Test
 	FVector2D LastDesiredInput;
 
+	// Jump
+	bool IsJump = false;
 };
