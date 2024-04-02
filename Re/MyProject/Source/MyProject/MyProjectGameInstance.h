@@ -29,6 +29,8 @@ public:
 
 	void SendPacket(SendBufferRef SendBuffer);
 
+	
+
 public:
 	void HandleSpawn(const Protocol::ObjectInfo& objectInfo, bool IsMine);
 	void HandleSpawn(const Protocol::S_ENTER_GAME& EnterGamePkt);
@@ -38,6 +40,20 @@ public:
 	void HandleDespawn(const Protocol::S_DESPAWN& DespawnPkt);
 
 	void HandleMove(const Protocol::S_MOVE& MovePkt);
+		
+	void HandleJump(const Protocol::S_JUMP& JumpPkt);
+
+	void HandleChange(const FString& CharacterName);
+	// ìºë¦­í„° í´ë˜ìŠ¤ ì°¾ê¸° í•¨ìˆ˜
+	TSubclassOf<APawn> FindCharacterClassByName(const FString& CharacterName);
+
+	// ì´ˆê¸°í™” í•¨ìˆ˜
+	virtual void Init() override;
+
+
+private:
+	// ìºë¦­í„° ì´ë¦„ê³¼ í´ë˜ìŠ¤ë¥¼ ë§¤í•‘í•˜ëŠ” ë§µ
+	TMap<FString, FString> CharacterBlueprintPaths;
 
 public:
 	class FSocket* Socket;
@@ -47,9 +63,9 @@ public:
 
 public:
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<AMyProjectPlayer> OtherPlayerClass;		// ´Ù¸¥ Ä³¸¯ÅÍ
+	TSubclassOf<AMyProjectPlayer> OtherPlayerClass;		// ï¿½Ù¸ï¿½ Ä³ï¿½ï¿½ï¿½ï¿½
 
-	AMyProjectPlayer* MyPlayer;							// ³» Ä³¸¯ÅÍ
-	TMap<uint64, AMyProjectPlayer*> Players;			// Ä³¸¯ÅÍµé ´ã¾Æ³õÀº°Å
+	AMyProjectPlayer* MyPlayer;							// ï¿½ï¿½ Ä³ï¿½ï¿½ï¿½ï¿½
+	TMap<uint64, AMyProjectPlayer*> Players;			// Ä³ï¿½ï¿½ï¿½Íµï¿½ ï¿½ï¿½Æ³ï¿½ï¿½ï¿½ï¿½ï¿½
 
 };

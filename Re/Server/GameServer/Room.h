@@ -10,7 +10,11 @@ public:
 
 	bool HandleEnterPlayer(PlayerRef player);
 	bool HandleLeavePlayer(PlayerRef player);
+
 	void HandleMove(Protocol::C_MOVE pkt);
+	void HandleJump(Protocol::C_JUMP pkt);
+
+	void HandleSelect(Protocol::C_SELECT pkt);
 
 public:
 

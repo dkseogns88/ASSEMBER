@@ -56,6 +56,27 @@ message S_MOVE
 	PosInfo info = 1;
 }
 
+message C_JUMP
+{
+	PosInfo info = 1;
+}
+
+message S_JUMP
+{
+	PosInfo info = 1;
+}
+
+message C_SELECT
+{
+	string msg = 1;
+}
+
+message S_SELECT
+{
+	bool success = 1;
+	string msg = 2;
+}
+
 message C_CHAT
 {
 	string msg = 1;

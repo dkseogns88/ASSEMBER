@@ -5,111 +5,90 @@
 #include "EnhancedInputSubsystems.h"
 #include "Blueprint/UserWidget.h"
 #include "MyProjectMyPlayer.h"
+#include "MyProjectMyPlayerSida.h"
 #include "Components/InputComponent.h"
+#include "MyProject.h"
+#include "Protocol.pb.h"
 
 
 
-void AMyProjectPlayerController::NotifyServerOfCharacterChange(const FCharacterChangeInfo& ChangeInfo)
-{
-    /* ¼­¹ö¿Í Åë½ÅÇÏ¿© Ä³¸¯ÅÍ º¯°æ Á¤º¸ Àü´Ş
-    ÇüÀÌ ±¸ÇöÇÒºÎºĞ , ChangeInfo¿¡ º¯°æµÈ Ä³¸¯ÅÍ Á¤º¸°¡ ÀúÀåµÇ¾îÀÖÀ½.º¯°æµÉ¶§¸¶´Ù »õ·ÎÀúÀå.
-    ÇÊ¿ä¿¡µû¶ó Ãß°¡ÀûÀÎ Á¤º¸ ÀúÀåÇÒ¿¹Á¤
-    */
 
 
-}
+
+
 
 void AMyProjectPlayerController::BeginPlay()
 {
-	Super::BeginPlay();
+    Super::BeginPlay();
 
-	// get the enhanced input subsystem
-	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
-	{
-		Subsystem->AddMappingContext(InputMappingContext, 0);
+    // get the enhanced input subsystem
+    if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
+    {
+        Subsystem->AddMappingContext(InputMappingContext, 0);
 
-		UE_LOG(LogTemp, Warning, TEXT("BeginPlay"));
+        UE_LOG(LogTemp, Warning, TEXT("BeginPlay"));
 
-		
-	}
+
+    }
 }
 
-void AMyProjectPlayerController::ChangeCharacter(TSubclassOf<APawn> NewCharacterClass)
+
+
+void AMyProjectPlayerController::RequestServerForCharacterChange(FString CharacterName)
 {
-    if (!GetPawn() || !NewCharacterClass) return;
+    // ì„œë²„ì— ìºë¦­í„° ë³€ê²½ ìš”ì²­
+    Protocol::C_SELECT SelectPkt;
+    std::string SeletName = TCHAR_TO_ANSI(*CharacterName);
+    SelectPkt.set_msg(SeletName);
 
-    // ÇöÀç Ä³¸¯ÅÍ ÆÄ±«
-    GetPawn()->Destroy();
+    SEND_PACKET(SelectPkt);
+    
 
-    // »õ Ä³¸¯ÅÍ ½ºÆù À§Ä¡ ¹× È¸Àü ¼³Á¤
-    FVector NewSpawnLocation = FVector(0, 0, 100);
-    FRotator NewSpawnRotation = FRotator(0, 0, 0);
-
-    // »õ Ä³¸¯ÅÍ ½ºÆù
-    APawn* NewSpawnCharacter = GetWorld()->SpawnActor<APawn>(NewCharacterClass, NewSpawnLocation, NewSpawnRotation);
-    if (NewSpawnCharacter)
-    {
-        // »õ Ä³¸¯ÅÍ ¼ÒÀ¯
-        Possess(NewSpawnCharacter);
-
-        // ¼­¹ö¿¡ Ä³¸¯ÅÍ º¯°æ Á¤º¸ Àü´Ş
-        FCharacterChangeInfo ChangeInfo;
-        ChangeInfo.CharacterName = NewSpawnCharacter->GetName();
-        ChangeInfo.CharacterClass = NewSpawnCharacter->GetClass();
-        ChangeInfo.CharacterParentClass = NewSpawnCharacter->GetClass()->GetSuperClass();
-
-        // ºÎ¸ğ Å¬·¡½º ÀÌ¸§ ·Î±×·Î Ãâ·Â (ºÎ¸ğ Å¬·¡½º Á¤º¸°¡ ÀÖÀ» °æ¿ì¸¸)
-        if (ChangeInfo.CharacterParentClass != nullptr)
-        {
-            FString ParentClassName = ChangeInfo.CharacterParentClass->GetName();
-            UE_LOG(LogTemp, Log, TEXT("Character Changed to: %s, Parent Class: %s"), *ChangeInfo.CharacterName, *ParentClassName);
-        }
-
-        NotifyServerOfCharacterChange(ChangeInfo);
-
-        // Ä³¸¯ÅÍ º¯°æ ÈÄ UI ¼û±â±â
-        if (CharacterSelectWidgetInstance != nullptr)
-        {
-            CharacterSelectWidgetInstance->RemoveFromViewport();
-            CharacterSelectWidgetInstance = nullptr;
-            bShowMouseCursor = false;
-            SetInputMode(FInputModeGameOnly());
-        }
-    }
-    else
-    {
-        UE_LOG(LogTemp, Warning, TEXT("Character spawn failed"));
-    }
+    UE_LOG(LogTemp, Log, TEXT("Requested server for character change to: %s"), *CharacterName);
 }
+
 
 
 void AMyProjectPlayerController::SetupInputComponent()
 {
-	Super::SetupInputComponent();
-	InputComponent->BindAction("CharacterSelect", IE_Pressed, this, &AMyProjectPlayerController::ToggleCharacterSelectUI);
+    Super::SetupInputComponent();
+    InputComponent->BindAction("CharacterSelect", IE_Pressed, this, &AMyProjectPlayerController::ToggleCharacterSelectUI);
+    
 }
 
 void AMyProjectPlayerController::ToggleCharacterSelectUI()
 {
- 
-    if (CharacterSelectWidgetInstance == nullptr)
+    //UIì˜ ê¸°ë³¸ false
+    if (!bIsUIActive)   //UIê°€ ì¼œì§€ë©´
     {
-        // UI À§Á¬ÀÌ ¾ÆÁ÷ »ı¼ºµÇÁö ¾Ê¾Ò´Ù¸é »ı¼º
-        CharacterSelectWidgetInstance = CreateWidget<UUserWidget>(this, CharacterSelectWidgetClass);
-        if (CharacterSelectWidgetInstance != nullptr)
+        if (!CharacterSelectWidgetInstance) //UIì—†ì„ë•Œ
         {
-            CharacterSelectWidgetInstance->AddToViewport();
-            bShowMouseCursor = true; // ¸¶¿ì½º Ä¿¼­ Ç¥½Ã
-            SetInputMode(FInputModeUIOnly()); // UI ÀÔ·Â ¸ğµå ¼³Á¤
+            CharacterSelectWidgetInstance = CreateWidget<UUserWidget>(this, CharacterSelectWidgetClass);    //UIìƒì„±
         }
-    }
-    else
-    {
-        // UI°¡ ÀÌ¹Ì Ç¥½ÃµÇ¾î ÀÖ´Ù¸é ¼û±è
-        CharacterSelectWidgetInstance->RemoveFromViewport();
-        CharacterSelectWidgetInstance = nullptr;
-        bShowMouseCursor = false; // ¸¶¿ì½º Ä¿¼­ ¼û±è
-        SetInputMode(FInputModeGameOnly()); // °ÔÀÓ ÀÔ·Â ¸ğµå·Î º¹±Í
+
+        if (CharacterSelectWidgetInstance)  //UIê°€ìˆì„ë•Œ
+        {
+            if (!CharacterSelectWidgetInstance->IsInViewport())
+            {
+                CharacterSelectWidgetInstance->AddToViewport();
+                bShowMouseCursor = true;
+                SetInputMode(FInputModeGameAndUI());
+                UE_LOG(LogTemp, Log, TEXT("Changed to UIMODE"));
+                bIsUIActive = true; // UIê°€ í™œì„±í™”ë˜ì—ˆë‹¤ê³  ìƒíƒœ ì—…ë°ì´íŠ¸
+                UE_LOG(LogTemp, Log, TEXT("bisUIActive is true"));
+            }
+            else
+            {
+                CharacterSelectWidgetInstance->RemoveFromViewport();
+                bShowMouseCursor = false;
+                SetInputMode(FInputModeGameOnly());
+                UE_LOG(LogTemp, Log, TEXT("Changed to GameMODE"));
+                bIsUIActive = false; // UIê°€ ë¹„í™œì„±í™”ë˜ì—ˆë‹¤ê³  ìƒíƒœ ì—…ë°ì´íŠ¸
+                UE_LOG(LogTemp, Log, TEXT("bisUIActive is false"));
+            }
+        }
     }
 }
 
+
+/* Rintyê°€ ì„œë²„ë¡œ ì •ë³´ê°€ ë„˜ì–´ê°€ì§€ ì•ŠìŒ*/

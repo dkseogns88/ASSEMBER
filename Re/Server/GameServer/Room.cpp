@@ -125,6 +125,43 @@ void Room::HandleMove(Protocol::C_MOVE pkt)
 
 }
 
+void Room::HandleJump(Protocol::C_JUMP pkt)
+{
+	const uint64 objectId = pkt.info().object_id();
+	if (_objects.find(objectId) == _objects.end())
+		return;
+
+	PlayerRef player = dynamic_pointer_cast<Player>(_objects[objectId]);
+	player->posInfo->CopyFrom(pkt.info());
+
+	{
+		Protocol::S_JUMP jumpPkt;
+		{
+			Protocol::PosInfo* info = jumpPkt.mutable_info();
+			info->CopyFrom(pkt.info());
+		}
+
+		SendBufferRef sendBuffer = ClientPacketHandler::MakeSendBuffer(jumpPkt);
+		Broadcast(sendBuffer);
+	}
+
+}
+
+void Room::HandleSelect(Protocol::C_SELECT pkt)
+{
+	auto& msg_pkt = pkt.msg();
+	if (msg_pkt == "Rindty" || msg_pkt == "Sida")
+	{
+		Protocol::S_SELECT selectPkt;
+		selectPkt.set_success(true);
+		selectPkt.set_msg(msg_pkt);
+
+		SendBufferRef sendBuffer = ClientPacketHandler::MakeSendBuffer(selectPkt);
+		Broadcast(sendBuffer);
+	}
+	
+}
+
 RoomRef Room::GetRoomRef()
 {
 	return static_pointer_cast<Room>(shared_from_this());

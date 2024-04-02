@@ -28,14 +28,14 @@ AMyProjectCharacter::AMyProjectCharacter()
 	// Create a Spring Arm Component
 	CameraBoom1P = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom1P->SetupAttachment(GetCapsuleComponent());
-	CameraBoom1P->TargetArmLength = 300.f; // Ä«¸Þ¶ó¿Í ÇÃ·¹ÀÌ¾î »çÀÌÀÇ °Å¸®
-	CameraBoom1P->bUsePawnControlRotation = true; // ½ºÇÁ¸µ ¾ÏÀÌ PawnÀÇ ÄÁÆ®·Ñ È¸ÀüÀ» µû¸£µµ·Ï ¼³Á¤
+	CameraBoom1P->TargetArmLength = 300.f; // Ä«ï¿½Þ¶ï¿½ï¿½ ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Å¸ï¿½
+	CameraBoom1P->bUsePawnControlRotation = true; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Pawnï¿½ï¿½ ï¿½ï¿½Æ®ï¿½ï¿½ È¸ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 		
 	// Create a CameraComponent	
 	FirstPersonCameraComponent1P = CreateDefaultSubobject<UCameraComponent>(TEXT("FirstPersonCamera"));
-	// Ä«¸Þ¶ó¸¦ ½ºÇÁ¸µ ¾Ï¿¡ ºÎÂø
+	// Ä«ï¿½Þ¶ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½ï¿½
 	FirstPersonCameraComponent1P->SetupAttachment(CameraBoom1P, USpringArmComponent::SocketName);
-	FirstPersonCameraComponent1P->bUsePawnControlRotation = false; // Ä«¸Þ¶ó ÀÚÃ¼ È¸ÀüÀº »ç¿ëÇÏÁö ¾ÊÀ½
+	FirstPersonCameraComponent1P->bUsePawnControlRotation = false; // Ä«ï¿½Þ¶ï¿½ ï¿½ï¿½Ã¼ È¸ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
 	// Create a mesh component that will be used when being viewed from a '1st person' view (when controlling this pawn)
 	Mesh1P = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("CharacterMesh1P"));
