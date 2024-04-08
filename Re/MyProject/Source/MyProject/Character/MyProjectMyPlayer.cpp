@@ -5,6 +5,8 @@
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
+#include "Components/SkeletalMeshComponent.h"
+#include "GameFramework/Character.h" 
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -12,6 +14,10 @@
 #include "EnhancedInputSubsystems.h"
 #include "MyProject.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "MyProjectCharacter.h"
+#include "Animation/AnimInstance.h"
+#include "AnimInstanceCustom.h"
+
 
 
 AMyProjectMyPlayer::AMyProjectMyPlayer()
@@ -177,4 +183,21 @@ void AMyProjectMyPlayer::Jump()
 void AMyProjectMyPlayer::StopJumping()
 {
 	Super::StopJumping();
+}
+
+
+void AMyProjectMyPlayer::SetAiming(bool bNewAiming)
+{
+	bIsAiming = bNewAiming; // Update internal aiming state
+
+	// 애니메이션 블루프린트와 변수연결
+	UAnimInstanceCustom* AnimInstance = Cast<UAnimInstanceCustom>(GetMesh()->GetAnimInstance());
+	if (AnimInstance)
+	{
+		// 애니메이션 블루프린트에서 변수업데이트
+		AnimInstance->bIsAiming = bIsAiming;
+
+		
+		UE_LOG(LogTemp, Log, TEXT("Aiming state updated to: %s"), bIsAiming ? TEXT("True") : TEXT("False"));
+	}
 }

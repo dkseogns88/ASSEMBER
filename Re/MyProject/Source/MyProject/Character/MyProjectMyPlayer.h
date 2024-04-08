@@ -49,6 +49,8 @@ protected:
 	void Jump();
 	void StopJumping();
 
+	void SetAiming(bool bNewAiming);
+
 protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;

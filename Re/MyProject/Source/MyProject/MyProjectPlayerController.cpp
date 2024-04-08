@@ -47,13 +47,52 @@ void AMyProjectPlayerController::RequestServerForCharacterChange(FString Charact
     UE_LOG(LogTemp, Log, TEXT("Requested server for character change to: %s"), *CharacterName);
 }
 
+void AMyProjectPlayerController::RequestServerForAimingChange(bool bIsAiming)
+{
+    //서버에 조준 변경 요청
 
+
+    UE_LOG(LogTemp, Log, TEXT("Requested server for aiming change: %s"), bIsAiming ? TEXT("True") : TEXT("False"));
+}
+
+
+void AMyProjectPlayerController::OnServerAimingResponse(bool bIsAimingApproved)
+{
+    if (bIsAimingApproved)
+    {
+        // 조준 승인 시 조준 상태로 전환
+        AMyProjectPlayer* MyCharacter = Cast<AMyProjectPlayer>(GetPawn());
+        if (MyCharacter)
+        {
+            MyCharacter->SetAiming(true);
+            UE_LOG(LogTemp, Log, TEXT("Aiming approved by server"));
+        }
+    }
+    else
+    {
+        // 거부될 경우 상태 변경하지 않음
+        UE_LOG(LogTemp, Warning, TEXT("Aiming rejected by server"));
+    }
+}
 
 void AMyProjectPlayerController::SetupInputComponent()
 {
     Super::SetupInputComponent();
     InputComponent->BindAction("CharacterSelect", IE_Pressed, this, &AMyProjectPlayerController::ToggleCharacterSelectUI);
+    InputComponent->BindAction("Aim", IE_Pressed, this, &AMyProjectPlayerController::OnAimPressed);
+    InputComponent->BindAction("Aim", IE_Released, this, &AMyProjectPlayerController::OnAimReleased);
     
+}
+
+
+void AMyProjectPlayerController::OnAimPressed()
+{
+    RequestServerForAimingChange(true);
+}
+
+void AMyProjectPlayerController::OnAimReleased()
+{
+    RequestServerForAimingChange(false);
 }
 
 void AMyProjectPlayerController::ToggleCharacterSelectUI()

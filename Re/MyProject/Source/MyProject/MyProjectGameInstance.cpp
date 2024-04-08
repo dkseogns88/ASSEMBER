@@ -249,10 +249,10 @@ TSubclassOf<APawn> UMyProjectGameInstance::FindCharacterClassByName(const FStrin
 void UMyProjectGameInstance::HandleChange(const FString& CharacterName)
 {
 
-	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, 0);
+	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this,0);
 	if (!PlayerController) return;
 
-	// 캐릭터 클래스 찾기 로직을 여기에 추가
+	
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn; // 충돌과 무관하게 항상 스폰
 
