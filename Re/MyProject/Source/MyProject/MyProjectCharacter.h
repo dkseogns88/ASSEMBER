@@ -47,7 +47,7 @@ class AMyProjectCharacter : public ACharacter
 	
 	
 
-	//MyMesh·Î ½ºÄÌ·¹Å» ¸Ş½¬ÄÄÆ÷³ÍÆ®¿¡ Á¢±Ù
+	//MyMeshë¡œ ìŠ¤ì¼ˆë ˆíƒˆ ë©”ì‰¬ì»´í¬ë„ŒíŠ¸ì— ì ‘ê·¼
 	USkeletalMeshComponent* MyMesh = GetMesh();
 	
 public:
@@ -65,6 +65,11 @@ public:
 	/** Bool for AnimBP to switch to another animation set */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon)
 	bool bHasRifle;
+	
+	// ì¡°ì¤€ ìƒíƒœë¥¼ ì €ì¥í•˜ëŠ” ë¶ˆë¦¬ì–¸ ë³€ìˆ˜
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Control")
+	bool bIsAiming;
+
 	
 
 
@@ -101,5 +106,6 @@ public:
 	/** Returns CameraBoom subobject **/
 	USpringArmComponent* GetCameraBoom() const { return CameraBoom1P; }
 
+	
 };
 

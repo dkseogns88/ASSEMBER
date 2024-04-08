@@ -32,6 +32,11 @@ public:
 
 	void RequestServerForCharacterChange(FString CharacterName);
 
+	void RequestServerForAimingChange(bool bIsAiming);
+
+	void OnServerAimingResponse(bool bIsAimingApproved);
+	
+
 	bool bIsUIActive = false;
 	void ToggleCharacterSelectUI();
 private:
@@ -44,6 +49,10 @@ protected:
 
 	
 	virtual void SetupInputComponent() override;
+
+	void OnAimPressed();
+
+	void OnAimReleased();
 	
 	
 	

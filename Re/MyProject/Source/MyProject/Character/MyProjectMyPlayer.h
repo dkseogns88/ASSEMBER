@@ -15,6 +15,7 @@ class MYPROJECT_API AMyProjectMyPlayer : public AMyProjectPlayer
 
 public:
 	AMyProjectMyPlayer();
+	void SetAiming(bool bNewAiming);
 
 protected:
 	/** Camera boom positioning the camera behind the character */
@@ -49,6 +50,8 @@ protected:
 	void Jump();
 	void StopJumping();
 
+	
+
 protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -63,10 +66,7 @@ public:
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
-	
 
-protected:
-	
 
 protected:
 	const float MOVE_PACKET_SEND_DELAY = 0.2f;
@@ -82,4 +82,8 @@ protected:
 
 	// Jump
 	bool IsJump = false;
+
+	// 캐릭터의 조준 상태
+	bool bIsAiming;
+	
 };

@@ -92,6 +92,7 @@ bool Handle_S_SELECT(PacketSessionRef& session, Protocol::S_SELECT& pkt)
 		if (auto* GameInstance = Cast<UMyProjectGameInstance>(GWorld->GetGameInstance()))
 		{
 			GameInstance->HandleChange(CharacterName);
+			
 		}
 	}
 
