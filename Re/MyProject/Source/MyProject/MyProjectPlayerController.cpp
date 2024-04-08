@@ -55,13 +55,12 @@ void AMyProjectPlayerController::RequestServerForAimingChange(bool bIsAiming)
     UE_LOG(LogTemp, Log, TEXT("Requested server for aiming change: %s"), bIsAiming ? TEXT("True") : TEXT("False"));
 }
 
-
 void AMyProjectPlayerController::OnServerAimingResponse(bool bIsAimingApproved)
 {
     if (bIsAimingApproved)
     {
         // 조준 승인 시 조준 상태로 전환
-        AMyProjectPlayer* MyCharacter = Cast<AMyProjectPlayer>(GetPawn());
+        AMyProjectMyPlayer* MyCharacter = Cast<AMyProjectMyPlayer>(GetPawn());
         if (MyCharacter)
         {
             MyCharacter->SetAiming(true);
@@ -74,6 +73,7 @@ void AMyProjectPlayerController::OnServerAimingResponse(bool bIsAimingApproved)
         UE_LOG(LogTemp, Warning, TEXT("Aiming rejected by server"));
     }
 }
+
 
 void AMyProjectPlayerController::SetupInputComponent()
 {
