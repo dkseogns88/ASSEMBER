@@ -188,6 +188,9 @@ class PosInfo final :
     kZFieldNumber = 4,
     kYawFieldNumber = 5,
     kStateFieldNumber = 6,
+    kDXFieldNumber = 7,
+    kDYFieldNumber = 8,
+    kDZFieldNumber = 9,
   };
   // uint64 object_id = 1;
   void clear_object_id();
@@ -243,6 +246,33 @@ class PosInfo final :
   void _internal_set_state(::Protocol::MoveState value);
   public:
 
+  // float d_x = 7;
+  void clear_d_x();
+  float d_x() const;
+  void set_d_x(float value);
+  private:
+  float _internal_d_x() const;
+  void _internal_set_d_x(float value);
+  public:
+
+  // float d_y = 8;
+  void clear_d_y();
+  float d_y() const;
+  void set_d_y(float value);
+  private:
+  float _internal_d_y() const;
+  void _internal_set_d_y(float value);
+  public:
+
+  // float d_z = 9;
+  void clear_d_z();
+  float d_z() const;
+  void set_d_z(float value);
+  private:
+  float _internal_d_z() const;
+  void _internal_set_d_z(float value);
+  public:
+
   // @@protoc_insertion_point(class_scope:Protocol.PosInfo)
  private:
   class _Internal;
@@ -257,6 +287,9 @@ class PosInfo final :
     float z_;
     float yaw_;
     int state_;
+    float d_x_;
+    float d_y_;
+    float d_z_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   };
   union { Impl_ _impl_; };
@@ -570,6 +603,66 @@ inline void PosInfo::_internal_set_state(::Protocol::MoveState value) {
 inline void PosInfo::set_state(::Protocol::MoveState value) {
   _internal_set_state(value);
   // @@protoc_insertion_point(field_set:Protocol.PosInfo.state)
+}
+
+// float d_x = 7;
+inline void PosInfo::clear_d_x() {
+  _impl_.d_x_ = 0;
+}
+inline float PosInfo::_internal_d_x() const {
+  return _impl_.d_x_;
+}
+inline float PosInfo::d_x() const {
+  // @@protoc_insertion_point(field_get:Protocol.PosInfo.d_x)
+  return _internal_d_x();
+}
+inline void PosInfo::_internal_set_d_x(float value) {
+  
+  _impl_.d_x_ = value;
+}
+inline void PosInfo::set_d_x(float value) {
+  _internal_set_d_x(value);
+  // @@protoc_insertion_point(field_set:Protocol.PosInfo.d_x)
+}
+
+// float d_y = 8;
+inline void PosInfo::clear_d_y() {
+  _impl_.d_y_ = 0;
+}
+inline float PosInfo::_internal_d_y() const {
+  return _impl_.d_y_;
+}
+inline float PosInfo::d_y() const {
+  // @@protoc_insertion_point(field_get:Protocol.PosInfo.d_y)
+  return _internal_d_y();
+}
+inline void PosInfo::_internal_set_d_y(float value) {
+  
+  _impl_.d_y_ = value;
+}
+inline void PosInfo::set_d_y(float value) {
+  _internal_set_d_y(value);
+  // @@protoc_insertion_point(field_set:Protocol.PosInfo.d_y)
+}
+
+// float d_z = 9;
+inline void PosInfo::clear_d_z() {
+  _impl_.d_z_ = 0;
+}
+inline float PosInfo::_internal_d_z() const {
+  return _impl_.d_z_;
+}
+inline float PosInfo::d_z() const {
+  // @@protoc_insertion_point(field_get:Protocol.PosInfo.d_z)
+  return _internal_d_z();
+}
+inline void PosInfo::_internal_set_d_z(float value) {
+  
+  _impl_.d_z_ = value;
+}
+inline void PosInfo::set_d_z(float value) {
+  _internal_set_d_z(value);
+  // @@protoc_insertion_point(field_set:Protocol.PosInfo.d_z)
 }
 
 // -------------------------------------------------------------------

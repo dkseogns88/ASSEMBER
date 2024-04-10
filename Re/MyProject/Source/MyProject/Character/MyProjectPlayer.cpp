@@ -51,13 +51,20 @@ void AMyProjectPlayer::BeginPlay()
 {
 	Super::BeginPlay();
 
+	FVector Start = GetActorLocation();
+	FVector End = Start - FVector(0, 0, 1000);
+	FHitResult HitResult;
+	if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility))
+	{
+		SetActorLocation(HitResult.Location);
+	}
+
 	{
 		FVector Location = GetActorLocation();
 		DestInfo->set_x(Location.X);
 		DestInfo->set_y(Location.Y);
 		DestInfo->set_z(Location.Z);
 		DestInfo->set_yaw(GetControlRotation().Yaw);
-
 		SetMoveState(Protocol::MOVE_STATE_IDLE);
 	}
 }
@@ -87,27 +94,29 @@ void AMyProjectPlayer::Tick(float DeltaSeconds)
 
 		if (State == Protocol::MOVE_STATE_RUN)
 		{
-			//FVector MoveLocation;
-			//MoveLocation.X = DestInfo->x();
-			//MoveLocation.Y = DestInfo->y();
-			//MoveLocation.Z = DestInfo->z();
-			//SetActorLocationAndRotation(MoveLocation, FRotator(0, DestInfo->yaw(), 0));
+			FRotator NowRotation = GetActorRotation();
+			FRotator TargetRotation = FRotator(0, DestInfo->yaw(), 0);
 
-			SetActorRotation(FRotator(0, DestInfo->yaw(), 0));
-			AddMovementInput(GetActorForwardVector()); // 바라보는 방향으로 가게 된다. 그러면 안된다.
-			                                           // 도착 목적지에서 현재 위치를 빼서 노말라이즈한 것을 이동 벡터로 해야 한다.
+			FRotator NewRotation = FMath::RInterpTo(NowRotation, TargetRotation, DeltaSeconds, 5.0f); // 보간 속도는 5.0f로 설정
+			SetActorRotation(NewRotation);
+
+			FVector ForwardDirection = FVector(DestInfo->d_x(), DestInfo->d_y(), DestInfo->d_z());
+			AddMovementInput(ForwardDirection);
+
+			//AddMovementInput(GetActorForwardVector());
 		}
 		else if (State == Protocol::MOVE_STATE_JUMP)
 		{
-			FVector JumpLocation;
-			JumpLocation.X = DestInfo->x();
-			JumpLocation.Y = DestInfo->y();
-			JumpLocation.Z = DestInfo->z();
-			SetActorLocationAndRotation(JumpLocation, FRotator(0, DestInfo->yaw(), 0));
-		}
-		else
-		{
+			Jump();
 
+			FRotator NowRotation = GetActorRotation();
+			FRotator TargetRotation = FRotator(0, DestInfo->yaw(), 0);
+
+			FRotator NewRotation = FMath::RInterpTo(NowRotation, TargetRotation, DeltaSeconds, 5.0f); // 보간 속도는 5.0f로 설정
+			SetActorRotation(NewRotation);
+
+			FVector ForwardDirection = FVector(DestInfo->d_x(), DestInfo->d_y(), DestInfo->d_z());
+			AddMovementInput(ForwardDirection);
 		}
 	}
 }

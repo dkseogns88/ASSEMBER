@@ -12,6 +12,10 @@ message PosInfo
 	float z = 4;
 	float yaw = 5;
 	MoveState state = 6;
+
+	float d_x = 7;
+	float d_y = 8;
+	float d_z = 9;
 }
 
 // 전체 오브젝트 정보

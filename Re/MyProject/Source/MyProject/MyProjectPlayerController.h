@@ -52,20 +52,7 @@ protected:
 
 	void OnAimPressed();
 
-	void OnAimReleased();
-	
-	
-	
-
-	
-
-	
-
-
-
-	
-
-	
+	void OnAimReleased();	
 	
 	//UI ���� �ν��Ͻ��� ����
 	UPROPERTY()

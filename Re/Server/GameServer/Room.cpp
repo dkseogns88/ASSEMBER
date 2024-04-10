@@ -54,7 +54,8 @@ bool Room::HandleEnterPlayer(PlayerRef player)
 	{
 		Protocol::S_SPAWN spawnPkt;
 
-		for (auto& item : _objects) {
+		for (auto& item : _objects)
+		{
 			if (item.second->IsPlayer() == false)
 				continue;
 

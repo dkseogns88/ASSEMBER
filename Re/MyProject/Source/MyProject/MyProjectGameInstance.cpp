@@ -172,8 +172,7 @@ void UMyProjectGameInstance::HandleMove(const Protocol::S_MOVE& MovePkt)
 		return;
 
 	AMyProjectPlayer* Player = (*FindActor);
-	//if (Player == MyPlayer)
-	//	return;
+
 	if (Player->IsMyPlayer())
 		return;
 

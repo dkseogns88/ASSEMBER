@@ -49,9 +49,9 @@ void AMyProjectPlayerController::RequestServerForCharacterChange(FString Charact
 
 void AMyProjectPlayerController::RequestServerForAimingChange(bool bIsAiming)
 {
-    //서버에 조준 변경 요청
+    
 
-
+    
     UE_LOG(LogTemp, Log, TEXT("Requested server for aiming change: %s"), bIsAiming ? TEXT("True") : TEXT("False"));
 }
 

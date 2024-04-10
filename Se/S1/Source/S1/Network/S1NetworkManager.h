@@ -55,11 +55,6 @@ public:
 	TObjectPtr<AS1Player> MyPlayer;
 };
 
-
-/**
- * <패킷버전> 서버에 패킷을 전송하는 것을 요청하는 함수 입니다.
- * 요청이 즉시 반영되지는 않습니다 SendPacketQueue에 저장을하고 SendThread에서 여유가 되면 보내주는 방식입니다.
- */
 template <typename T> 
 void US1NetworkManager::SendPacket(T packet) const
 {

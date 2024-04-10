@@ -47,10 +47,7 @@ protected:
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 
-	void Jump();
-	void StopJumping();
-
-	
+	void Input_Jump(const FInputActionValue& Value);
 
 protected:
 	// APawn interface
@@ -80,8 +77,9 @@ protected:
 	// Dirty Flag Test
 	FVector2D LastDesiredInput;
 
-	// Jump
-	bool IsJump = false;
+	// Jump Cache
+	bool IsJumping = false;
+	bool bLastInputJump = false;
 
 	// 캐릭터의 조준 상태
 	bool bIsAiming;

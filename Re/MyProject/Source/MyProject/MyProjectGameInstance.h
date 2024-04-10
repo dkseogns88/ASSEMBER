@@ -14,9 +14,6 @@ class MYPROJECT_API UMyProjectGameInstance : public UGameInstance
 {
 	GENERATED_BODY()
 	
-/////////////////////////////////
-/////////  Server ///////////////
-/////////////////////////////////
 public:
 	UFUNCTION(BlueprintCallable)
 	void ConnectToGameServer();
@@ -27,9 +24,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void HandleRecvPackets();
 
-	void SendPacket(SendBufferRef SendBuffer);
-
-	
+	void SendPacket(SendBufferRef SendBuffer);	
 
 public:
 	void HandleSpawn(const Protocol::ObjectInfo& objectInfo, bool IsMine);
@@ -63,9 +58,9 @@ public:
 
 public:
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<AMyProjectPlayer> OtherPlayerClass;		// �ٸ� ĳ����
+	TSubclassOf<AMyProjectPlayer> OtherPlayerClass;
 
-	AMyProjectPlayer* MyPlayer;							// �� ĳ����
-	TMap<uint64, AMyProjectPlayer*> Players;			// ĳ���͵� ��Ƴ�����
+	AMyProjectPlayer* MyPlayer;
+	TMap<uint64, AMyProjectPlayer*> Players;
 
 };
