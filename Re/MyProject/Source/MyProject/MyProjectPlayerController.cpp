@@ -49,10 +49,11 @@ void AMyProjectPlayerController::RequestServerForCharacterChange(FString Charact
 
 void AMyProjectPlayerController::RequestServerForAimingChange(bool bIsAiming)
 {
+   
     AMyProjectMyPlayer* MyCharacter = Cast<AMyProjectMyPlayer>(GetPawn());
     if (MyCharacter)
     {
-        MyCharacter->SetAiming(true);
+        MyCharacter->SetAiming(bIsAiming);
         UE_LOG(LogTemp, Log, TEXT("Aiming set"));
     }
 
