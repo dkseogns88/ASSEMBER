@@ -49,30 +49,18 @@ void AMyProjectPlayerController::RequestServerForCharacterChange(FString Charact
 
 void AMyProjectPlayerController::RequestServerForAimingChange(bool bIsAiming)
 {
-    
+    AMyProjectMyPlayer* MyCharacter = Cast<AMyProjectMyPlayer>(GetPawn());
+    if (MyCharacter)
+    {
+        MyCharacter->SetAiming(true);
+        UE_LOG(LogTemp, Log, TEXT("Aiming set"));
+    }
 
     
     UE_LOG(LogTemp, Log, TEXT("Requested server for aiming change: %s"), bIsAiming ? TEXT("True") : TEXT("False"));
 }
 
-void AMyProjectPlayerController::OnServerAimingResponse(bool bIsAimingApproved)
-{
-    if (bIsAimingApproved)
-    {
-        // 조준 승인 시 조준 상태로 전환
-        AMyProjectMyPlayer* MyCharacter = Cast<AMyProjectMyPlayer>(GetPawn());
-        if (MyCharacter)
-        {
-            MyCharacter->SetAiming(true);
-            UE_LOG(LogTemp, Log, TEXT("Aiming approved by server"));
-        }
-    }
-    else
-    {
-        // 거부될 경우 상태 변경하지 않음
-        UE_LOG(LogTemp, Warning, TEXT("Aiming rejected by server"));
-    }
-}
+
 
 
 void AMyProjectPlayerController::SetupInputComponent()

@@ -35,6 +35,25 @@ AMyProjectMyPlayer::AMyProjectMyPlayer()
 	
 }
 
+
+// APawn interface
+
+inline void AMyProjectMyPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+{
+	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent)) {
+
+		// Jumping
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &AMyProjectMyPlayer::Input_Jump);
+
+		// Moving
+		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AMyProjectMyPlayer::Move);
+		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Completed, this, &AMyProjectMyPlayer::Move);
+
+		// Looking
+		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AMyProjectMyPlayer::Look);
+	}
+}
+
 void AMyProjectMyPlayer::BeginPlay()
 {
 	Super::BeginPlay();
@@ -132,22 +151,6 @@ void AMyProjectMyPlayer::Tick(float DeltaTime)
 //////////////////////////////////////////////////////////////////////////
 // Input
 
-void AMyProjectMyPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent)) {
-	
-		// Jumping
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &AMyProjectMyPlayer::Input_Jump);
-	
-		// Moving
-		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AMyProjectMyPlayer::Move);
-		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Completed, this, &AMyProjectMyPlayer::Move);
-
-		// Looking
-		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AMyProjectMyPlayer::Look);
-	}
-}
-
 void AMyProjectMyPlayer::Move(const FInputActionValue& Value)
 {
 	FVector2D MovementVector = Value.Get<FVector2D>();
@@ -205,14 +208,18 @@ void AMyProjectMyPlayer::Input_Jump(const FInputActionValue& Value)
 void AMyProjectMyPlayer::SetAiming(bool bNewAiming)
 {
 	bIsAiming = bNewAiming; // Update internal aiming state
+	UE_LOG(LogTemp, Log, TEXT("Aiming state set to: %s"), bIsAiming ? TEXT("True") : TEXT("False"));
 
-	// 애니메이션 블루프린트와 변수연결
+	// Get the animation instance from the skeletal mesh component
 	UAnimInstanceCustom* AnimInstance = Cast<UAnimInstanceCustom>(GetMesh()->GetAnimInstance());
 	if (AnimInstance)
 	{
-		// 애니메이션 블루프린트에서 변수업데이트
+		// Update the animation blueprint variable
 		AnimInstance->bIsAiming = bIsAiming;
-
-		UE_LOG(LogTemp, Log, TEXT("Aiming state updated to: %s"), bIsAiming ? TEXT("True") : TEXT("False"));
+		UE_LOG(LogTemp, Log, TEXT("Aiming state updated in animation blueprint to: %s"), bIsAiming ? TEXT("True") : TEXT("False"));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("Failed to cast to UAnimInstanceCustom"));
 	}
 }

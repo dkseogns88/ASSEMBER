@@ -34,7 +34,7 @@ public:
 
 	void RequestServerForAimingChange(bool bIsAiming);
 
-	void OnServerAimingResponse(bool bIsAimingApproved);
+	
 	
 
 	bool bIsUIActive = false;
