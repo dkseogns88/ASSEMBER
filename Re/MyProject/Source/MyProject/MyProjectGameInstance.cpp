@@ -202,6 +202,29 @@ void UMyProjectGameInstance::HandleJump(const Protocol::S_JUMP& JumpPkt)
 	Player->SetDestInfo(Info);
 }
 
+void UMyProjectGameInstance::HandleZoom(const Protocol::S_ZOOM& ZommPkt)
+{
+	if (Socket == nullptr || GameServerSession == nullptr)
+		return;
+
+	auto* World = GetWorld();
+	if (World == nullptr)
+		return;
+
+	const uint64 ObjectId = ZommPkt.info().object_id();
+	AMyProjectPlayer** FindActor = Players.Find(ObjectId);
+	if (FindActor == nullptr)
+		return;
+
+	AMyProjectPlayer* Player = (*FindActor);
+	if (Player->IsMyPlayer())
+		return;
+
+	// 여기서부터 다른 클라이언트 줌 애니메이션 처리
+
+
+}
+
 
 void UMyProjectGameInstance::Init()
 {

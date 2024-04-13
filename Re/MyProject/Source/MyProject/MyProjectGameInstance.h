@@ -35,11 +35,12 @@ public:
 	void HandleDespawn(const Protocol::S_DESPAWN& DespawnPkt);
 
 	void HandleMove(const Protocol::S_MOVE& MovePkt);
-		
 	void HandleJump(const Protocol::S_JUMP& JumpPkt);
-
+	void HandleZoom(const Protocol::S_ZOOM& ZommPkt);
+	
 	void HandleChange(const FString& CharacterName);
 	// 캐릭터 클래스 찾기 함수
+
 	TSubclassOf<APawn> FindCharacterClassByName(const FString& CharacterName);
 
 	// 초기화 함수

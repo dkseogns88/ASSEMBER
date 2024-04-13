@@ -57,6 +57,11 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 
+	void StateTick();
+	void SendTick(float DeltaTime);
+	void Send_Idle_Move();
+	void Send_Jump();
+
 
 public:
 	/** Returns CameraBoom subobject **/
@@ -80,6 +85,9 @@ protected:
 	// Jump Cache
 	bool IsJumping = false;
 	bool bLastInputJump = false;
+
+	// Turn Cache
+	bool bIsTurn = false;
 
 	// 캐릭터의 조준 상태
 	bool bIsAiming;

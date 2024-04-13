@@ -55,9 +55,16 @@ void AMyProjectPlayerController::RequestServerForAimingChange(bool bIsAiming)
     {
         MyCharacter->SetAiming(bIsAiming);
         UE_LOG(LogTemp, Log, TEXT("Aiming set"));
+
+        Protocol::C_ZOOM ZoomPkt;
+
+        Protocol::ZoomInfo* Info = ZoomPkt.mutable_info();
+        Info->set_object_id(MyCharacter->GetPlayerInfo()->object_id());
+        Info->set_b_zoom(bIsAiming);
+
+        SEND_PACKET(ZoomPkt);
     }
 
-    
     UE_LOG(LogTemp, Log, TEXT("Requested server for aiming change: %s"), bIsAiming ? TEXT("True") : TEXT("False"));
 }
 
@@ -77,6 +84,8 @@ void AMyProjectPlayerController::SetupInputComponent()
 void AMyProjectPlayerController::OnAimPressed()
 {
     RequestServerForAimingChange(true);
+
+
 }
 
 void AMyProjectPlayerController::OnAimReleased()

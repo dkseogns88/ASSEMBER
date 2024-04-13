@@ -78,16 +78,14 @@ void AMyProjectMyPlayer::BeginPlay()
 void AMyProjectMyPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
-	bool ForceSendPacket = false;
-	
-	if ((LastDesiredInput != DesiredInput) || (bLastInputJump))
-	{
-		ForceSendPacket = true;
-		bLastInputJump = false;
-		
-		LastDesiredInput = DesiredInput;
-	}
+
+	StateTick();
+	SendTick(DeltaTime);
+
+}
+
+void AMyProjectMyPlayer::StateTick()
+{
 
 	if (GetCharacterMovement()->IsFalling())
 	{
@@ -109,9 +107,23 @@ void AMyProjectMyPlayer::Tick(float DeltaTime)
 	{
 		SetMoveState(Protocol::MOVE_STATE_JUMP);
 	}
+}
+
+void AMyProjectMyPlayer::SendTick(float DeltaTime)
+{
+	bool ForceSendPacket = false;
+
+	if ((LastDesiredInput != DesiredInput) || (bLastInputJump) || (bIsTurn))
+	{
+		ForceSendPacket = true;
+
+		bLastInputJump = false;
+		bIsTurn = false;
+		LastDesiredInput = DesiredInput;
+	}
 
 	MovePacketSendTimer -= DeltaTime;
-	
+
 	if (MovePacketSendTimer <= 0 || ForceSendPacket)
 	{
 		MovePacketSendTimer = MOVE_PACKET_SEND_DELAY;
@@ -119,33 +131,43 @@ void AMyProjectMyPlayer::Tick(float DeltaTime)
 		if (GetMoveState() == Protocol::MOVE_STATE_RUN
 			|| GetMoveState() == Protocol::MOVE_STATE_IDLE)
 		{
-			Protocol::C_MOVE MovePkt;
-
-			Protocol::PosInfo* Info = MovePkt.mutable_info();
-			Info->CopyFrom(*PlayerInfo);
-			Info->set_yaw(DesiredYaw);
-			Info->set_state(GetMoveState());
-			Info->set_d_x(DesiredMoveDirection.X);
-			Info->set_d_y(DesiredMoveDirection.Y);
-			Info->set_d_z(DesiredMoveDirection.Z);
-
-			SEND_PACKET(MovePkt);
+			Send_Idle_Move();
 		}
 		else if (GetMoveState() == Protocol::MOVE_STATE_JUMP)
 		{
-			Protocol::C_JUMP JumpPkt;
-
-			Protocol::PosInfo* Info = JumpPkt.mutable_info();
-			Info->CopyFrom(*PlayerInfo);
-			Info->set_yaw(DesiredYaw);
-			Info->set_state(GetMoveState());
-			Info->set_d_x(DesiredMoveDirection.X);
-			Info->set_d_y(DesiredMoveDirection.Y);
-			Info->set_d_z(DesiredMoveDirection.Z);
-
-			SEND_PACKET(JumpPkt);
+			Send_Jump();
 		}
 	}
+}
+
+void AMyProjectMyPlayer::Send_Idle_Move()
+{
+	Protocol::C_MOVE MovePkt;
+
+	Protocol::PosInfo* Info = MovePkt.mutable_info();
+	Info->CopyFrom(*PlayerInfo);
+	Info->set_yaw(DesiredYaw);
+	Info->set_state(GetMoveState());
+	Info->set_d_x(DesiredMoveDirection.X);
+	Info->set_d_y(DesiredMoveDirection.Y);
+	Info->set_d_z(DesiredMoveDirection.Z);
+
+	SEND_PACKET(MovePkt);
+}
+
+void AMyProjectMyPlayer::Send_Jump()
+{
+	Protocol::C_JUMP JumpPkt;
+
+	Protocol::PosInfo* Info = JumpPkt.mutable_info();
+	Info->CopyFrom(*PlayerInfo);
+	Info->set_yaw(DesiredYaw);
+	Info->set_state(GetMoveState());
+	Info->set_d_x(DesiredMoveDirection.X);
+	Info->set_d_y(DesiredMoveDirection.Y);
+	Info->set_d_z(DesiredMoveDirection.Z);
+
+	SEND_PACKET(JumpPkt);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -191,12 +213,14 @@ void AMyProjectMyPlayer::Look(const FInputActionValue& Value)
 {
 	FVector2D LookAxisVector = Value.Get<FVector2D>();
 	
-	if (Controller != nullptr)
+
+	if (GetMoveState() != Protocol::MOVE_STATE_IDLE)
 	{
-		// add yaw and pitch input to controller
-		AddControllerYawInput(LookAxisVector.X);
-		AddControllerPitchInput(LookAxisVector.Y);
+		bIsTurn = true;
 	}
+
+	AddControllerYawInput(LookAxisVector.X);
+	AddControllerPitchInput(LookAxisVector.Y);
 }
 
 void AMyProjectMyPlayer::Input_Jump(const FInputActionValue& Value)

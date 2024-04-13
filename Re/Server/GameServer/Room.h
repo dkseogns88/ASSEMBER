@@ -14,6 +14,8 @@ public:
 	void HandleMove(Protocol::C_MOVE pkt);
 	void HandleJump(Protocol::C_JUMP pkt);
 
+	void HandleZoom(Protocol::C_ZOOM pkt);
+
 	void HandleSelect(Protocol::C_SELECT pkt);
 
 public:
