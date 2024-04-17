@@ -20,6 +20,7 @@
 
 
 
+
 AMyProjectMyPlayer::AMyProjectMyPlayer()
 {
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
@@ -52,6 +53,13 @@ inline void AMyProjectMyPlayer::SetupPlayerInputComponent(UInputComponent* Playe
 		// Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AMyProjectMyPlayer::Look);
 	}
+}
+
+void AMyProjectMyPlayer::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	
+	
 }
 
 void AMyProjectMyPlayer::BeginPlay()
@@ -170,6 +178,8 @@ void AMyProjectMyPlayer::Send_Jump()
 	SEND_PACKET(JumpPkt);
 }
 
+
+
 //////////////////////////////////////////////////////////////////////////
 // Input
 
@@ -231,14 +241,15 @@ void AMyProjectMyPlayer::Input_Jump(const FInputActionValue& Value)
 
 void AMyProjectMyPlayer::SetAiming(bool bNewAiming)
 {
-	bIsAiming = bNewAiming; // Update internal aiming state
+	bIsAiming = bNewAiming; 
 	UE_LOG(LogTemp, Log, TEXT("Aiming state set to: %s"), bIsAiming ? TEXT("True") : TEXT("False"));
 
-	// Get the animation instance from the skeletal mesh component
+	
+	//애니메이션 직접조작, 현재는 클라이언트에서만 작동
 	UAnimInstanceCustom* AnimInstance = Cast<UAnimInstanceCustom>(GetMesh()->GetAnimInstance());
 	if (AnimInstance)
 	{
-		// Update the animation blueprint variable
+		
 		AnimInstance->bIsAiming = bIsAiming;
 		UE_LOG(LogTemp, Log, TEXT("Aiming state updated in animation blueprint to: %s"), bIsAiming ? TEXT("True") : TEXT("False"));
 	}
@@ -246,4 +257,9 @@ void AMyProjectMyPlayer::SetAiming(bool bNewAiming)
 	{
 		UE_LOG(LogTemp, Error, TEXT("Failed to cast to UAnimInstanceCustom"));
 	}
+}
+
+void AMyProjectMyPlayer::OnRep_Aimingchanged()
+{
+	SetAiming(bIsAiming);
 }

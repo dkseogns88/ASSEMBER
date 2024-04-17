@@ -16,6 +16,7 @@
 #include "MyProjectMyPlayer.h"
 #include "MyProjectMyPlayerSida.h"
 #include "MyProjectPlayerController.h"
+#include "AnimInstanceCustom.h"
 
 void UMyProjectGameInstance::ConnectToGameServer()
 {
@@ -202,7 +203,7 @@ void UMyProjectGameInstance::HandleJump(const Protocol::S_JUMP& JumpPkt)
 	Player->SetDestInfo(Info);
 }
 
-void UMyProjectGameInstance::HandleZoom(const Protocol::S_ZOOM& ZommPkt)
+void UMyProjectGameInstance::HandleZoom(const Protocol::S_ZOOM& ZoomPkt)
 {
 	if (Socket == nullptr || GameServerSession == nullptr)
 		return;
@@ -211,7 +212,7 @@ void UMyProjectGameInstance::HandleZoom(const Protocol::S_ZOOM& ZommPkt)
 	if (World == nullptr)
 		return;
 
-	const uint64 ObjectId = ZommPkt.info().object_id();
+	const uint64 ObjectId = ZoomPkt.info().object_id();
 	AMyProjectPlayer** FindActor = Players.Find(ObjectId);
 	if (FindActor == nullptr)
 		return;
@@ -220,9 +221,21 @@ void UMyProjectGameInstance::HandleZoom(const Protocol::S_ZOOM& ZommPkt)
 	if (Player->IsMyPlayer())
 		return;
 
-	// 여기서부터 다른 클라이언트 줌 애니메이션 처리
+	
+	UAnimInstanceCustom* AnimInstance = Cast<UAnimInstanceCustom>(Player->GetMesh()->GetAnimInstance());
+	if (AnimInstance)
+	{
+		// 조준 상태를 업데이트 합니다.
+		bool bIsAiming = ZoomPkt.info().b_zoom();  // 패킷에서 조준 정보를 가져옵니다.
+		AnimInstance->SetAiming(bIsAiming);
+		
 
-
+		UE_LOG(LogTemp, Log, TEXT("Zoom animation updated for player %llu, aiming: %s"), ObjectId, bIsAiming ? TEXT("True") : TEXT("False"));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("Failed to cast to UAnimInstanceCustom for player %llu"), ObjectId);
+	}
 }
 
 

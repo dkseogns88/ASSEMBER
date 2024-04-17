@@ -53,6 +53,8 @@ protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 	// To add mapping context
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
@@ -90,6 +92,12 @@ protected:
 	bool bIsTurn = false;
 
 	// 캐릭터의 조준 상태
+	UPROPERTY(ReplicatedUsing = OnRep_Aimingchanged)
 	bool bIsAiming;
+
+	// 조준 상태가 변경될 때 호출될 함수
+	UFUNCTION()
+	void OnRep_Aimingchanged();
+
 	
 };
