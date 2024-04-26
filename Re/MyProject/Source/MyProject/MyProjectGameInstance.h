@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
 #include "MyProject.h"
+#include "Character/Enemy1.h"
 #include "MyProjectGameInstance.generated.h"
 
 class AMyProjectPlayer;
@@ -43,6 +44,9 @@ public:
 
 	TSubclassOf<APawn> FindCharacterClassByName(const FString& CharacterName);
 
+
+	void SpawnMonsterAtLocation(const FVector& Location);
+
 	// 초기화 함수
 	virtual void Init() override;
 
@@ -51,6 +55,9 @@ private:
 	// 캐릭터 이름과 클래스를 매핑하는 맵
 	TMap<FString, FString> CharacterBlueprintPaths;
 
+
+	// 몬스터 클래스 참조
+	TSubclassOf<AEnemy1> MonsterClass;
 public:
 	class FSocket* Socket;
 	FString IpAddress = TEXT("127.0.0.1");
@@ -60,6 +67,9 @@ public:
 public:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<AMyProjectPlayer> OtherPlayerClass;
+
+	// 스폰된 몬스터를 관리하기 위한 컨테이너
+	TArray<AEnemy1*> SpawnedMonsters;
 
 	AMyProjectPlayer* MyPlayer;
 	TMap<uint64, AMyProjectPlayer*> Players;

@@ -238,6 +238,24 @@ void UMyProjectGameInstance::HandleZoom(const Protocol::S_ZOOM& ZoomPkt)
 	}
 }
 
+void UMyProjectGameInstance::SpawnMonsterAtLocation(const FVector& Location)
+{
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+	// 스폰할 몬스터의 클래스를 지정
+	AEnemy1* SpawnedMonster = GetWorld()->SpawnActor<AEnemy1>(MonsterClass, Location, FRotator::ZeroRotator, SpawnParams);
+	if (SpawnedMonster)
+	{
+		UE_LOG(LogTemp, Log, TEXT("Monster spawned successfully at %s"), *Location.ToString());
+		SpawnedMonsters.Add(SpawnedMonster);  // 스폰된 몬스터를 배열에 추가
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT
+		("Failed to spawn monster at %s"), *Location.ToString());
+	}
+}
 
 void UMyProjectGameInstance::Init()
 {
@@ -246,6 +264,11 @@ void UMyProjectGameInstance::Init()
 	// 캐릭터 클래스 매핑 초기화
 	CharacterBlueprintPaths.Add("Rinty", "Blueprint'/Game/MyBP/BP_Class/BP_MyPlayer.BP_MyPlayer_C'");
 	CharacterBlueprintPaths.Add("Sida", "Blueprint'/Game/MyBP/BP_Class/BP_MyPlayer_sida.BP_MyPlayer_sida_C'");
+
+	// 몬스터 클래스 설정
+	MonsterClass = AEnemy1::StaticClass();
+	FVector SpawnLocation = FVector(100.0f, 100.0f, 200.0f);  
+	SpawnMonsterAtLocation(SpawnLocation);
 	
 }
 
