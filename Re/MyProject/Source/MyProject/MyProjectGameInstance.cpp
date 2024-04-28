@@ -17,6 +17,8 @@
 #include "MyProjectMyPlayerSida.h"
 #include "MyProjectPlayerController.h"
 #include "AnimInstanceCustom.h"
+#include "UObject/ConstructorHelpers.h"
+
 
 void UMyProjectGameInstance::ConnectToGameServer()
 {
@@ -249,11 +251,41 @@ void UMyProjectGameInstance::SpawnMonsterAtLocation(const FVector& Location)
 	{
 		UE_LOG(LogTemp, Log, TEXT("Monster spawned successfully at %s"), *Location.ToString());
 		SpawnedMonsters.Add(SpawnedMonster);  // 스폰된 몬스터를 배열에 추가
+		SpawnedMonster->SetActorScale3D(FVector(0.5f, 0.5f, 0.5f));
+		SpawnedMonster->SetActorEnableCollision(true);
+		SpawnedMonster->GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		SpawnedMonster->SetActorHiddenInGame(false);
+		SpawnedMonster->GetMesh()->SetVisibility(true, true);
+
+		// Draw a debug sphere at the spawn location
+		DrawDebugSphere(GetWorld(), Location, 50.0f, 32, FColor::Green, true, 10.0f);
+
+		UE_LOG(LogTemp, Log, TEXT("Spawned Monster Location: %s"), *SpawnedMonster->GetActorLocation().ToString());
+		
+
+		// Additional check for mesh visibility
+		if (SpawnedMonster->GetMesh()->IsVisible())
+		{
+			UE_LOG(LogTemp, Log, TEXT("Monster mesh is visible."));
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Monster mesh is NOT visible."));
+		}
 	}
 	else
 	{
-		UE_LOG(LogTemp, Error, TEXT
-		("Failed to spawn monster at %s"), *Location.ToString());
+		UE_LOG(LogTemp, Error, TEXT("Failed to spawn monster at %s"), *Location.ToString());
+	}
+}
+
+UMyProjectGameInstance::UMyProjectGameInstance()
+{
+	// Set up the class finder for the enemy blueprint
+	static ConstructorHelpers::FClassFinder<AEnemy1> MonsterBPClass(TEXT("/Game/MyBP/BP_Class/BP_Enemy1.BP_Enemy1_C"));
+	if (MonsterBPClass.Class != NULL)
+	{
+		MonsterClass = MonsterBPClass.Class;
 	}
 }
 
@@ -266,9 +298,13 @@ void UMyProjectGameInstance::Init()
 	CharacterBlueprintPaths.Add("Sida", "Blueprint'/Game/MyBP/BP_Class/BP_MyPlayer_sida.BP_MyPlayer_sida_C'");
 
 	// 몬스터 클래스 설정
-	MonsterClass = AEnemy1::StaticClass();
-	FVector SpawnLocation = FVector(100.0f, 100.0f, 200.0f);  
-	SpawnMonsterAtLocation(SpawnLocation);
+	//MonsterClass = AEnemy1::StaticClass();
+	
+
+
+
+	FVector MonsterSpawnLocation = FVector(-2420.0f, -160.0f, -190.0f);  
+	SpawnMonsterAtLocation(MonsterSpawnLocation);
 	
 }
 

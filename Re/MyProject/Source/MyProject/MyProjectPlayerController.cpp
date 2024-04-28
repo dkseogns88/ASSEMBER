@@ -56,6 +56,28 @@ void AMyProjectPlayerController::RequestServerForAimingChange(bool bIsAiming)
         MyCharacter->SetAiming(bIsAiming);
         UE_LOG(LogTemp, Log, TEXT("Aiming set"));
 
+
+
+        if (bIsAiming)
+        {
+            if (!AimUIInstance && AimUIClass)
+            {
+                AimUIInstance = CreateWidget<UUserWidget>(this,AimUIClass);
+            }
+            if (AimUIInstance && !AimUIInstance->IsInViewport())
+            {
+                AimUIInstance->AddToViewport();
+            }
+        }
+        else
+        {
+            if (AimUIInstance && AimUIInstance->IsInViewport())
+            {
+                AimUIInstance->RemoveFromViewport();
+            }
+        }
+
+
         Protocol::C_ZOOM ZoomPkt;
 
         Protocol::ZoomInfo* Info = ZoomPkt.mutable_info();

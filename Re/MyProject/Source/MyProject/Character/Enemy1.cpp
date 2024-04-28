@@ -30,22 +30,18 @@ AEnemy1::AEnemy1()
     }
     
 	// Constructor에서 애니메이션 로드
-	static ConstructorHelpers::FObjectFinder<UAnimSequence> AnimAsset(TEXT("/Game/Asset/Enemy01/enemy01walk_Anim.enemy01walk_Anim"));
-	if (AnimAsset.Succeeded())
+	static ConstructorHelpers::FObjectFinder<UAnimSequence> IdleAnimAsset(TEXT("/Game/Asset/Enemy01/enemy01walk_Anim.enemy01walk_Anim"));
+	if (IdleAnimAsset.Succeeded())
 	{
-		IdleAnimation = AnimAsset.Object;
-		UE_LOG(LogTemp, Log, TEXT("Animation loaded successfully: %s"), *AnimAsset.Object->GetName());
+		IdleAnimation = IdleAnimAsset.Object;
+		UE_LOG(LogTemp, Log, TEXT("Idle Animation loaded successfully: %s"), *IdleAnimAsset.Object->GetName());
 	}
 	else
 	{
 		UE_LOG(LogTemp, Error, TEXT("Failed to load animation from path:/Game/Asset/Enemy01/enemy01walk_Anim.enemy01walk_Anim"));
 	}
 
-    static ConstructorHelpers::FObjectFinder<UAnimSequence> WalkAnimAsset(TEXT("/Game/Asset/Enemy01/enemy01walk_Anim.enemy01walk_Anim"));
-    if (WalkAnimAsset.Succeeded())
-    {
-        WalkingAnimation = WalkAnimAsset.Object;
-    }
+    
 }
 
 // Called when the game starts or when spawned

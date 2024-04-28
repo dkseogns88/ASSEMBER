@@ -34,7 +34,11 @@ public:
 
 	void RequestServerForAimingChange(bool bIsAiming);
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+	TSubclassOf<UUserWidget> AimUIClass;
 	
+	UPROPERTY()
+	UUserWidget* AimUIInstance;
 	
 
 	bool bIsUIActive = false;
@@ -46,6 +50,7 @@ private:
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputMappingContext* InputMappingContext;
+
 
 	
 	virtual void SetupInputComponent() override;

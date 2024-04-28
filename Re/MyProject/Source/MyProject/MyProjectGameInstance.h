@@ -49,7 +49,7 @@ public:
 
 	// 초기화 함수
 	virtual void Init() override;
-
+	UMyProjectGameInstance();
 
 private:
 	// 캐릭터 이름과 클래스를 매핑하는 맵
