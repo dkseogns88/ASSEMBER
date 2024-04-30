@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h" 
 #include "Blueprint/UserWidget.h"
+#include "HealthBarWidgets.h"
 #include "MyProjectPlayerController.generated.h"
 
 class UInputMappingContext;
@@ -22,12 +23,18 @@ struct FCharacterChangeInfo
 UCLASS()
 class MYPROJECT_API AMyProjectPlayerController : public APlayerController
 {
+
 	GENERATED_BODY()
 
 
 public:
 	// ĳ���� ���� �Լ�
 	UFUNCTION(BlueprintCallable, Category = "Character")
+	
+	
+
+	
+
 	
 
 	void RequestServerForCharacterChange(FString CharacterName);
@@ -69,14 +76,18 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UUserWidget> CharacterSelectWidgetClass;
 
+	void SetHealth(float NewHealth);
 	
-	// Begin Actor interface
 protected:
 
 
 	
 
 	virtual void BeginPlay() override;
+	UPROPERTY(Transient)
+	UHealthBarWidgets* HealthBarWidgets;
+
+	float PlayerHealth = 100.0f;
 
 	// End Actor interface
 };

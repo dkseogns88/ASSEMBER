@@ -2,14 +2,14 @@
 
 
 #include "MyProjectPlayerController.h"
-#include "EnhancedInputSubsystems.h"
 #include "Blueprint/UserWidget.h"
+#include "EnhancedInputSubsystems.h"
 #include "MyProjectMyPlayer.h"
 #include "MyProjectMyPlayerSida.h"
+#include "HealthBarWidgets.h"
 #include "Components/InputComponent.h"
 #include "MyProject.h"
 #include "Protocol.pb.h"
-
 
 
 
@@ -21,6 +21,8 @@ void AMyProjectPlayerController::BeginPlay()
 {
     Super::BeginPlay();
 
+    
+    
     // get the enhanced input subsystem
     if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
     {
@@ -30,7 +32,34 @@ void AMyProjectPlayerController::BeginPlay()
 
 
     }
+
+
+    // Create and display the health bar widget
+    if (IsLocalController())
+    {
+        HealthBarWidgets = CreateWidget<UHealthBarWidgets>(this, UHealthBarWidgets::StaticClass());
+        if (HealthBarWidgets)
+        {
+            UE_LOG(LogTemp, Log, TEXT("Health bar widget created successfully."));
+            HealthBarWidgets->AddToViewport(1);
+            // Ensuring NativeConstruct is called right after adding to viewport
+            HealthBarWidgets->NativeConstruct();
+            HealthBarWidgets->UpdateHealth(PlayerHealth / 100.0f);
+           
+        }
+    }
 }
+
+void AMyProjectPlayerController::SetHealth(float NewHealth)
+{
+    PlayerHealth = NewHealth;
+    if (HealthBarWidgets)
+    {
+        HealthBarWidgets->UpdateHealth(PlayerHealth / 100.0f);
+    }
+}
+
+
 
 
 
