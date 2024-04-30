@@ -8,7 +8,7 @@ public class MyProject : ModuleRules
     {
         PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
-        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "Sockets", "EnhancedInput", "Networking", "UMG" });
+        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "Sockets", "EnhancedInput", "Networking", "UMG", "Slate", "SlateCore" });
 
         PrivateDependencyModuleNames.AddRange(new string[] { "ProtobufCore" });
 
