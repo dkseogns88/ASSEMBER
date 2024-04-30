@@ -279,8 +279,11 @@ void UMyProjectGameInstance::SpawnMonsterAtLocation(const FVector& Location)
 		}
 
 		// Draw a debug sphere at the spawn location
-		DrawDebugSphere(GetWorld(), Location, 50.0f, 32, FColor::Green, true, 10.0f);
-		DrawDebugBox(GetWorld(), Location, FVector(50, 50, 50), FColor::Red, true, 10.0f, 0, 5);
+		if (SpawnedMonster->GetMesh())
+		{
+			FBoxSphereBounds Bounds = SpawnedMonster->GetMesh()->CalcBounds(SpawnedMonster->GetMesh()->GetComponentTransform());
+			DrawDebugBox(GetWorld(), Bounds.Origin, Bounds.BoxExtent, FQuat::Identity, FColor::Red, true, 10.0f, 0, 2);
+		}
 
 		UE_LOG(LogTemp, Log, TEXT("Spawned Monster Location: %s, Scale: %s"),
 			*SpawnedMonster->GetActorLocation().ToString(),
