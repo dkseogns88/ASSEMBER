@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
 #include "MyProject.h"
+#include "Character/Enemy1.h"
 #include "MyProjectGameInstance.generated.h"
 
 class AMyProjectPlayer;
@@ -14,9 +15,6 @@ class MYPROJECT_API UMyProjectGameInstance : public UGameInstance
 {
 	GENERATED_BODY()
 	
-/////////////////////////////////
-/////////  Server ///////////////
-/////////////////////////////////
 public:
 	UFUNCTION(BlueprintCallable)
 	void ConnectToGameServer();
@@ -27,9 +25,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void HandleRecvPackets();
 
-	void SendPacket(SendBufferRef SendBuffer);
-
-	
+	void SendPacket(SendBufferRef SendBuffer);	
 
 public:
 	void HandleSpawn(const Protocol::ObjectInfo& objectInfo, bool IsMine);
@@ -40,21 +36,28 @@ public:
 	void HandleDespawn(const Protocol::S_DESPAWN& DespawnPkt);
 
 	void HandleMove(const Protocol::S_MOVE& MovePkt);
-		
 	void HandleJump(const Protocol::S_JUMP& JumpPkt);
-
+	void HandleZoom(const Protocol::S_ZOOM& ZommPkt);
+	
 	void HandleChange(const FString& CharacterName);
 	// 캐릭터 클래스 찾기 함수
+
 	TSubclassOf<APawn> FindCharacterClassByName(const FString& CharacterName);
+
+
+	void SpawnMonsterAtLocation(const FVector& Location);
 
 	// 초기화 함수
 	virtual void Init() override;
-
+	UMyProjectGameInstance();
 
 private:
 	// 캐릭터 이름과 클래스를 매핑하는 맵
 	TMap<FString, FString> CharacterBlueprintPaths;
 
+
+	// 몬스터 클래스 참조
+	TSubclassOf<AEnemy1> MonsterClass;
 public:
 	class FSocket* Socket;
 	FString IpAddress = TEXT("127.0.0.1");
@@ -63,9 +66,12 @@ public:
 
 public:
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<AMyProjectPlayer> OtherPlayerClass;		// �ٸ� ĳ����
+	TSubclassOf<AMyProjectPlayer> OtherPlayerClass;
 
-	AMyProjectPlayer* MyPlayer;							// �� ĳ����
-	TMap<uint64, AMyProjectPlayer*> Players;			// ĳ���͵� ��Ƴ�����
+	// 스폰된 몬스터를 관리하기 위한 컨테이너
+	TArray<AEnemy1*> SpawnedMonsters;
+
+	AMyProjectPlayer* MyPlayer;
+	TMap<uint64, AMyProjectPlayer*> Players;
 
 };

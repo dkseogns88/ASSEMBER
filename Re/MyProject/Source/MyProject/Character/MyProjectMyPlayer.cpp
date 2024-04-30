@@ -20,6 +20,7 @@
 
 
 
+
 AMyProjectMyPlayer::AMyProjectMyPlayer()
 {
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
@@ -35,9 +36,43 @@ AMyProjectMyPlayer::AMyProjectMyPlayer()
 	
 }
 
+
+// APawn interface
+
+inline void AMyProjectMyPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+{
+	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent)) {
+
+		// Jumping
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &AMyProjectMyPlayer::Input_Jump);
+
+		// Moving
+		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AMyProjectMyPlayer::Move);
+		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Completed, this, &AMyProjectMyPlayer::Move);
+
+		// Looking
+		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AMyProjectMyPlayer::Look);
+	}
+}
+
+void AMyProjectMyPlayer::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	
+	
+}
+
 void AMyProjectMyPlayer::BeginPlay()
 {
 	Super::BeginPlay();
+
+	FVector Start = GetActorLocation();
+	FVector End = Start - FVector(0, 0, 1000);
+	FHitResult HitResult;
+	if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility))
+	{
+		SetActorLocation(HitResult.Location);
+	}
 
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
 	{
@@ -51,81 +86,102 @@ void AMyProjectMyPlayer::BeginPlay()
 void AMyProjectMyPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
-	bool ForceSendPacket = false;
-	
-	if ((LastDesiredInput != DesiredInput) || IsJump)
-	{
-		ForceSendPacket = true;
-		LastDesiredInput = DesiredInput;
-	}
-	
+
+	StateTick();
+	SendTick(DeltaTime);
+
+}
+
+void AMyProjectMyPlayer::StateTick()
+{
+
 	if (GetCharacterMovement()->IsFalling())
 	{
-		IsJump = true;
+		IsJumping = true;
 	}
 	else {
-		IsJump = false;
-
+		IsJumping = false;
 	}
 
-	if (DesiredInput == FVector2D::Zero() && (IsJump == false))
+	if (DesiredInput == FVector2D::Zero() && (IsJumping == false))
+	{
 		SetMoveState(Protocol::MOVE_STATE_IDLE);
-	else if((DesiredInput != FVector2D::Zero()) && (IsJump == false))
+	}
+	else if ((DesiredInput != FVector2D::Zero()) && (IsJumping == false))
+	{
 		SetMoveState(Protocol::MOVE_STATE_RUN);
-	else if(IsJump == true)
+	}
+	else if (IsJumping == true)
+	{
 		SetMoveState(Protocol::MOVE_STATE_JUMP);
+	}
+}
+
+void AMyProjectMyPlayer::SendTick(float DeltaTime)
+{
+	bool ForceSendPacket = false;
+
+	if ((LastDesiredInput != DesiredInput) || (bLastInputJump) || (bIsTurn))
+	{
+		ForceSendPacket = true;
+
+		bLastInputJump = false;
+		bIsTurn = false;
+		LastDesiredInput = DesiredInput;
+	}
 
 	MovePacketSendTimer -= DeltaTime;
-	
+
 	if (MovePacketSendTimer <= 0 || ForceSendPacket)
 	{
 		MovePacketSendTimer = MOVE_PACKET_SEND_DELAY;
 
-		if (IsJump == false)
+		if (GetMoveState() == Protocol::MOVE_STATE_RUN
+			|| GetMoveState() == Protocol::MOVE_STATE_IDLE)
 		{
-			Protocol::C_MOVE MovePkt;
-			{
-				Protocol::PosInfo* Info = MovePkt.mutable_info();
-				Info->CopyFrom(*PlayerInfo);
-				Info->set_yaw(DesiredYaw);
-				Info->set_state(GetMoveState());
-			}
-			SEND_PACKET(MovePkt);
+			Send_Idle_Move();
 		}
-		else if(IsJump == true)
+		else if (GetMoveState() == Protocol::MOVE_STATE_JUMP)
 		{
-			Protocol::C_JUMP JumpPkt;
-			{
-				Protocol::PosInfo* Info = JumpPkt.mutable_info();
-				Info->CopyFrom(*PlayerInfo);
-				Info->set_yaw(GetActorRotation().Yaw);
-				Info->set_state(GetMoveState());
-			}
-			SEND_PACKET(JumpPkt);
+			Send_Jump();
 		}
 	}
 }
+
+void AMyProjectMyPlayer::Send_Idle_Move()
+{
+	Protocol::C_MOVE MovePkt;
+
+	Protocol::PosInfo* Info = MovePkt.mutable_info();
+	Info->CopyFrom(*PlayerInfo);
+	Info->set_yaw(DesiredYaw);
+	Info->set_state(GetMoveState());
+	Info->set_d_x(DesiredMoveDirection.X);
+	Info->set_d_y(DesiredMoveDirection.Y);
+	Info->set_d_z(DesiredMoveDirection.Z);
+
+	SEND_PACKET(MovePkt);
+}
+
+void AMyProjectMyPlayer::Send_Jump()
+{
+	Protocol::C_JUMP JumpPkt;
+
+	Protocol::PosInfo* Info = JumpPkt.mutable_info();
+	Info->CopyFrom(*PlayerInfo);
+	Info->set_yaw(DesiredYaw);
+	Info->set_state(GetMoveState());
+	Info->set_d_x(DesiredMoveDirection.X);
+	Info->set_d_y(DesiredMoveDirection.Y);
+	Info->set_d_z(DesiredMoveDirection.Z);
+
+	SEND_PACKET(JumpPkt);
+}
+
+
 
 //////////////////////////////////////////////////////////////////////////
 // Input
-
-void AMyProjectMyPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent)) {
-	
-		// Jumping
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &AMyProjectMyPlayer::Jump);
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &AMyProjectMyPlayer::StopJumping);
-	
-		// Moving
-		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AMyProjectMyPlayer::Move);
-		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Completed, this, &AMyProjectMyPlayer::Move);
-
-		// Looking
-		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AMyProjectMyPlayer::Look);
-	}
-}
 
 void AMyProjectMyPlayer::Move(const FInputActionValue& Value)
 {
@@ -143,7 +199,7 @@ void AMyProjectMyPlayer::Move(const FInputActionValue& Value)
 		// get right vector 
 		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 	
-		// add movement 
+		// add movement
 		AddMovementInput(ForwardDirection, MovementVector.Y);
 		AddMovementInput(RightDirection, MovementVector.X);
 
@@ -167,37 +223,43 @@ void AMyProjectMyPlayer::Look(const FInputActionValue& Value)
 {
 	FVector2D LookAxisVector = Value.Get<FVector2D>();
 	
-	if (Controller != nullptr)
+
+	if (GetMoveState() != Protocol::MOVE_STATE_IDLE)
 	{
-		// add yaw and pitch input to controller
-		AddControllerYawInput(LookAxisVector.X);
-		AddControllerPitchInput(LookAxisVector.Y);
+		bIsTurn = true;
 	}
+
+	AddControllerYawInput(LookAxisVector.X);
+	AddControllerPitchInput(LookAxisVector.Y);
 }
 
-void AMyProjectMyPlayer::Jump()
+void AMyProjectMyPlayer::Input_Jump(const FInputActionValue& Value)
 {
-	Super::Jump();
+	bLastInputJump = Value.Get<bool>();
+	Jump();
 }
-
-void AMyProjectMyPlayer::StopJumping()
-{
-	Super::StopJumping();
-}
-
 
 void AMyProjectMyPlayer::SetAiming(bool bNewAiming)
 {
-	bIsAiming = bNewAiming; // Update internal aiming state
+	bIsAiming = bNewAiming; 
+	UE_LOG(LogTemp, Log, TEXT("Aiming state set to: %s"), bIsAiming ? TEXT("True") : TEXT("False"));
 
-	// 애니메이션 블루프린트와 변수연결
+	
+	//애니메이션 직접조작, 현재는 클라이언트에서만 작동
 	UAnimInstanceCustom* AnimInstance = Cast<UAnimInstanceCustom>(GetMesh()->GetAnimInstance());
 	if (AnimInstance)
 	{
-		// 애니메이션 블루프린트에서 변수업데이트
-		AnimInstance->bIsAiming = bIsAiming;
-
 		
-		UE_LOG(LogTemp, Log, TEXT("Aiming state updated to: %s"), bIsAiming ? TEXT("True") : TEXT("False"));
+		AnimInstance->bIsAiming = bIsAiming;
+		UE_LOG(LogTemp, Log, TEXT("Aiming state updated in animation blueprint to: %s"), bIsAiming ? TEXT("True") : TEXT("False"));
 	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("Failed to cast to UAnimInstanceCustom"));
+	}
+}
+
+void AMyProjectMyPlayer::OnRep_Aimingchanged()
+{
+	SetAiming(bIsAiming);
 }

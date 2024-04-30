@@ -52,10 +52,14 @@ extern ObjectInfoDefaultTypeInternal _ObjectInfo_default_instance_;
 class PosInfo;
 struct PosInfoDefaultTypeInternal;
 extern PosInfoDefaultTypeInternal _PosInfo_default_instance_;
+class ZoomInfo;
+struct ZoomInfoDefaultTypeInternal;
+extern ZoomInfoDefaultTypeInternal _ZoomInfo_default_instance_;
 }  // namespace Protocol
 PROTOBUF_NAMESPACE_OPEN
 template<> ::Protocol::ObjectInfo* Arena::CreateMaybeMessage<::Protocol::ObjectInfo>(Arena*);
 template<> ::Protocol::PosInfo* Arena::CreateMaybeMessage<::Protocol::PosInfo>(Arena*);
+template<> ::Protocol::ZoomInfo* Arena::CreateMaybeMessage<::Protocol::ZoomInfo>(Arena*);
 PROTOBUF_NAMESPACE_CLOSE
 namespace Protocol {
 
@@ -188,6 +192,9 @@ class PosInfo final :
     kZFieldNumber = 4,
     kYawFieldNumber = 5,
     kStateFieldNumber = 6,
+    kDXFieldNumber = 7,
+    kDYFieldNumber = 8,
+    kDZFieldNumber = 9,
   };
   // uint64 object_id = 1;
   void clear_object_id();
@@ -243,6 +250,33 @@ class PosInfo final :
   void _internal_set_state(::Protocol::MoveState value);
   public:
 
+  // float d_x = 7;
+  void clear_d_x();
+  float d_x() const;
+  void set_d_x(float value);
+  private:
+  float _internal_d_x() const;
+  void _internal_set_d_x(float value);
+  public:
+
+  // float d_y = 8;
+  void clear_d_y();
+  float d_y() const;
+  void set_d_y(float value);
+  private:
+  float _internal_d_y() const;
+  void _internal_set_d_y(float value);
+  public:
+
+  // float d_z = 9;
+  void clear_d_z();
+  float d_z() const;
+  void set_d_z(float value);
+  private:
+  float _internal_d_z() const;
+  void _internal_set_d_z(float value);
+  public:
+
   // @@protoc_insertion_point(class_scope:Protocol.PosInfo)
  private:
   class _Internal;
@@ -257,6 +291,9 @@ class PosInfo final :
     float z_;
     float yaw_;
     int state_;
+    float d_x_;
+    float d_y_;
+    float d_z_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   };
   union { Impl_ _impl_; };
@@ -441,6 +478,165 @@ class ObjectInfo final :
   union { Impl_ _impl_; };
   friend struct ::TableStruct_Struct_2eproto;
 };
+// -------------------------------------------------------------------
+
+class ZoomInfo final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:Protocol.ZoomInfo) */ {
+ public:
+  inline ZoomInfo() : ZoomInfo(nullptr) {}
+  ~ZoomInfo() override;
+  explicit PROTOBUF_CONSTEXPR ZoomInfo(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+
+  ZoomInfo(const ZoomInfo& from);
+  ZoomInfo(ZoomInfo&& from) noexcept
+    : ZoomInfo() {
+    *this = ::std::move(from);
+  }
+
+  inline ZoomInfo& operator=(const ZoomInfo& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline ZoomInfo& operator=(ZoomInfo&& from) noexcept {
+    if (this == &from) return *this;
+    if (GetOwningArena() == from.GetOwningArena()
+  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
+        && GetOwningArena() != nullptr
+  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
+    ) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const ZoomInfo& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const ZoomInfo* internal_default_instance() {
+    return reinterpret_cast<const ZoomInfo*>(
+               &_ZoomInfo_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    2;
+
+  friend void swap(ZoomInfo& a, ZoomInfo& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(ZoomInfo* other) {
+    if (other == this) return;
+  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() != nullptr &&
+        GetOwningArena() == other->GetOwningArena()) {
+   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() == other->GetOwningArena()) {
+  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
+      InternalSwap(other);
+    } else {
+      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(ZoomInfo* other) {
+    if (other == this) return;
+    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  ZoomInfo* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
+    return CreateMaybeMessage<ZoomInfo>(arena);
+  }
+  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
+  void CopyFrom(const ZoomInfo& from);
+  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
+  void MergeFrom( const ZoomInfo& from) {
+    ZoomInfo::MergeImpl(*this, from);
+  }
+  private:
+  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg);
+  public:
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  uint8_t* _InternalSerialize(
+      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena, bool is_message_owned);
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(ZoomInfo* other);
+
+  private:
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "Protocol.ZoomInfo";
+  }
+  protected:
+  explicit ZoomInfo(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                       bool is_message_owned = false);
+  public:
+
+  static const ClassData _class_data_;
+  const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetClassData() const final;
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kObjectIdFieldNumber = 1,
+    kBZoomFieldNumber = 2,
+  };
+  // uint64 object_id = 1;
+  void clear_object_id();
+  uint64_t object_id() const;
+  void set_object_id(uint64_t value);
+  private:
+  uint64_t _internal_object_id() const;
+  void _internal_set_object_id(uint64_t value);
+  public:
+
+  // bool b_zoom = 2;
+  void clear_b_zoom();
+  bool b_zoom() const;
+  void set_b_zoom(bool value);
+  private:
+  bool _internal_b_zoom() const;
+  void _internal_set_b_zoom(bool value);
+  public:
+
+  // @@protoc_insertion_point(class_scope:Protocol.ZoomInfo)
+ private:
+  class _Internal;
+
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  typedef void InternalArenaConstructable_;
+  typedef void DestructorSkippable_;
+  struct Impl_ {
+    uint64_t object_id_;
+    bool b_zoom_;
+    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_Struct_2eproto;
+};
 // ===================================================================
 
 
@@ -570,6 +766,66 @@ inline void PosInfo::_internal_set_state(::Protocol::MoveState value) {
 inline void PosInfo::set_state(::Protocol::MoveState value) {
   _internal_set_state(value);
   // @@protoc_insertion_point(field_set:Protocol.PosInfo.state)
+}
+
+// float d_x = 7;
+inline void PosInfo::clear_d_x() {
+  _impl_.d_x_ = 0;
+}
+inline float PosInfo::_internal_d_x() const {
+  return _impl_.d_x_;
+}
+inline float PosInfo::d_x() const {
+  // @@protoc_insertion_point(field_get:Protocol.PosInfo.d_x)
+  return _internal_d_x();
+}
+inline void PosInfo::_internal_set_d_x(float value) {
+  
+  _impl_.d_x_ = value;
+}
+inline void PosInfo::set_d_x(float value) {
+  _internal_set_d_x(value);
+  // @@protoc_insertion_point(field_set:Protocol.PosInfo.d_x)
+}
+
+// float d_y = 8;
+inline void PosInfo::clear_d_y() {
+  _impl_.d_y_ = 0;
+}
+inline float PosInfo::_internal_d_y() const {
+  return _impl_.d_y_;
+}
+inline float PosInfo::d_y() const {
+  // @@protoc_insertion_point(field_get:Protocol.PosInfo.d_y)
+  return _internal_d_y();
+}
+inline void PosInfo::_internal_set_d_y(float value) {
+  
+  _impl_.d_y_ = value;
+}
+inline void PosInfo::set_d_y(float value) {
+  _internal_set_d_y(value);
+  // @@protoc_insertion_point(field_set:Protocol.PosInfo.d_y)
+}
+
+// float d_z = 9;
+inline void PosInfo::clear_d_z() {
+  _impl_.d_z_ = 0;
+}
+inline float PosInfo::_internal_d_z() const {
+  return _impl_.d_z_;
+}
+inline float PosInfo::d_z() const {
+  // @@protoc_insertion_point(field_get:Protocol.PosInfo.d_z)
+  return _internal_d_z();
+}
+inline void PosInfo::_internal_set_d_z(float value) {
+  
+  _impl_.d_z_ = value;
+}
+inline void PosInfo::set_d_z(float value) {
+  _internal_set_d_z(value);
+  // @@protoc_insertion_point(field_set:Protocol.PosInfo.d_z)
 }
 
 // -------------------------------------------------------------------
@@ -706,9 +962,55 @@ inline void ObjectInfo::set_allocated_pos_info(::Protocol::PosInfo* pos_info) {
   // @@protoc_insertion_point(field_set_allocated:Protocol.ObjectInfo.pos_Info)
 }
 
+// -------------------------------------------------------------------
+
+// ZoomInfo
+
+// uint64 object_id = 1;
+inline void ZoomInfo::clear_object_id() {
+  _impl_.object_id_ = uint64_t{0u};
+}
+inline uint64_t ZoomInfo::_internal_object_id() const {
+  return _impl_.object_id_;
+}
+inline uint64_t ZoomInfo::object_id() const {
+  // @@protoc_insertion_point(field_get:Protocol.ZoomInfo.object_id)
+  return _internal_object_id();
+}
+inline void ZoomInfo::_internal_set_object_id(uint64_t value) {
+  
+  _impl_.object_id_ = value;
+}
+inline void ZoomInfo::set_object_id(uint64_t value) {
+  _internal_set_object_id(value);
+  // @@protoc_insertion_point(field_set:Protocol.ZoomInfo.object_id)
+}
+
+// bool b_zoom = 2;
+inline void ZoomInfo::clear_b_zoom() {
+  _impl_.b_zoom_ = false;
+}
+inline bool ZoomInfo::_internal_b_zoom() const {
+  return _impl_.b_zoom_;
+}
+inline bool ZoomInfo::b_zoom() const {
+  // @@protoc_insertion_point(field_get:Protocol.ZoomInfo.b_zoom)
+  return _internal_b_zoom();
+}
+inline void ZoomInfo::_internal_set_b_zoom(bool value) {
+  
+  _impl_.b_zoom_ = value;
+}
+inline void ZoomInfo::set_b_zoom(bool value) {
+  _internal_set_b_zoom(value);
+  // @@protoc_insertion_point(field_set:Protocol.ZoomInfo.b_zoom)
+}
+
 #ifdef __GNUC__
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 

@@ -47,18 +47,22 @@ protected:
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 
-	void Jump();
-	void StopJumping();
-
-	
+	void Input_Jump(const FInputActionValue& Value);
 
 protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 	// To add mapping context
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
+
+	void StateTick();
+	void SendTick(float DeltaTime);
+	void Send_Idle_Move();
+	void Send_Jump();
 
 
 public:
@@ -80,10 +84,20 @@ protected:
 	// Dirty Flag Test
 	FVector2D LastDesiredInput;
 
-	// Jump
-	bool IsJump = false;
+	// Jump Cache
+	bool IsJumping = false;
+	bool bLastInputJump = false;
+
+	// Turn Cache
+	bool bIsTurn = false;
 
 	// 캐릭터의 조준 상태
+	UPROPERTY(ReplicatedUsing = OnRep_Aimingchanged)
 	bool bIsAiming;
+
+	// 조준 상태가 변경될 때 호출될 함수
+	UFUNCTION()
+	void OnRep_Aimingchanged();
+
 	
 };

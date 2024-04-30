@@ -103,3 +103,13 @@ bool Handle_S_CHAT(PacketSessionRef& session, Protocol::S_CHAT& pkt)
 {
 	return true;
 }
+
+bool Handle_S_ZOOM(PacketSessionRef& session, Protocol::S_ZOOM& pkt)
+{
+	if (auto* GameInstance = Cast<UMyProjectGameInstance>(GWorld->GetGameInstance()))
+	{
+		GameInstance->HandleZoom(pkt);
+	}
+
+	return true;
+}

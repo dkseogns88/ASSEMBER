@@ -12,6 +12,10 @@ message PosInfo
 	float z = 4;
 	float yaw = 5;
 	MoveState state = 6;
+
+	float d_x = 7;
+	float d_y = 8;
+	float d_z = 9;
 }
 
 // 전체 오브젝트 정보
@@ -21,4 +25,10 @@ message ObjectInfo
 	ObjectType object_type = 2;
 	PosInfo pos_Info = 3;
 
+}
+
+message ZoomInfo
+{
+	uint64 object_id = 1;
+	bool b_zoom = 2;
 }

@@ -2,14 +2,14 @@
 
 
 #include "MyProjectPlayerController.h"
-#include "EnhancedInputSubsystems.h"
 #include "Blueprint/UserWidget.h"
+#include "EnhancedInputSubsystems.h"
 #include "MyProjectMyPlayer.h"
 #include "MyProjectMyPlayerSida.h"
+#include "HealthBarWidgets.h"
 #include "Components/InputComponent.h"
 #include "MyProject.h"
 #include "Protocol.pb.h"
-
 
 
 
@@ -21,6 +21,8 @@ void AMyProjectPlayerController::BeginPlay()
 {
     Super::BeginPlay();
 
+    
+    
     // get the enhanced input subsystem
     if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
     {
@@ -30,7 +32,34 @@ void AMyProjectPlayerController::BeginPlay()
 
 
     }
+
+
+    // Create and display the health bar widget
+    if (IsLocalController())
+    {
+        HealthBarWidgets = CreateWidget<UHealthBarWidgets>(this, UHealthBarWidgets::StaticClass());
+        if (HealthBarWidgets)
+        {
+            UE_LOG(LogTemp, Log, TEXT("Health bar widget created successfully."));
+            HealthBarWidgets->AddToViewport(1);
+            // Ensuring NativeConstruct is called right after adding to viewport
+            HealthBarWidgets->NativeConstruct();
+            HealthBarWidgets->UpdateHealth(PlayerHealth / 100.0f);
+           
+        }
+    }
 }
+
+void AMyProjectPlayerController::SetHealth(float NewHealth)
+{
+    PlayerHealth = NewHealth;
+    if (HealthBarWidgets)
+    {
+        HealthBarWidgets->UpdateHealth(PlayerHealth / 100.0f);
+    }
+}
+
+
 
 
 
@@ -49,30 +78,48 @@ void AMyProjectPlayerController::RequestServerForCharacterChange(FString Charact
 
 void AMyProjectPlayerController::RequestServerForAimingChange(bool bIsAiming)
 {
-    //서버에 조준 변경 요청
+   
+    AMyProjectMyPlayer* MyCharacter = Cast<AMyProjectMyPlayer>(GetPawn());
+    if (MyCharacter)
+    {
+        MyCharacter->SetAiming(bIsAiming);
+        UE_LOG(LogTemp, Log, TEXT("Aiming set"));
 
+
+
+        if (bIsAiming)
+        {
+            if (!AimUIInstance && AimUIClass)
+            {
+                AimUIInstance = CreateWidget<UUserWidget>(this,AimUIClass);
+            }
+            if (AimUIInstance && !AimUIInstance->IsInViewport())
+            {
+                AimUIInstance->AddToViewport();
+            }
+        }
+        else
+        {
+            if (AimUIInstance && AimUIInstance->IsInViewport())
+            {
+                AimUIInstance->RemoveFromViewport();
+            }
+        }
+
+
+        Protocol::C_ZOOM ZoomPkt;
+
+        Protocol::ZoomInfo* Info = ZoomPkt.mutable_info();
+        Info->set_object_id(MyCharacter->GetPlayerInfo()->object_id());
+        Info->set_b_zoom(bIsAiming);
+
+        SEND_PACKET(ZoomPkt);
+    }
 
     UE_LOG(LogTemp, Log, TEXT("Requested server for aiming change: %s"), bIsAiming ? TEXT("True") : TEXT("False"));
 }
 
-void AMyProjectPlayerController::OnServerAimingResponse(bool bIsAimingApproved)
-{
-    if (bIsAimingApproved)
-    {
-        // 조준 승인 시 조준 상태로 전환
-        AMyProjectMyPlayer* MyCharacter = Cast<AMyProjectMyPlayer>(GetPawn());
-        if (MyCharacter)
-        {
-            MyCharacter->SetAiming(true);
-            UE_LOG(LogTemp, Log, TEXT("Aiming approved by server"));
-        }
-    }
-    else
-    {
-        // 거부될 경우 상태 변경하지 않음
-        UE_LOG(LogTemp, Warning, TEXT("Aiming rejected by server"));
-    }
-}
+
 
 
 void AMyProjectPlayerController::SetupInputComponent()
@@ -88,6 +135,8 @@ void AMyProjectPlayerController::SetupInputComponent()
 void AMyProjectPlayerController::OnAimPressed()
 {
     RequestServerForAimingChange(true);
+
+
 }
 
 void AMyProjectPlayerController::OnAimReleased()

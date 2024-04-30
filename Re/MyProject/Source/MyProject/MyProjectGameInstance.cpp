@@ -2,6 +2,7 @@
 
 
 #include "MyProjectGameInstance.h"
+#include "Enemy1.h"
 #include "Sockets.h"
 #include "Common/TcpSocketBuilder.h"
 #include "Serialization/ArrayWriter.h"
@@ -16,6 +17,18 @@
 #include "MyProjectMyPlayer.h"
 #include "MyProjectMyPlayerSida.h"
 #include "MyProjectPlayerController.h"
+#include "AnimInstanceCustom.h"
+#include "UObject/ConstructorHelpers.h"
+
+
+
+
+UMyProjectGameInstance::UMyProjectGameInstance()
+{
+	// Directly setting the MonsterClass to the AEnemy1 class
+	MonsterClass = AEnemy1::StaticClass();
+}
+
 
 void UMyProjectGameInstance::ConnectToGameServer()
 {
@@ -172,8 +185,7 @@ void UMyProjectGameInstance::HandleMove(const Protocol::S_MOVE& MovePkt)
 		return;
 
 	AMyProjectPlayer* Player = (*FindActor);
-	//if (Player == MyPlayer)
-	//	return;
+
 	if (Player->IsMyPlayer())
 		return;
 
@@ -203,6 +215,99 @@ void UMyProjectGameInstance::HandleJump(const Protocol::S_JUMP& JumpPkt)
 	Player->SetDestInfo(Info);
 }
 
+void UMyProjectGameInstance::HandleZoom(const Protocol::S_ZOOM& ZoomPkt)
+{
+	if (Socket == nullptr || GameServerSession == nullptr)
+		return;
+
+	auto* World = GetWorld();
+	if (World == nullptr)
+		return;
+
+	const uint64 ObjectId = ZoomPkt.info().object_id();
+	AMyProjectPlayer** FindActor = Players.Find(ObjectId);
+	if (FindActor == nullptr)
+		return;
+
+	AMyProjectPlayer* Player = (*FindActor);
+	if (Player->IsMyPlayer())
+		return;
+
+	
+	UAnimInstanceCustom* AnimInstance = Cast<UAnimInstanceCustom>(Player->GetMesh()->GetAnimInstance());
+	if (AnimInstance)
+	{
+		// 조준 상태를 업데이트 합니다.
+		bool bIsAiming = ZoomPkt.info().b_zoom();  // 패킷에서 조준 정보를 가져옵니다.
+		AnimInstance->SetAiming(bIsAiming);
+		
+
+		UE_LOG(LogTemp, Log, TEXT("Zoom animation updated for player %llu, aiming: %s"), ObjectId, bIsAiming ? TEXT("True") : TEXT("False"));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("Failed to cast to UAnimInstanceCustom for player %llu"), ObjectId);
+	}
+}
+
+void UMyProjectGameInstance::SpawnMonsterAtLocation(const FVector& Location)
+{
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+	// 스폰할 몬스터의 클래스를 지정
+	AEnemy1* SpawnedMonster = GetWorld()->SpawnActor<AEnemy1>(MonsterClass, Location, FRotator::ZeroRotator, SpawnParams);
+	if (SpawnedMonster)
+	{
+		UE_LOG(LogTemp, Log, TEXT("Monster spawned successfully at %s"), *Location.ToString());
+		SpawnedMonsters.Add(SpawnedMonster);  // 스폰된 몬스터를 배열에 추가
+		SpawnedMonster->SetActorScale3D(FVector(0.5f, 0.5f, 0.5f));
+		SpawnedMonster->SetActorEnableCollision(true);
+
+		if (SpawnedMonster->GetMesh()->GetCollisionEnabled() == ECollisionEnabled::NoCollision)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Collision is disabled for the monster mesh."));
+			SpawnedMonster->GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		}
+
+		SpawnedMonster->SetActorHiddenInGame(false);
+
+		if (!SpawnedMonster->GetMesh()->IsVisible())
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Monster mesh is NOT visible."));
+			SpawnedMonster->GetMesh()->SetVisibility(true, true);
+		}
+
+		// Draw a debug sphere at the spawn location
+		if (SpawnedMonster->GetMesh())
+		{
+			FBoxSphereBounds Bounds = SpawnedMonster->GetMesh()->CalcBounds(SpawnedMonster->GetMesh()->GetComponentTransform());
+			DrawDebugBox(GetWorld(), Bounds.Origin, Bounds.BoxExtent, FQuat::Identity, FColor::Red, true, 10.0f, 0, 2);
+		}
+
+		UE_LOG(LogTemp, Log, TEXT("Spawned Monster Location: %s, Scale: %s"),
+			*SpawnedMonster->GetActorLocation().ToString(),
+			*SpawnedMonster->GetActorScale3D().ToString());
+
+		
+
+		// Additional check for mesh visibility
+		if (SpawnedMonster->GetMesh()->IsVisible())
+		{
+			UE_LOG(LogTemp, Log, TEXT("Monster mesh is visible."));
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Monster mesh is NOT visible."));
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("Failed to spawn monster at %s"), *Location.ToString());
+	}
+}
+
+
 
 void UMyProjectGameInstance::Init()
 {
@@ -211,6 +316,13 @@ void UMyProjectGameInstance::Init()
 	// 캐릭터 클래스 매핑 초기화
 	CharacterBlueprintPaths.Add("Rinty", "Blueprint'/Game/MyBP/BP_Class/BP_MyPlayer.BP_MyPlayer_C'");
 	CharacterBlueprintPaths.Add("Sida", "Blueprint'/Game/MyBP/BP_Class/BP_MyPlayer_sida.BP_MyPlayer_sida_C'");
+
+
+
+
+
+	FVector MonsterSpawnLocation = FVector(-2420.0f, -160.0f, -190.0f);  
+	SpawnMonsterAtLocation(MonsterSpawnLocation);
 	
 }
 

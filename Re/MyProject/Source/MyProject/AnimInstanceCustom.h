@@ -9,8 +9,11 @@ class UAnimInstanceCustom : public UAnimInstance
 {
     GENERATED_BODY()
 
-
 public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
     bool bIsAiming;
+
+    void SetAiming(bool bAiming);
 };
+
+

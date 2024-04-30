@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h" 
 #include "Blueprint/UserWidget.h"
+#include "HealthBarWidgets.h"
 #include "MyProjectPlayerController.generated.h"
 
 class UInputMappingContext;
@@ -22,6 +23,7 @@ struct FCharacterChangeInfo
 UCLASS()
 class MYPROJECT_API AMyProjectPlayerController : public APlayerController
 {
+
 	GENERATED_BODY()
 
 
@@ -29,12 +31,21 @@ public:
 	// ĳ���� ���� �Լ�
 	UFUNCTION(BlueprintCallable, Category = "Character")
 	
+	
+
+	
+
+	
 
 	void RequestServerForCharacterChange(FString CharacterName);
 
 	void RequestServerForAimingChange(bool bIsAiming);
 
-	void OnServerAimingResponse(bool bIsAimingApproved);
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+	TSubclassOf<UUserWidget> AimUIClass;
+	
+	UPROPERTY()
+	UUserWidget* AimUIInstance;
 	
 
 	bool bIsUIActive = false;
@@ -47,25 +58,13 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputMappingContext* InputMappingContext;
 
+
 	
 	virtual void SetupInputComponent() override;
 
 	void OnAimPressed();
 
-	void OnAimReleased();
-	
-	
-	
-
-	
-
-	
-
-
-
-	
-
-	
+	void OnAimReleased();	
 	
 	//UI ���� �ν��Ͻ��� ����
 	UPROPERTY()
@@ -77,14 +76,18 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UUserWidget> CharacterSelectWidgetClass;
 
+	void SetHealth(float NewHealth);
 	
-	// Begin Actor interface
 protected:
 
 
 	
 
 	virtual void BeginPlay() override;
+	UPROPERTY(Transient)
+	UHealthBarWidgets* HealthBarWidgets;
+
+	float PlayerHealth = 100.0f;
 
 	// End Actor interface
 };
