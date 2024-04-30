@@ -13,7 +13,15 @@
 
 
 
-
+AMyProjectPlayerController::AMyProjectPlayerController()
+{
+    // 위젯 블루프린트 클래스 로드
+    static ConstructorHelpers::FClassFinder<UHealthBarWidgets> HealthBarBPClass(TEXT("/Game/MyBP/UI/HealthBarWidgets.HealthBarWidgets_C"));
+    if (HealthBarBPClass.Succeeded())
+    {
+        HealthBarWidgetClass = HealthBarBPClass.Class;
+    }
+}
 
 
 
@@ -37,7 +45,7 @@ void AMyProjectPlayerController::BeginPlay()
     // Create and display the health bar widget
     if (IsLocalController())
     {
-        HealthBarWidgets = CreateWidget<UHealthBarWidgets>(this, UHealthBarWidgets::StaticClass());
+        HealthBarWidgets = CreateWidget<UHealthBarWidgets>(this, HealthBarWidgetClass);
         if (HealthBarWidgets)
         {
             UE_LOG(LogTemp, Log, TEXT("Health bar widget created successfully."));

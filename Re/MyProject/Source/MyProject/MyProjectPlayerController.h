@@ -83,10 +83,15 @@ protected:
 
 	
 
-	virtual void BeginPlay() override;
-	UPROPERTY(Transient)
-	UHealthBarWidgets* HealthBarWidgets;
+	AMyProjectPlayerController();
 
+	virtual void BeginPlay() override;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI")
+	TSubclassOf<UHealthBarWidgets> HealthBarWidgetClass;
+
+	// Health bar widget instance
+	UPROPERTY()
+	UHealthBarWidgets* HealthBarWidgets;
 	float PlayerHealth = 100.0f;
 
 	// End Actor interface

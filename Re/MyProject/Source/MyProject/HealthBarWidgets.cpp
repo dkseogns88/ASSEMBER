@@ -19,13 +19,13 @@ void UHealthBarWidgets::UpdateHealth(float HealthPercentage)
 
 void UHealthBarWidgets::NativeConstruct()
 {
-    Super::NativeConstruct(); // Always call the base implementation first
+    Super::NativeConstruct(); // Always call Super first to ensure all elements are initialized
 
+    UE_LOG(LogTemp, Log, TEXT("NativeConstruct called."));
 
-    // Check the bound widgets for additional setup or validation
+    HealthProgressBar = Cast<UProgressBar>(GetWidgetFromName(TEXT("HealthProgressBar")));
     if (HealthProgressBar)
     {
-        // Perform any extra initialization or setup here
         UE_LOG(LogTemp, Log, TEXT("HealthProgressBar found and ready to use."));
     }
     else
@@ -33,9 +33,9 @@ void UHealthBarWidgets::NativeConstruct()
         UE_LOG(LogTemp, Warning, TEXT("HealthProgressBar not found."));
     }
 
+    HealthText = Cast<UTextBlock>(GetWidgetFromName(TEXT("HealthText")));
     if (HealthText)
     {
-        // Additional setup for HealthText
         UE_LOG(LogTemp, Log, TEXT("HealthText found and ready to use."));
     }
     else
@@ -43,6 +43,5 @@ void UHealthBarWidgets::NativeConstruct()
         UE_LOG(LogTemp, Warning, TEXT("HealthText not found."));
     }
 
-    // Example of setting default values or running start-up animations
-    UpdateHealth(1.0f); // Initialize with full health
+    UpdateHealth(1.0f); // Initialize with full health to ensure the bar and text reflect this at start.
 }
