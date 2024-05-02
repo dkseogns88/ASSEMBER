@@ -255,6 +255,7 @@ void UMyProjectGameInstance::SpawnMonsterAtLocation(const FVector& Location)
 {
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+	
 
 	// 스폰할 몬스터의 클래스를 지정
 	AEnemy1* SpawnedMonster = GetWorld()->SpawnActor<AEnemy1>(MonsterClass, Location, FRotator::ZeroRotator, SpawnParams);
@@ -262,7 +263,6 @@ void UMyProjectGameInstance::SpawnMonsterAtLocation(const FVector& Location)
 	{
 		UE_LOG(LogTemp, Log, TEXT("Monster spawned successfully at %s"), *Location.ToString());
 		SpawnedMonsters.Add(SpawnedMonster);  // 스폰된 몬스터를 배열에 추가
-		SpawnedMonster->SetActorScale3D(FVector(0.5f, 0.5f, 0.5f));
 		SpawnedMonster->SetActorEnableCollision(true);
 
 	}
@@ -283,12 +283,20 @@ void UMyProjectGameInstance::Init()
 	CharacterBlueprintPaths.Add("Rinty", "Blueprint'/Game/MyBP/BP_Class/BP_MyPlayer.BP_MyPlayer_C'");
 	CharacterBlueprintPaths.Add("Sida", "Blueprint'/Game/MyBP/BP_Class/BP_MyPlayer_sida.BP_MyPlayer_sida_C'");
 
-	MonsterClass = AEnemy1::StaticClass(); // 몬스터 클래스를 직접 설정
-	FVector MonsterSpawnLocation = FVector(0.0f, 0.0f, 500.0f); // 스폰 위치 설정
+	MonsterClass = AEnemy1::StaticClass(); 
+	
+	//스폰안정화를위해 월드 완전히생성후 텀을두어 몬스터소환
+	GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, this, &UMyProjectGameInstance::SpawnNPC, 5.0f, false);
+
+
+}
+
+void UMyProjectGameInstance::SpawnNPC()
+{
+	// 스폰 위치 설정
+	FVector MonsterSpawnLocation = FVector(0.0f, 0.0f, 120.0f);
 	SpawnMonsterAtLocation(MonsterSpawnLocation);
-
-
-
+	UE_LOG(LogTemp, Log, TEXT("NPC Spawned at %s"), *MonsterSpawnLocation.ToString());
 }
 
 TSubclassOf<APawn> UMyProjectGameInstance::FindCharacterClassByName(const FString& CharacterName)

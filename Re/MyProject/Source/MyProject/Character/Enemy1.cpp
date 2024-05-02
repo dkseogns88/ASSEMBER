@@ -33,6 +33,7 @@ AEnemy1::AEnemy1()
     }
 
     // Setup collision and visibility
+    SkeletalMesh->SetRelativeLocation(FVector(0.0f, 0.0f, -160.0f));
     SkeletalMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
     SkeletalMesh->SetCollisionObjectType(ECollisionChannel::ECC_Pawn);
     SkeletalMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
@@ -42,6 +43,7 @@ AEnemy1::AEnemy1()
     
     // Setup CapsuleComponent for collision
     UCapsuleComponent* CapsuleComp = GetCapsuleComponent();
+    CapsuleComp->InitCapsuleSize(200.0f, 100.0f);
     CapsuleComp->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
     CapsuleComp->SetCollisionObjectType(ECollisionChannel::ECC_Pawn);
     CapsuleComp->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
@@ -62,6 +64,15 @@ AEnemy1::AEnemy1()
     
 }
 
+void AEnemy1::CheckAndTeleport()
+{
+    FVector CurrentLocation = GetActorLocation();
+    if (CurrentLocation.Z < -300.0f)
+    {
+        FVector NewLocation(0.0f, 0.0f, 300.0f);
+        SetActorLocation(NewLocation);
+    }
+}
 // Called when the game starts or when spawned
 void AEnemy1::BeginPlay()
 {
@@ -81,6 +92,7 @@ void AEnemy1::BeginPlay()
 void AEnemy1::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+    CheckAndTeleport();
     //UpdateAnimation();
 }
 

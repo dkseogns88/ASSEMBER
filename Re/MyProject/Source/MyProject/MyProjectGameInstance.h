@@ -8,6 +8,7 @@
 #include "Character/Enemy1.h"
 #include "MyProjectGameInstance.generated.h"
 
+
 class AMyProjectPlayer;
 
 UCLASS()
@@ -56,7 +57,8 @@ private:
 	// 캐릭터 이름과 클래스를 매핑하는 맵
 	TMap<FString, FString> CharacterBlueprintPaths;
 
-
+	FTimerHandle SpawnTimerHandle;
+	void SpawnNPC();
 	
 public:
 	class FSocket* Socket;
