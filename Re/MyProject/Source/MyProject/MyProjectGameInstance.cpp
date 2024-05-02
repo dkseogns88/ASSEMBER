@@ -22,7 +22,6 @@
 
 
 
-
 UMyProjectGameInstance::UMyProjectGameInstance()
 {
 
@@ -266,49 +265,6 @@ void UMyProjectGameInstance::SpawnMonsterAtLocation(const FVector& Location)
 		SpawnedMonster->SetActorScale3D(FVector(0.5f, 0.5f, 0.5f));
 		SpawnedMonster->SetActorEnableCollision(true);
 
-		USkeletalMeshComponent* MeshComp = SpawnedMonster->GetMesh();
-		if (MeshComp)
-		{
-			MeshComp->SetSimulatePhysics(true);
-			MeshComp->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-		}
-
-		if (SpawnedMonster->GetMesh()->GetCollisionEnabled() == ECollisionEnabled::NoCollision)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Collision is disabled for the monster mesh."));
-			SpawnedMonster->GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-		}
-
-		SpawnedMonster->SetActorHiddenInGame(false);
-
-		if (!SpawnedMonster->GetMesh()->IsVisible())
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Monster mesh is NOT visible."));
-			SpawnedMonster->GetMesh()->SetVisibility(true, true);
-		}
-
-		// Draw a debug sphere at the spawn location
-		if (SpawnedMonster->GetMesh())
-		{
-			FBoxSphereBounds Bounds = SpawnedMonster->GetMesh()->CalcBounds(SpawnedMonster->GetMesh()->GetComponentTransform());
-			DrawDebugBox(GetWorld(), Bounds.Origin, Bounds.BoxExtent, FQuat::Identity, FColor::Red, true, 10.0f, 0, 2);
-		}
-
-		UE_LOG(LogTemp, Log, TEXT("Spawned Monster Location: %s, Scale: %s"),
-			*SpawnedMonster->GetActorLocation().ToString(),
-			*SpawnedMonster->GetActorScale3D().ToString());
-
-		
-
-		// Additional check for mesh visibility
-		if (SpawnedMonster->GetMesh()->IsVisible())
-		{
-			UE_LOG(LogTemp, Log, TEXT("Monster mesh is visible."));
-		}
-		else
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Monster mesh is NOT visible."));
-		}
 	}
 	else
 	{

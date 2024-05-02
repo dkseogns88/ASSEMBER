@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Animation/AnimSequence.h"
+#include "Components/CapsuleComponent.h"
 #include "Enemy1.generated.h"
 
 UCLASS()
@@ -30,15 +31,10 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Animation", meta = (AllowPrivateAccess = "true"))
-	UAnimSequence* WalkingAnimation; // Additional animation
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	UAnimSequence* IdleAnimation;
 
 
 
-	void PlayIdleAnimation();
+	
 	void CheckMeshSetup();
 
 
