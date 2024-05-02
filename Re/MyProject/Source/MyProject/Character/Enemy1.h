@@ -15,8 +15,7 @@ class MYPROJECT_API AEnemy1 : public ACharacter
 
 
 private:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Animation", meta = (AllowPrivateAccess = "true"))
-	UAnimSequence* WalkingAnimation; // Additional animation
+	
 
 public:
 	// Sets default values for this character's properties
@@ -31,11 +30,13 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Animation", meta = (AllowPrivateAccess = "true"))
+	UAnimSequence* WalkingAnimation; // Additional animation
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	UAnimSequence* IdleAnimation;
 
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
 
 	void PlayIdleAnimation();
 	void CheckMeshSetup();

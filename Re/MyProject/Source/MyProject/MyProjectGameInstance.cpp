@@ -25,6 +25,8 @@
 
 UMyProjectGameInstance::UMyProjectGameInstance()
 {
+
+
 	// Directly setting the MonsterClass to the AEnemy1 class
 	MonsterClass = AEnemy1::StaticClass();
 }
@@ -253,7 +255,7 @@ void UMyProjectGameInstance::HandleZoom(const Protocol::S_ZOOM& ZoomPkt)
 void UMyProjectGameInstance::SpawnMonsterAtLocation(const FVector& Location)
 {
 	FActorSpawnParameters SpawnParams;
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
 	// 스폰할 몬스터의 클래스를 지정
 	AEnemy1* SpawnedMonster = GetWorld()->SpawnActor<AEnemy1>(MonsterClass, Location, FRotator::ZeroRotator, SpawnParams);
@@ -263,6 +265,13 @@ void UMyProjectGameInstance::SpawnMonsterAtLocation(const FVector& Location)
 		SpawnedMonsters.Add(SpawnedMonster);  // 스폰된 몬스터를 배열에 추가
 		SpawnedMonster->SetActorScale3D(FVector(0.5f, 0.5f, 0.5f));
 		SpawnedMonster->SetActorEnableCollision(true);
+
+		USkeletalMeshComponent* MeshComp = SpawnedMonster->GetMesh();
+		if (MeshComp)
+		{
+			MeshComp->SetSimulatePhysics(true);
+			MeshComp->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		}
 
 		if (SpawnedMonster->GetMesh()->GetCollisionEnabled() == ECollisionEnabled::NoCollision)
 		{
@@ -313,17 +322,17 @@ void UMyProjectGameInstance::Init()
 {
 	Super::Init();
 
+	
 	// 캐릭터 클래스 매핑 초기화
 	CharacterBlueprintPaths.Add("Rinty", "Blueprint'/Game/MyBP/BP_Class/BP_MyPlayer.BP_MyPlayer_C'");
 	CharacterBlueprintPaths.Add("Sida", "Blueprint'/Game/MyBP/BP_Class/BP_MyPlayer_sida.BP_MyPlayer_sida_C'");
 
-
-
-
-
-	FVector MonsterSpawnLocation = FVector(-2420.0f, -160.0f, -190.0f);  
+	MonsterClass = AEnemy1::StaticClass(); // 몬스터 클래스를 직접 설정
+	FVector MonsterSpawnLocation = FVector(0.0f, 0.0f, 500.0f); // 스폰 위치 설정
 	SpawnMonsterAtLocation(MonsterSpawnLocation);
-	
+
+
+
 }
 
 TSubclassOf<APawn> UMyProjectGameInstance::FindCharacterClassByName(const FString& CharacterName)

@@ -29,6 +29,7 @@ AEnemy1::AEnemy1()
         UE_LOG(LogTemp, Error, TEXT("Failed to load skeletal mesh."));
     }
     
+    
 	// Constructor에서 애니메이션 로드
 	static ConstructorHelpers::FObjectFinder<UAnimSequence> IdleAnimAsset(TEXT("/Game/Asset/Enemy01/enemy01walk_Anim.enemy01walk_Anim"));
 	if (IdleAnimAsset.Succeeded())
@@ -40,7 +41,7 @@ AEnemy1::AEnemy1()
 	{
 		UE_LOG(LogTemp, Error, TEXT("Failed to load animation from path:/Game/Asset/Enemy01/enemy01walk_Anim.enemy01walk_Anim"));
 	}
-
+    
     
 }
 
@@ -54,7 +55,7 @@ void AEnemy1::BeginPlay()
         UE_LOG(LogTemp, Error, TEXT("Mesh or animation not properly configured."));
         return;
     }
-	PlayIdleAnimation();
+	//PlayIdleAnimation();
     CheckMeshSetup();
 }
 
@@ -65,12 +66,7 @@ void AEnemy1::Tick(float DeltaTime)
     //UpdateAnimation();
 }
 
-// Called to bind functionality to input
-void AEnemy1::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-}
 
 void AEnemy1::PlayIdleAnimation()
 {
