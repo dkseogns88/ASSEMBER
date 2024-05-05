@@ -28,6 +28,7 @@ UMyProjectGameInstance::UMyProjectGameInstance()
 
 	// Directly setting the MonsterClass to the AEnemy1 class
 	MonsterClass = AEnemy1::StaticClass();
+
 }
 
 
@@ -286,7 +287,7 @@ void UMyProjectGameInstance::Init()
 	MonsterClass = AEnemy1::StaticClass(); 
 	
 	//스폰안정화를위해 월드 완전히생성후 텀을두어 몬스터소환
-	GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, this, &UMyProjectGameInstance::SpawnNPC, 5.0f, false);
+	GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, this, &UMyProjectGameInstance::SpawnNPC, 1.0f, false);
 
 
 }
@@ -294,7 +295,7 @@ void UMyProjectGameInstance::Init()
 void UMyProjectGameInstance::SpawnNPC()
 {
 	// 스폰 위치 설정
-	FVector MonsterSpawnLocation = FVector(0.0f, 0.0f, 120.0f);
+	FVector MonsterSpawnLocation = FVector(0.0f, 0.0f, 150.0f);
 	SpawnMonsterAtLocation(MonsterSpawnLocation);
 	UE_LOG(LogTemp, Log, TEXT("NPC Spawned at %s"), *MonsterSpawnLocation.ToString());
 }
