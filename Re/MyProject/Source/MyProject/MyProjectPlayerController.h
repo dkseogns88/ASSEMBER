@@ -6,6 +6,7 @@
 #include "GameFramework/PlayerController.h" 
 #include "Blueprint/UserWidget.h"
 #include "HealthBarWidgets.h"
+#include "AmmoWidget.h"
 #include "MyProjectPlayerController.generated.h"
 
 class UInputMappingContext;
@@ -28,15 +29,13 @@ class MYPROJECT_API AMyProjectPlayerController : public APlayerController
 
 
 public:
+
+
+
+	
 	// ĳ���� ���� �Լ�
 	UFUNCTION(BlueprintCallable, Category = "Character")
 	
-	
-
-	
-
-	
-
 	void RequestServerForCharacterChange(FString CharacterName);
 
 	void RequestServerForAimingChange(bool bIsAiming);
@@ -80,14 +79,29 @@ protected:
 	
 protected:
 
+	AMyProjectPlayerController();
 
 	
-
 	virtual void BeginPlay() override;
-	UPROPERTY(Transient)
-	UHealthBarWidgets* HealthBarWidgets;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI")
+	TSubclassOf<UHealthBarWidgets> HealthBarWidgetClass;
 
+	// Health bar widget instance
+	UPROPERTY()
+	UHealthBarWidgets* HealthBarWidgets;
 	float PlayerHealth = 100.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI")
+	TSubclassOf<UAmmoWidget> AmmoWidgetClass;
+
+	UPROPERTY()
+	UAmmoWidget* AmmoWidget;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ammo")
+	int32 CurrentAmmo;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ammo")
+	int32 MaxAmmo;
 
 	// End Actor interface
 };

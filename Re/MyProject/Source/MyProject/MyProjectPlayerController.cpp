@@ -6,14 +6,30 @@
 #include "EnhancedInputSubsystems.h"
 #include "MyProjectMyPlayer.h"
 #include "MyProjectMyPlayerSida.h"
-#include "HealthBarWidgets.h"
 #include "Components/InputComponent.h"
 #include "MyProject.h"
 #include "Protocol.pb.h"
 
 
 
+AMyProjectPlayerController::AMyProjectPlayerController()
+{
+    // 위젯 블루프린트 클래스 로드
+    static ConstructorHelpers::FClassFinder<UHealthBarWidgets> HealthBarBPClass(TEXT("/Game/MyBP/UI/HealthBarWidgets.HealthBarWidgets_C"));
+    if (HealthBarBPClass.Succeeded())
+    {
+        HealthBarWidgetClass = HealthBarBPClass.Class;
+    }
 
+    static ConstructorHelpers::FClassFinder<UAmmoWidget> AmmoWidgetBPClass(TEXT("/Game/MyBP/UI/AmmoUI.AmmoUI_C"));
+    if (AmmoWidgetBPClass.Succeeded())
+    {
+        AmmoWidgetClass = AmmoWidgetBPClass.Class;
+    }
+
+    MaxAmmo = 6;
+    CurrentAmmo = MaxAmmo;
+}
 
 
 
@@ -37,17 +53,27 @@ void AMyProjectPlayerController::BeginPlay()
     // Create and display the health bar widget
     if (IsLocalController())
     {
-        HealthBarWidgets = CreateWidget<UHealthBarWidgets>(this, UHealthBarWidgets::StaticClass());
+        HealthBarWidgets = CreateWidget<UHealthBarWidgets>(this, HealthBarWidgetClass);
         if (HealthBarWidgets)
         {
             UE_LOG(LogTemp, Log, TEXT("Health bar widget created successfully."));
-            HealthBarWidgets->AddToViewport(1);
-            // Ensuring NativeConstruct is called right after adding to viewport
+            HealthBarWidgets->AddToViewport();
             HealthBarWidgets->NativeConstruct();
             HealthBarWidgets->UpdateHealth(PlayerHealth / 100.0f);
            
         }
+
+        // Create and display AmmoUI
+        AmmoWidget = CreateWidget<UAmmoWidget>(this, AmmoWidgetClass);
+        if (AmmoWidget)
+        {
+            AmmoWidget->AddToViewport();
+            AmmoWidget->UpdateAmmoCount(CurrentAmmo, MaxAmmo);
+        }
+
     }
+
+    
 }
 
 void AMyProjectPlayerController::SetHealth(float NewHealth)

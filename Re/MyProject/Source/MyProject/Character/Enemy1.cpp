@@ -17,44 +17,74 @@ AEnemy1::AEnemy1()
     if (!SkeletalMesh)
     {
         SkeletalMesh = CreateDefaultSubobject<USkeletalMeshComponent> ("SkeletalMeshComponent");
+        SetRootComponent(SkeletalMesh);
     }
     static ConstructorHelpers::FObjectFinder<USkeletalMesh> MeshAsset(TEXT("/Game/Asset/Enemy01/ENEMY01.ENEMY01"));
+   
 
     if (MeshAsset.Succeeded())
     {
         SkeletalMesh->SetSkeletalMesh(MeshAsset.Object);
+        
     }
     else
     {
         UE_LOG(LogTemp, Error, TEXT("Failed to load skeletal mesh."));
     }
-    
-	// Constructor에서 애니메이션 로드
-	static ConstructorHelpers::FObjectFinder<UAnimSequence> IdleAnimAsset(TEXT("/Game/Asset/Enemy01/enemy01walk_Anim.enemy01walk_Anim"));
-	if (IdleAnimAsset.Succeeded())
-	{
-		IdleAnimation = IdleAnimAsset.Object;
-		UE_LOG(LogTemp, Log, TEXT("Idle Animation loaded successfully: %s"), *IdleAnimAsset.Object->GetName());
-	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("Failed to load animation from path:/Game/Asset/Enemy01/enemy01walk_Anim.enemy01walk_Anim"));
-	}
 
+    // Setup collision and visibility
+    SkeletalMesh->SetRelativeLocation(FVector(0.0f, 0.0f, -160.0f));
+    SkeletalMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+    SkeletalMesh->SetCollisionObjectType(ECollisionChannel::ECC_Pawn);
+    SkeletalMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
+    SkeletalMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
+    SkeletalMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Ignore);
+    SkeletalMesh->SetVisibility(true, true);
+    
+    // Setup CapsuleComponent for collision
+    UCapsuleComponent* CapsuleComp = GetCapsuleComponent();
+    CapsuleComp->InitCapsuleSize(200.0f, 100.0f);
+    CapsuleComp->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+    CapsuleComp->SetCollisionObjectType(ECollisionChannel::ECC_Pawn);
+    CapsuleComp->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
+    CapsuleComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
+    CapsuleComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Ignore);
+	// Constructor에서 애니메이션 로드
+ 
+    static ConstructorHelpers::FObjectFinder<UAnimBlueprintGeneratedClass> AnimBP(TEXT("AnimBlueprintGeneratedClass'/Game/AnimationBlueprint/Enemy1.Enemy1_C'"));
+    if (AnimBP.Succeeded())
+    {
+        SkeletalMesh->SetAnimInstanceClass(AnimBP.Object);
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("Failed to load animation blueprint class."));
+    }
+   
     
 }
 
+void AEnemy1::CheckAndTeleport()
+{
+    FVector CurrentLocation = GetActorLocation();
+    if (CurrentLocation.Z < -300.0f)
+    {
+        FVector NewLocation(0.0f, 0.0f, 300.0f);
+        SetActorLocation(NewLocation);
+    }
+}
 // Called when the game starts or when spawned
 void AEnemy1::BeginPlay()
 {
 	Super::BeginPlay();
+    // 강제로 메쉬의 가시성을 활성화
+    GetMesh()->SetVisibility(true);
 
-    if (!GetMesh() || !IdleAnimation)
-    {
-        UE_LOG(LogTemp, Error, TEXT("Mesh or animation not properly configured."));
-        return;
-    }
-	PlayIdleAnimation();
+    // 물리 및 충돌 설정 확인
+   
+    GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+    GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+    
     CheckMeshSetup();
 }
 
@@ -62,23 +92,12 @@ void AEnemy1::BeginPlay()
 void AEnemy1::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+    CheckAndTeleport();
     //UpdateAnimation();
 }
 
-// Called to bind functionality to input
-void AEnemy1::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-}
 
-void AEnemy1::PlayIdleAnimation()
-{
-	if (IdleAnimation && GetMesh())
-	{
-		GetMesh()->PlayAnimation(IdleAnimation, true);
-	}
-}
 
 void AEnemy1::CheckMeshSetup()
 {

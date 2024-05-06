@@ -22,11 +22,13 @@
 
 
 
-
 UMyProjectGameInstance::UMyProjectGameInstance()
 {
+
+
 	// Directly setting the MonsterClass to the AEnemy1 class
 	MonsterClass = AEnemy1::StaticClass();
+
 }
 
 
@@ -253,7 +255,8 @@ void UMyProjectGameInstance::HandleZoom(const Protocol::S_ZOOM& ZoomPkt)
 void UMyProjectGameInstance::SpawnMonsterAtLocation(const FVector& Location)
 {
 	FActorSpawnParameters SpawnParams;
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+	
 
 	// 스폰할 몬스터의 클래스를 지정
 	AEnemy1* SpawnedMonster = GetWorld()->SpawnActor<AEnemy1>(MonsterClass, Location, FRotator::ZeroRotator, SpawnParams);
@@ -261,45 +264,8 @@ void UMyProjectGameInstance::SpawnMonsterAtLocation(const FVector& Location)
 	{
 		UE_LOG(LogTemp, Log, TEXT("Monster spawned successfully at %s"), *Location.ToString());
 		SpawnedMonsters.Add(SpawnedMonster);  // 스폰된 몬스터를 배열에 추가
-		SpawnedMonster->SetActorScale3D(FVector(0.5f, 0.5f, 0.5f));
 		SpawnedMonster->SetActorEnableCollision(true);
 
-		if (SpawnedMonster->GetMesh()->GetCollisionEnabled() == ECollisionEnabled::NoCollision)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Collision is disabled for the monster mesh."));
-			SpawnedMonster->GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-		}
-
-		SpawnedMonster->SetActorHiddenInGame(false);
-
-		if (!SpawnedMonster->GetMesh()->IsVisible())
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Monster mesh is NOT visible."));
-			SpawnedMonster->GetMesh()->SetVisibility(true, true);
-		}
-
-		// Draw a debug sphere at the spawn location
-		if (SpawnedMonster->GetMesh())
-		{
-			FBoxSphereBounds Bounds = SpawnedMonster->GetMesh()->CalcBounds(SpawnedMonster->GetMesh()->GetComponentTransform());
-			DrawDebugBox(GetWorld(), Bounds.Origin, Bounds.BoxExtent, FQuat::Identity, FColor::Red, true, 10.0f, 0, 2);
-		}
-
-		UE_LOG(LogTemp, Log, TEXT("Spawned Monster Location: %s, Scale: %s"),
-			*SpawnedMonster->GetActorLocation().ToString(),
-			*SpawnedMonster->GetActorScale3D().ToString());
-
-		
-
-		// Additional check for mesh visibility
-		if (SpawnedMonster->GetMesh()->IsVisible())
-		{
-			UE_LOG(LogTemp, Log, TEXT("Monster mesh is visible."));
-		}
-		else
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Monster mesh is NOT visible."));
-		}
 	}
 	else
 	{
@@ -313,17 +279,25 @@ void UMyProjectGameInstance::Init()
 {
 	Super::Init();
 
+	
 	// 캐릭터 클래스 매핑 초기화
 	CharacterBlueprintPaths.Add("Rinty", "Blueprint'/Game/MyBP/BP_Class/BP_MyPlayer.BP_MyPlayer_C'");
 	CharacterBlueprintPaths.Add("Sida", "Blueprint'/Game/MyBP/BP_Class/BP_MyPlayer_sida.BP_MyPlayer_sida_C'");
 
-
-
-
-
-	FVector MonsterSpawnLocation = FVector(-2420.0f, -160.0f, -190.0f);  
-	SpawnMonsterAtLocation(MonsterSpawnLocation);
+	MonsterClass = AEnemy1::StaticClass(); 
 	
+	//스폰안정화를위해 월드 완전히생성후 텀을두어 몬스터소환
+	GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, this, &UMyProjectGameInstance::SpawnNPC, 1.0f, false);
+
+
+}
+
+void UMyProjectGameInstance::SpawnNPC()
+{
+	// 스폰 위치 설정
+	FVector MonsterSpawnLocation = FVector(0.0f, 0.0f, 150.0f);
+	SpawnMonsterAtLocation(MonsterSpawnLocation);
+	UE_LOG(LogTemp, Log, TEXT("NPC Spawned at %s"), *MonsterSpawnLocation.ToString());
 }
 
 TSubclassOf<APawn> UMyProjectGameInstance::FindCharacterClassByName(const FString& CharacterName)
