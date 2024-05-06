@@ -113,3 +113,13 @@ bool Handle_S_ZOOM(PacketSessionRef& session, Protocol::S_ZOOM& pkt)
 
 	return true;
 }
+
+bool Handle_S_SPAWN_MONSTER(PacketSessionRef& session, Protocol::S_SPAWN_MONSTER& pkt)
+{
+	if (auto* GameInstance = Cast<UMyProjectGameInstance>(GWorld->GetGameInstance()))
+	{
+		GameInstance->HandleMonsterSpawn(pkt);
+	}
+
+	return true;
+}

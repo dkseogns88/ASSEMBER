@@ -28,3 +28,9 @@ enum MoveState
 	MOVE_STATE_RUN	= 2;
 	MOVE_STATE_JUMP	= 3;
 }
+
+enum MonsterType
+{
+	MONSTER_TYPE_NONE	= 0;
+	MONSTER_TYPE_TEST	= 1;
+}

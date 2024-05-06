@@ -4,6 +4,9 @@ package Protocol;
 import "Enum.proto";
 import "Struct.proto";
 
+// C_ : 클라에서 서버한테 보내기
+// S_ : 서버에서 클라한테 보내기
+
 message C_LOGIN
 {
 	// 나중에 아이디, 비번 추가
@@ -96,4 +99,9 @@ message C_ZOOM
 message S_ZOOM
 {
 	ZoomInfo info = 1;
+}
+
+message S_SPAWN_MONSTER
+{
+	repeated ObjectInfo monsters = 1;
 }

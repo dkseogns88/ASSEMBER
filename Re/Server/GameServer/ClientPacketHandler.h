@@ -28,6 +28,7 @@ enum : uint16
 	PKT_S_CHAT = 1015,
 	PKT_C_ZOOM = 1016,
 	PKT_S_ZOOM = 1017,
+	PKT_S_SPAWN_MONSTER = 1018,
 };
 
 // Custom Handlers
@@ -73,6 +74,7 @@ public:
 	static SendBufferRef MakeSendBuffer(Protocol::S_SELECT& pkt) { return MakeSendBuffer(pkt, PKT_S_SELECT); }
 	static SendBufferRef MakeSendBuffer(Protocol::S_CHAT& pkt) { return MakeSendBuffer(pkt, PKT_S_CHAT); }
 	static SendBufferRef MakeSendBuffer(Protocol::S_ZOOM& pkt) { return MakeSendBuffer(pkt, PKT_S_ZOOM); }
+	static SendBufferRef MakeSendBuffer(Protocol::S_SPAWN_MONSTER& pkt) { return MakeSendBuffer(pkt, PKT_S_SPAWN_MONSTER); }
 
 private:
 	template<typename PacketType, typename ProcessFunc>

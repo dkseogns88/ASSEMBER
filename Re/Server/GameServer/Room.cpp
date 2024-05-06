@@ -2,6 +2,8 @@
 #include "Room.h"
 #include "Player.h"
 #include "GameSession.h"
+#include "Monster.h"
+#include "ObjectUtils.h"
 
 RoomRef GRoom = make_shared<Room>();
 
@@ -17,7 +19,7 @@ Room::~Room()
 
 bool Room::HandleEnterPlayer(PlayerRef player)
 {
-	bool success = AddObject(player);
+	bool success = AddPlayer(player);
 
 	// 랜덤 위치
 	player->posInfo->set_x(Utils::GetRandom(0.f, 500.f));
@@ -54,7 +56,7 @@ bool Room::HandleEnterPlayer(PlayerRef player)
 	{
 		Protocol::S_SPAWN spawnPkt;
 
-		for (auto& item : _objects)
+		for (auto& item : _players)
 		{
 			if (item.second->IsPlayer() == false)
 				continue;
@@ -68,6 +70,24 @@ bool Room::HandleEnterPlayer(PlayerRef player)
 			session->Send(sendBuffer);
 	}
 
+	// 입장한 플레이어 모두에게 기존 몬스터들을 알리자.
+	{
+		Protocol::S_SPAWN_MONSTER spawnKkt;
+
+		for (auto& item : _monsters)
+		{
+			Protocol::ObjectInfo* objectInfo = spawnKkt.add_monsters();
+			objectInfo->CopyFrom(*item.second->objectInfo);
+		}
+
+	}
+
+
+	// 몬스터 생성 관련
+	{
+		DoTimer(1000, &Room::MonserSpawn);
+	}
+
 	return success;
 }
 
@@ -78,7 +98,7 @@ bool Room::HandleLeavePlayer(PlayerRef player)
 
 
 	const uint64 objectId = player->objectInfo->object_id();
-	bool success = RemoveObject(objectId);
+	bool success = RemovePlayer(objectId);
 
 	// 퇴장 사실을 퇴장하는 플레이어에게 알린다.
 	{
@@ -119,7 +139,7 @@ void Room::HandleMove(Protocol::C_MOVE pkt)
 			Protocol::PosInfo* info = movePkt.mutable_info();
 			info->CopyFrom(pkt.info());
 		}
-		
+
 		SendBufferRef sendBuffer = ClientPacketHandler::MakeSendBuffer(movePkt);
 		Broadcast(sendBuffer);
 	}
@@ -145,7 +165,6 @@ void Room::HandleJump(Protocol::C_JUMP pkt)
 		SendBufferRef sendBuffer = ClientPacketHandler::MakeSendBuffer(jumpPkt);
 		Broadcast(sendBuffer);
 	}
-
 }
 
 void Room::HandleZoom(Protocol::C_ZOOM pkt)
@@ -166,6 +185,7 @@ void Room::HandleZoom(Protocol::C_ZOOM pkt)
 		SendBufferRef sendBuffer = ClientPacketHandler::MakeSendBuffer(zoomPkt);
 		Broadcast(sendBuffer);
 	}
+
 }
 
 void Room::HandleSelect(Protocol::C_SELECT pkt)
@@ -180,8 +200,33 @@ void Room::HandleSelect(Protocol::C_SELECT pkt)
 		SendBufferRef sendBuffer = ClientPacketHandler::MakeSendBuffer(selectPkt);
 		Broadcast(sendBuffer);
 	}
-	
+
 }
+
+void Room::MonserSpawn()
+{
+
+	MonsterRef monster = ObjectUtils::CreateMonster();
+	monster->posInfo->set_x(Utils::GetRandom(0.f, 500.f));
+	monster->posInfo->set_y(Utils::GetRandom(0.f, 500.f));
+	monster->posInfo->set_z(Utils::GetRandom(100.f, 100.f));
+	monster->posInfo->set_yaw(Utils::GetRandom(0.f, 500.f));
+
+	AddMonster(monster);
+
+
+	Protocol::S_SPAWN_MONSTER spawnKkt;
+	Protocol::ObjectInfo* objectInfo = spawnKkt.add_monsters();
+	objectInfo->CopyFrom(*monster->objectInfo);
+
+	SendBufferRef sendBuffer = ClientPacketHandler::MakeSendBuffer(spawnKkt);
+	Broadcast(sendBuffer);
+
+	{
+		DoTimer(1000, &Room::MonserSpawn);
+	}
+}
+
 
 RoomRef Room::GetRoomRef()
 {
@@ -190,13 +235,36 @@ RoomRef Room::GetRoomRef()
 
 bool Room::AddObject(ObjectRef object)
 {
-	// 있는지 확인
-	if(_objects.find(object->objectInfo->object_id()) != _objects.end())
+	if (_objects.find(object->objectInfo->object_id()) != _objects.end())
 		return false;
 
 	_objects.insert(make_pair(object->objectInfo->object_id(), object));
 
 	object->room.store(GetRoomRef());
+
+	return true;
+}
+
+bool Room::AddPlayer(ObjectRef object)
+{
+	if (AddObject(object) == false)
+		return false;
+
+	if (_players.find(object->objectInfo->object_id()) != _players.end())
+		return false;
+	_players.insert(make_pair(object->objectInfo->object_id(), object));
+
+	return true;
+}
+
+bool Room::AddMonster(ObjectRef object)
+{
+	if (AddObject(object) == false)
+		return false;
+
+	if (_monsters.find(object->objectInfo->object_id()) != _monsters.end())
+		return false;
+	_monsters.insert(make_pair(object->objectInfo->object_id(), object));
 
 	return true;
 }
@@ -214,9 +282,41 @@ bool Room::RemoveObject(uint64 objectId)
 	return true;
 }
 
+bool Room::RemovePlayer(uint64 objectId)
+{
+	if (RemoveObject(objectId) == false)
+		return false;
+
+	if (_players.find(objectId) == _players.end())
+		return false;
+
+	ObjectRef object = _players[objectId];
+	object->room.store(weak_ptr<Room>());
+
+	_players.erase(objectId);
+
+	return true;
+}
+
+bool Room::RemoveMonster(uint64 objectId)
+{
+	if (RemoveObject(objectId) == false)
+		return false;
+
+	if (_monsters.find(objectId) == _monsters.end())
+		return false;
+
+	ObjectRef object = _monsters[objectId];
+	object->room.store(weak_ptr<Room>());
+
+	_monsters.erase(objectId);
+
+	return true;
+}
+
 void Room::Broadcast(SendBufferRef sendBuffer, uint64 exceptId)
 {
-	for (auto& item : _objects)
+	for (auto& item : _players)
 	{
 		PlayerRef player = dynamic_pointer_cast<Player>(item.second);
 		if (player == nullptr)

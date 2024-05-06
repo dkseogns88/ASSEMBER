@@ -39,6 +39,9 @@ public:
 	void HandleMove(const Protocol::S_MOVE& MovePkt);
 	void HandleJump(const Protocol::S_JUMP& JumpPkt);
 	void HandleZoom(const Protocol::S_ZOOM& ZommPkt);
+
+	void HandleMonsterSpawn(const Protocol::S_SPAWN_MONSTER& SpawnPkt);
+	void HandleMonsterSpawn(const Protocol::ObjectInfo& MonsterInfo);
 	
 	void HandleChange(const FString& CharacterName);
 	// 캐릭터 클래스 찾기 함수

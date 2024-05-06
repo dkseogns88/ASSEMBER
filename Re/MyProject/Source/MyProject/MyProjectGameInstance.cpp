@@ -252,6 +252,28 @@ void UMyProjectGameInstance::HandleZoom(const Protocol::S_ZOOM& ZoomPkt)
 	}
 }
 
+void UMyProjectGameInstance::HandleMonsterSpawn(const Protocol::S_SPAWN_MONSTER& SpawnPkt)
+{
+	for (auto& monster : SpawnPkt.monsters())
+	{
+		HandleMonsterSpawn(monster);
+	}
+
+}
+
+void UMyProjectGameInstance::HandleMonsterSpawn(const Protocol::ObjectInfo& MonsterInfo)
+{
+	if (Socket == nullptr || GameServerSession == nullptr)
+		return;
+
+	auto* World = GetWorld();
+	if (World == nullptr)
+		return;
+
+	FVector Location(MonsterInfo.pos_info().x(), MonsterInfo.pos_info().y(), MonsterInfo.pos_info().z());
+	SpawnMonsterAtLocation(Location);
+}
+
 void UMyProjectGameInstance::SpawnMonsterAtLocation(const FVector& Location)
 {
 	FActorSpawnParameters SpawnParams;
