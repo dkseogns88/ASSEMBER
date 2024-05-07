@@ -6,6 +6,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "MyProjectMyPlayer.h"
 #include "MyProjectMyPlayerSida.h"
+#include "DrawDebugHelpers.h"
 #include "Components/InputComponent.h"
 #include "MyProject.h"
 #include "Protocol.pb.h"
@@ -154,6 +155,8 @@ void AMyProjectPlayerController::SetupInputComponent()
     InputComponent->BindAction("CharacterSelect", IE_Pressed, this, &AMyProjectPlayerController::ToggleCharacterSelectUI);
     InputComponent->BindAction("Aim", IE_Pressed, this, &AMyProjectPlayerController::OnAimPressed);
     InputComponent->BindAction("Aim", IE_Released, this, &AMyProjectPlayerController::OnAimReleased);
+
+    InputComponent->BindAction("Fire", IE_Pressed, this, &AMyProjectPlayerController::AttemptToFireWeapon);
     
 }
 
@@ -168,6 +171,47 @@ void AMyProjectPlayerController::OnAimPressed()
 void AMyProjectPlayerController::OnAimReleased()
 {
     RequestServerForAimingChange(false);
+}
+
+
+void AMyProjectPlayerController::FireWeapon()
+{
+    
+    FVector CameraLoc;
+    FRotator CameraRot;
+    GetPlayerViewPoint(CameraLoc, CameraRot); // 플레이어의 카메라 위치와 회전을 가져옴
+
+
+    FVector Start = CameraLoc + CameraRot.Vector() * 400;
+
+    FVector End = CameraLoc + CameraRot.Vector() * 10000; // 히트스캔 거리 설정
+
+    FHitResult HitResult;
+    FCollisionQueryParams Params;
+    Params.AddIgnoredActor(GetPawn()); // 자기 자신은 무시
+
+    if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, Params))
+    {
+        if (HitResult.GetActor()) // 어떤 액터와 충돌했는지 확인
+        {
+            UE_LOG(LogTemp, Log, TEXT("Hit: %s"), *HitResult.GetActor()->GetName());
+
+            // TODO: 몬스터 타입 확인 및 데미지 처리
+        }
+    }
+
+    // 디버깅용 라인 그리기 (에디터에서만 보임)
+    DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 1.0f, 0, 1.0f);
+}
+
+
+void AMyProjectPlayerController::AttemptToFireWeapon()
+{
+    AMyProjectMyPlayer* MyCharacter = Cast<AMyProjectMyPlayer>(GetPawn());
+    if (MyCharacter && MyCharacter->IsAiming())
+    {
+        FireWeapon();
+    }
 }
 
 void AMyProjectPlayerController::ToggleCharacterSelectUI()

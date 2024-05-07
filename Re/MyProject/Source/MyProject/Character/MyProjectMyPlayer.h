@@ -14,7 +14,10 @@ class MYPROJECT_API AMyProjectMyPlayer : public AMyProjectPlayer
 	GENERATED_BODY()
 
 public:
+	
 	AMyProjectMyPlayer();
+
+	bool IsAiming() const { return bIsAiming; }
 	void SetAiming(bool bNewAiming);
 
 protected:
@@ -93,7 +96,7 @@ protected:
 
 	// 캐릭터의 조준 상태
 	UPROPERTY(ReplicatedUsing = OnRep_Aimingchanged)
-	bool bIsAiming;
+	bool bIsAiming = false;
 
 	// 조준 상태가 변경될 때 호출될 함수
 	UFUNCTION()

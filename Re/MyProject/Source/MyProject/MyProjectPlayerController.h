@@ -40,6 +40,8 @@ public:
 
 	void RequestServerForAimingChange(bool bIsAiming);
 
+	void FireWeapon();
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
 	TSubclassOf<UUserWidget> AimUIClass;
 	
@@ -48,6 +50,7 @@ public:
 	
 
 	bool bIsUIActive = false;
+	void AttemptToFireWeapon();
 	void ToggleCharacterSelectUI();
 private:
 	// UI가 현재 활성화되어 있는지 여부를 나타내는 변수
