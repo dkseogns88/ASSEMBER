@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h" 
+#include "\Program Files\Epic Games\UE_5.3\Engine\Source\Runtime\Engine\Classes\Sound\SoundBase.h"
 #include "Blueprint/UserWidget.h"
 #include "HealthBarWidgets.h"
 #include "AmmoWidget.h"
@@ -48,6 +49,8 @@ public:
 	UPROPERTY()
 	UUserWidget* AimUIInstance;
 	
+	UFUNCTION()
+	void ReloadWeapon();
 
 	bool bIsUIActive = false;
 	void AttemptToFireWeapon();
@@ -79,6 +82,14 @@ protected:
 	TSubclassOf<UUserWidget> CharacterSelectWidgetClass;
 
 	void SetHealth(float NewHealth);
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sound")
+	USoundBase* FireSound;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sound")
+	USoundBase* ReloadSound;
+
 	
 protected:
 

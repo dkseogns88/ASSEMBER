@@ -30,6 +30,19 @@ AMyProjectPlayerController::AMyProjectPlayerController()
 
     MaxAmmo = 6;
     CurrentAmmo = MaxAmmo;
+
+    static ConstructorHelpers::FObjectFinder<USoundBase> FireSoundObj(TEXT("/Game/Sound/pistol.pistol"));
+    if (FireSoundObj.Succeeded())
+    {
+        FireSound = FireSoundObj.Object;
+    }
+
+    static ConstructorHelpers::FObjectFinder<USoundBase> ReloadSoundObj(TEXT("/Game/Sound/pistolroad.pistolroad"));
+    if (ReloadSoundObj.Succeeded())
+    {
+        ReloadSound = ReloadSoundObj.Object;
+    }
+
 }
 
 
@@ -157,6 +170,8 @@ void AMyProjectPlayerController::SetupInputComponent()
     InputComponent->BindAction("Aim", IE_Released, this, &AMyProjectPlayerController::OnAimReleased);
 
     InputComponent->BindAction("Fire", IE_Pressed, this, &AMyProjectPlayerController::AttemptToFireWeapon);
+
+    InputComponent->BindAction("Reload", IE_Pressed, this, &AMyProjectPlayerController::ReloadWeapon);
     
 }
 
@@ -190,7 +205,7 @@ void AMyProjectPlayerController::FireWeapon()
     FCollisionQueryParams Params;
     Params.AddIgnoredActor(GetPawn()); // 자기 자신은 무시
 
-    if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, Params))
+    if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Pawn, Params))
     {
         if (HitResult.GetActor()) // 어떤 액터와 충돌했는지 확인
         {
@@ -202,6 +217,16 @@ void AMyProjectPlayerController::FireWeapon()
 
     // 디버깅용 라인 그리기 (에디터에서만 보임)
     DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 1.0f, 0, 1.0f);
+
+    if (FireSound)
+    {
+        
+        UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetPawn()->GetActorLocation());
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("Fail to load Firesound"));
+    }
 }
 
 
@@ -210,9 +235,36 @@ void AMyProjectPlayerController::AttemptToFireWeapon()
     AMyProjectMyPlayer* MyCharacter = Cast<AMyProjectMyPlayer>(GetPawn());
     if (MyCharacter && MyCharacter->IsAiming())
     {
-        FireWeapon();
+        if (CurrentAmmo > 0)
+        {
+            FireWeapon();
+            CurrentAmmo--;
+            if (AmmoWidget)
+            {
+                AmmoWidget->UpdateAmmoCount(CurrentAmmo, MaxAmmo);
+            }
+        }
+        else
+        {
+            UE_LOG(LogTemp, Warning, TEXT("No ammo left to fire."));
+        }
     }
 }
+
+void AMyProjectPlayerController::ReloadWeapon()
+{
+    CurrentAmmo = MaxAmmo;
+    if (AmmoWidget)
+    {
+        AmmoWidget->UpdateAmmoCount(CurrentAmmo, MaxAmmo);
+    }
+
+    if (ReloadSound)
+    {
+        UGameplayStatics::PlaySoundAtLocation(this, ReloadSound, GetPawn()->GetActorLocation());
+    }
+}
+
 
 void AMyProjectPlayerController::ToggleCharacterSelectUI()
 {
