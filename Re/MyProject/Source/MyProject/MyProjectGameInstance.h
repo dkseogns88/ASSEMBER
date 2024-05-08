@@ -4,8 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
+#include "\Program Files\Epic Games\UE_5.3\Engine\Source\Runtime\Engine\Classes\GameFramework\Actor.h"
 #include "MyProject.h"
 #include "Character/Enemy1.h"
+#include "Character/Enemy2.h"
 #include "MyProjectGameInstance.generated.h"
 
 
@@ -14,6 +16,7 @@ class AMyProjectPlayer;
 UCLASS()
 class MYPROJECT_API UMyProjectGameInstance : public UGameInstance
 {
+
 	GENERATED_BODY()
 	
 public:
