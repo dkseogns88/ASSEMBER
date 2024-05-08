@@ -26,8 +26,7 @@ UMyProjectGameInstance::UMyProjectGameInstance()
 {
 
 
-	// Directly setting the MonsterClass to the AEnemy1 class
-	MonsterClass = AEnemy1::StaticClass();
+	
 
 }
 
@@ -271,17 +270,19 @@ void UMyProjectGameInstance::HandleMonsterSpawn(const Protocol::ObjectInfo& Mons
 		return;
 
 	FVector Location(MonsterInfo.pos_info().x(), MonsterInfo.pos_info().y(), MonsterInfo.pos_info().z());
-	SpawnMonsterAtLocation(Location);
+
+	//이부분 수정해야함,
+	//SpawnMonsterAtLocation(Location);
 }
 
-void UMyProjectGameInstance::SpawnMonsterAtLocation(const FVector& Location)
+void UMyProjectGameInstance::SpawnMonsterAtLocation(UClass* MonsterClass, const FVector& Location)
 {
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 	
 
 	// 스폰할 몬스터의 클래스를 지정
-	AEnemy1* SpawnedMonster = GetWorld()->SpawnActor<AEnemy1>(MonsterClass, Location, FRotator::ZeroRotator, SpawnParams);
+	AActor* SpawnedMonster = GetWorld()->SpawnActor<AActor>(MonsterClass, Location, FRotator::ZeroRotator, SpawnParams);
 	if (SpawnedMonster)
 	{
 		UE_LOG(LogTemp, Log, TEXT("Monster spawned successfully at %s"), *Location.ToString());
@@ -306,7 +307,8 @@ void UMyProjectGameInstance::Init()
 	CharacterBlueprintPaths.Add("Rinty", "Blueprint'/Game/MyBP/BP_Class/BP_MyPlayer.BP_MyPlayer_C'");
 	CharacterBlueprintPaths.Add("Sida", "Blueprint'/Game/MyBP/BP_Class/BP_MyPlayer_sida.BP_MyPlayer_sida_C'");
 
-	MonsterClass = AEnemy1::StaticClass(); 
+	MonsterClass1 = AEnemy1::StaticClass();
+	MonsterClass2 = AEnemy2::StaticClass();
 	
 	//스폰안정화를위해 월드 완전히생성후 텀을두어 몬스터소환
 	GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, this, &UMyProjectGameInstance::SpawnNPC, 1.0f, false);
@@ -316,10 +318,16 @@ void UMyProjectGameInstance::Init()
 
 void UMyProjectGameInstance::SpawnNPC()
 {
-	// 스폰 위치 설정
-	FVector MonsterSpawnLocation = FVector(0.0f, 0.0f, 150.0f);
-	SpawnMonsterAtLocation(MonsterSpawnLocation);
-	UE_LOG(LogTemp, Log, TEXT("NPC Spawned at %s"), *MonsterSpawnLocation.ToString());
+	// AEnemy1 스폰 위치 설정
+	FVector MonsterSpawnLocation1 = FVector(0.0f, 0.0f, 150.0f);
+	SpawnMonsterAtLocation(MonsterClass1, MonsterSpawnLocation1);
+	UE_LOG(LogTemp, Log, TEXT("AEnemy1 Spawned at %s"), *MonsterSpawnLocation1.ToString());
+
+	// AEnemy2 스폰 위치 설정
+	FVector MonsterSpawnLocation2 = FVector(200.0f, 200.0f, 150.0f);
+	SpawnMonsterAtLocation(MonsterClass2, MonsterSpawnLocation2);
+	UE_LOG(LogTemp, Log, TEXT("AEnemy2 Spawned at %s"), *MonsterSpawnLocation2.ToString());
+
 }
 
 TSubclassOf<APawn> UMyProjectGameInstance::FindCharacterClassByName(const FString& CharacterName)

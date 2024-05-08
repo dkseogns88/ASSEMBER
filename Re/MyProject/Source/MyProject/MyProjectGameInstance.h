@@ -57,7 +57,7 @@ public:
 	// 초기화 함수
 	virtual void Init() override;
 	UMyProjectGameInstance();
-	void SpawnMonsterAtLocation(const FVector& Location);
+	void SpawnMonsterAtLocation(UClass* MonsterClass, const FVector& Location);
 
 private:
 	// 캐릭터 이름과 클래스를 매핑하는 맵
@@ -77,10 +77,15 @@ public:
 	TSubclassOf<AMyProjectPlayer> OtherPlayerClass;
 
 	// 몬스터 클래스 참조
-	TSubclassOf<AEnemy1> MonsterClass;
+	UPROPERTY()
+	UClass* MonsterClass1;
+
+	UPROPERTY()
+	UClass* MonsterClass2;
 
 	// 스폰된 몬스터를 관리하기 위한 컨테이너
-	TArray<AEnemy1*> SpawnedMonsters;
+	UPROPERTY()
+	TArray<AActor*> SpawnedMonsters;
 
 	AMyProjectPlayer* MyPlayer;
 	TMap<uint64, AMyProjectPlayer*> Players;
