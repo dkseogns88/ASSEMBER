@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Animation/AnimSequence.h"
-#include "Components/CapsuleComponent.h"
+#include "Components/BoxComponent.h"
 #include "Enemy1.generated.h"
 
 UCLASS()
@@ -22,6 +22,10 @@ public:
 	// Sets default values for this character's properties
 	AEnemy1();
 	void UpdateAnimation();
+
+	// Box Component for collision
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	UBoxComponent* BoxComponent;
 
 protected:
 	// Called when the game starts or when spawned

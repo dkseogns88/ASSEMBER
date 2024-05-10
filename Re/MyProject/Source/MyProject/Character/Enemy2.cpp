@@ -41,14 +41,18 @@ AEnemy2::AEnemy2()
     SkeletalMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Ignore);
     SkeletalMesh->SetVisibility(true, true);
 
-    // Setup CapsuleComponent for collision
-    UCapsuleComponent* CapsuleComp = GetCapsuleComponent();
-    CapsuleComp->InitCapsuleSize(200.0f, 100.0f);
-    CapsuleComp->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-    CapsuleComp->SetCollisionObjectType(ECollisionChannel::ECC_Pawn);
-    CapsuleComp->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
-    CapsuleComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
-    CapsuleComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Ignore);
+    // Create and initialize the box component for collision
+    BoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComponent"));
+    BoxComponent->SetupAttachment(RootComponent);
+    BoxComponent->SetBoxExtent(FVector(50.0f, 50.0f, 200.0f));  // Adjust the size as necessary
+    BoxComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+    BoxComponent->SetCollisionObjectType(ECollisionChannel::ECC_Pawn);
+    BoxComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
+    BoxComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
+    BoxComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Ignore);
+
+    // Set the relative location of the box component if necessary
+    BoxComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
     // Constructor에서 애니메이션 로드
 
     static ConstructorHelpers::FObjectFinder<UAnimBlueprintGeneratedClass> AnimBP(TEXT("AnimBlueprintGeneratedClass'/Game/AnimationBlueprint/Enemy2.Enemy2_C'"));
@@ -83,7 +87,7 @@ void AEnemy2::BeginPlay()
     // 물리 및 충돌 설정 확인
 
     GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-    GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+   
 
     CheckMeshSetup();
 }
