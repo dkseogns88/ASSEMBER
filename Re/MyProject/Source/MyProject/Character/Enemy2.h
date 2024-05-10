@@ -24,6 +24,9 @@ public:
 	AEnemy2();
 	void UpdateAnimation();
 
+	// Function to get the box component's corner points
+	TArray<FVector> GetBoxCornerPoints() const;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

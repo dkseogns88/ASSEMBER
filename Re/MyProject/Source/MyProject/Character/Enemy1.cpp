@@ -34,6 +34,7 @@ AEnemy1::AEnemy1()
 
     // Setup collision and visibility
     SkeletalMesh->SetRelativeLocation(FVector(0.0f, 0.0f, -160.0f));
+    SkeletalMesh->SetRelativeScale3D(FVector(0.5f, 0.5f, 0.5f));
     SkeletalMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
     SkeletalMesh->SetCollisionObjectType(ECollisionChannel::ECC_Pawn);
     SkeletalMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
@@ -45,7 +46,7 @@ AEnemy1::AEnemy1()
     // Create and initialize the box component for collision
     BoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComponent"));
     BoxComponent->SetupAttachment(RootComponent);
-    BoxComponent->SetBoxExtent(FVector(50.0f, 50.0f, 200.0f));  // Adjust the size as necessary
+    BoxComponent->SetBoxExtent(FVector(25.0f, 25.0f, 100.0f));  // Adjust the size as necessary
     BoxComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
     BoxComponent->SetCollisionObjectType(ECollisionChannel::ECC_Pawn);
     BoxComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
@@ -53,7 +54,7 @@ AEnemy1::AEnemy1()
     BoxComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Ignore);
 
     // Set the relative location of the box component if necessary
-    BoxComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 20.0f));
+    BoxComponent->SetRelativeLocation(FVector(0.0f, 0.0f, -50.0f));
 	// Constructor에서 애니메이션 로드
  
     static ConstructorHelpers::FObjectFinder<UAnimBlueprintGeneratedClass> AnimBP(TEXT("AnimBlueprintGeneratedClass'/Game/AnimationBlueprint/Enemy1.Enemy1_C'"));
@@ -97,11 +98,42 @@ void AEnemy1::BeginPlay()
 void AEnemy1::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+    TArray<FVector> CornerPoints = GetBoxCornerPoints();
+
+    for (const FVector& Point : CornerPoints)
+    {
+        DrawDebugSphere(GetWorld(), Point, 5.0f, 12, FColor::Green, false, -1.0f);
+        UE_LOG(LogTemp, Log, TEXT("Enemy 1 Corner Point: %s"), *Point.ToString());
+    }
     CheckAndTeleport();
     //UpdateAnimation();
 }
 
+TArray<FVector> AEnemy1::GetBoxCornerPoints() const
+{
+    TArray<FVector> Points;
+    FVector Extent = BoxComponent->GetScaledBoxExtent();
+    FVector Origin = BoxComponent->GetComponentLocation();
 
+    // Calculate the corner points
+    FVector BoxPoints[] = {
+        FVector(Extent.X, Extent.Y, Extent.Z),
+        FVector(Extent.X, Extent.Y, -Extent.Z),
+        FVector(Extent.X, -Extent.Y, Extent.Z),
+        FVector(Extent.X, -Extent.Y, -Extent.Z),
+        FVector(-Extent.X, Extent.Y, Extent.Z),
+        FVector(-Extent.X, Extent.Y, -Extent.Z),
+        FVector(-Extent.X, -Extent.Y, Extent.Z),
+        FVector(-Extent.X, -Extent.Y, -Extent.Z)
+    };
+
+    for (const FVector& Point : BoxPoints)
+    {
+        Points.Add(Origin + Point);
+    }
+
+    return Points;
+}
 
 
 void AEnemy1::CheckMeshSetup()

@@ -23,6 +23,9 @@ public:
 	AEnemy1();
 	void UpdateAnimation();
 
+	// Function to get the box component's corner points
+	TArray<FVector> GetBoxCornerPoints() const;
+
 	// Box Component for collision
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	UBoxComponent* BoxComponent;
