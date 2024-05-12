@@ -26,6 +26,12 @@ public:
 	// Function to get the box component's corner points
 	TArray<FVector> GetBoxCornerPoints() const;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enemy Info")
+	FString EnemyName;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enemy Info")
+	float Health;
+
 	// Box Component for collision
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	UBoxComponent* BoxComponent;

@@ -11,7 +11,8 @@ AEnemy1::AEnemy1()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-    
+    EnemyName = TEXT("Example Enemy");
+    Health = 100.0f;
     // Create and initialize the skeletal mesh component
     USkeletalMeshComponent* SkeletalMesh = GetMesh();
     if (!SkeletalMesh)
@@ -99,12 +100,20 @@ void AEnemy1::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
     TArray<FVector> CornerPoints = GetBoxCornerPoints();
+    FVector Pivot = BoxComponent->GetComponentLocation(); // 중심 피봇 좌표
+    /*
+    UE_LOG(LogTemp, Log, TEXT("Enemy 1 Pivot Point: %s"), *Pivot.ToString()); // 피봇 좌표 출력
 
     for (const FVector& Point : CornerPoints)
     {
         DrawDebugSphere(GetWorld(), Point, 5.0f, 12, FColor::Green, false, -1.0f);
         UE_LOG(LogTemp, Log, TEXT("Enemy 1 Corner Point: %s"), *Point.ToString());
+
+        // 꼭지점에서 피봇으로 나눈 상대 좌표
+        FVector RelativePoint = Point - Pivot;
+        UE_LOG(LogTemp, Log, TEXT(" Enemy 1 Relative Corner Point: %s"), *RelativePoint.ToString());
     }
+    */
     CheckAndTeleport();
     //UpdateAnimation();
 }

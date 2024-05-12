@@ -8,9 +8,14 @@
 #include "Blueprint/UserWidget.h"
 #include "HealthBarWidgets.h"
 #include "AmmoWidget.h"
+#include "Enemy1.h"
 #include "MyProjectPlayerController.generated.h"
 
 class UInputMappingContext;
+class UUserWidget;
+class UHealthBarWidgets;
+class UAmmoWidget;
+class UEnemyInfoWidget;
 
 //ĳ���ͺ������� 
 struct FCharacterChangeInfo
@@ -41,7 +46,13 @@ public:
 
 	void RequestServerForAimingChange(bool bIsAiming);
 
+	void Tick(float DeltaTime);
+
+	void RemoveEnemyInfo();
+
 	void FireWeapon();
+
+	void ShowEnemyInfo(AEnemy1* Enemy);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
 	TSubclassOf<UUserWidget> AimUIClass;
@@ -49,6 +60,12 @@ public:
 	UPROPERTY()
 	UUserWidget* AimUIInstance;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+	TSubclassOf<UEnemyInfoWidget> EnemyInfoWidgetClass;
+
+	UPROPERTY()
+	UEnemyInfoWidget* CurrentEnemyInfoWidget;
+
 	UFUNCTION()
 	void ReloadWeapon();
 
