@@ -94,10 +94,15 @@ void AMyProjectPlayerController::BeginPlay()
         AmmoWidget = CreateWidget<UAmmoWidget>(this, AmmoWidgetClass);
         if (AmmoWidget)
         {
+            UE_LOG(LogTemp, Log, TEXT("Ammo widget created successfully."));
             AmmoWidget->AddToViewport();
+            AmmoWidget->NativeConstruct(); 
             AmmoWidget->UpdateAmmoCount(CurrentAmmo, MaxAmmo);
         }
-
+        else
+        {
+            UE_LOG(LogTemp, Warning, TEXT("Failed to create Ammo widget."));
+        }
         
       
         
@@ -195,15 +200,20 @@ void AMyProjectPlayerController::Tick(float DeltaTime)
     {
         if (HitResult.GetActor()) // 어떤 액터와 충돌했는지 확인
         {
-            AEnemy1* HitEnemy = Cast<AEnemy1>(HitResult.GetActor());
-            if (HitEnemy) // 충돌한 액터가 몬스터인지 확인
+            AEnemy1* HitEnemy1 = Cast<AEnemy1>(HitResult.GetActor());
+            AEnemy2* HitEnemy2 = Cast<AEnemy2>(HitResult.GetActor());
+
+            if (HitEnemy1) // 충돌한 액터가 AEnemy1인지 확인
             {
-                // 화면에 몬스터 정보 표시
-                ShowEnemyInfo(HitEnemy);
+                ShowEnemyInfo(HitEnemy1);
+            }
+            else if (HitEnemy2) // 충돌한 액터가 AEnemy2인지 확인
+            {
+                ShowEnemyInfo(HitEnemy2);
             }
             else
             {
-                RemoveEnemyInfo(); // 충돌한 액터가 몬스터가 아닌 경우
+                RemoveEnemyInfo(); // 충돌한 액터가 AEnemy1이나 AEnemy2가 아닌 경우
             }
         }
         else
@@ -307,19 +317,27 @@ void AMyProjectPlayerController::FireWeapon()
 
 void AMyProjectPlayerController::ShowEnemyInfo(AEnemy1* Enemy)
 {
+    UE_LOG(LogTemp, Log, TEXT("ShowEnemyInfo called for AEnemy1"));
+    ShowEnemyInfo_Internal(Enemy->EnemyName, Enemy->Health);
+}
 
-    UE_LOG(LogTemp, Log, TEXT("ShowEnemyInfo called"));
-    UE_LOG(LogTemp, Log, TEXT("CurrentEnemyInfoWidget: %s"), CurrentEnemyInfoWidget ? TEXT("Valid") : TEXT("Null"));
-    UE_LOG(LogTemp, Log, TEXT("EnemyInfoWidgetClass: %s"), EnemyInfoWidgetClass ? *EnemyInfoWidgetClass->GetName() : TEXT("Null"));
+void AMyProjectPlayerController::ShowEnemyInfo(AEnemy2* Enemy)
+{
+    UE_LOG(LogTemp, Log, TEXT("ShowEnemyInfo called for AEnemy2"));
+    ShowEnemyInfo_Internal(Enemy->EnemyName, Enemy->Health);
+}
 
+void AMyProjectPlayerController::ShowEnemyInfo_Internal(FString EnemyName, float Health)
+{
     if (!CurrentEnemyInfoWidget && EnemyInfoWidgetClass)
     {
-
         UE_LOG(LogTemp, Log, TEXT("Attempting to create EnemyInfoWidget"));
 
         try
         {
             CurrentEnemyInfoWidget = CreateWidget<UEnemyInfoWidget>(this, EnemyInfoWidgetClass);
+            UE_LOG(LogTemp, Log, TEXT("CreateWidget called"));
+
             if (CurrentEnemyInfoWidget)
             {
                 CurrentEnemyInfoWidget->AddToViewport();
@@ -333,24 +351,14 @@ void AMyProjectPlayerController::ShowEnemyInfo(AEnemy1* Enemy)
         catch (const std::exception& e)
         {
             UE_LOG(LogTemp, Error, TEXT("Exception occurred while creating EnemyInfoWidget: %s"), *FString(e.what()));
-        
         }
     }
-   
 
     if (CurrentEnemyInfoWidget)
     {
-       
-        if (Enemy)
-        {
-            UE_LOG(LogTemp, Log, TEXT("Setting enemy info: %s"), *Enemy->EnemyName);
-            CurrentEnemyInfoWidget->SetEnemyName(Enemy->EnemyName);
-            CurrentEnemyInfoWidget->SetEnemyHealth(Enemy->Health / 100.0f); // assuming health is out of 100
-        }
-        else
-        {
-            UE_LOG(LogTemp, Warning, TEXT("Enemy is null"));
-        }
+        UE_LOG(LogTemp, Log, TEXT("Setting enemy info: %s"), *EnemyName);
+        CurrentEnemyInfoWidget->SetEnemyName(EnemyName);
+        CurrentEnemyInfoWidget->SetEnemyHealth(Health / 100.0f);
     }
     else
     {

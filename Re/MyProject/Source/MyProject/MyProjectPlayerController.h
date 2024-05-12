@@ -9,6 +9,7 @@
 #include "HealthBarWidgets.h"
 #include "AmmoWidget.h"
 #include "Enemy1.h"
+#include "Enemy2.h"
 #include "MyProjectPlayerController.generated.h"
 
 class UInputMappingContext;
@@ -53,6 +54,7 @@ public:
 	void FireWeapon();
 
 	void ShowEnemyInfo(AEnemy1* Enemy);
+	void ShowEnemyInfo(AEnemy2* Enemy);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
 	TSubclassOf<UUserWidget> AimUIClass;
@@ -73,8 +75,8 @@ public:
 	void AttemptToFireWeapon();
 	void ToggleCharacterSelectUI();
 private:
-	// UI가 현재 활성화되어 있는지 여부를 나타내는 변수
 	
+	void ShowEnemyInfo_Internal(FString EnemyName, float Health);
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)

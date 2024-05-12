@@ -21,7 +21,13 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Ammo")
     void UpdateAmmoCount(int32 CurrentAmmo, int32 MaxAmmo);
 
+    virtual void NativeConstruct() override;
+    
+
 protected:
+
+  
+
     UPROPERTY(meta = (BindWidget))
     UTextBlock* CurrentAmmoText;
 

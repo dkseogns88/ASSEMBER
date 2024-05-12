@@ -11,7 +11,8 @@ AEnemy2::AEnemy2()
     // Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
     PrimaryActorTick.bCanEverTick = true;
 
-
+    EnemyName = TEXT("Enemy 2");
+    Health = 100.0f;
     // Create and initialize the skeletal mesh component
     USkeletalMeshComponent* SkeletalMesh = GetMesh();
     if (!SkeletalMesh)
