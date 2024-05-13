@@ -7,6 +7,7 @@
 #include "MyProjectMyPlayer.h"
 #include "MyProjectMyPlayerSida.h"
 #include "DrawDebugHelpers.h"
+#include "EnemyInfoWidget.h"
 #include "Components/InputComponent.h"
 #include "MyProject.h"
 #include "Protocol.pb.h"
@@ -42,6 +43,18 @@ AMyProjectPlayerController::AMyProjectPlayerController()
         ReloadSound = ReloadSoundObj.Object;
     }
 
+    static ConstructorHelpers::FClassFinder<UEnemyInfoWidget> EnemyInfoWidgetBPClass(TEXT("/Game/MyBP/UI/EnemyInfoWidget.EnemyInfoWidget_C"));
+    if (EnemyInfoWidgetBPClass.Succeeded())
+    {
+        EnemyInfoWidgetClass = EnemyInfoWidgetBPClass.Class;
+        UE_LOG(LogTemp, Log, TEXT("Successfully found BP_EnemyInfoWidget"));
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("Failed to find BP_EnemyInfoWidget"));
+    }
+
+
 }
 
 
@@ -50,7 +63,7 @@ void AMyProjectPlayerController::BeginPlay()
 {
     Super::BeginPlay();
 
-    
+  
     
     // get the enhanced input subsystem
     if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
@@ -80,10 +93,18 @@ void AMyProjectPlayerController::BeginPlay()
         AmmoWidget = CreateWidget<UAmmoWidget>(this, AmmoWidgetClass);
         if (AmmoWidget)
         {
+            UE_LOG(LogTemp, Log, TEXT("Ammo widget created successfully."));
             AmmoWidget->AddToViewport();
+            AmmoWidget->NativeConstruct(); 
             AmmoWidget->UpdateAmmoCount(CurrentAmmo, MaxAmmo);
         }
-
+        else
+        {
+            UE_LOG(LogTemp, Warning, TEXT("Failed to create Ammo widget."));
+        }
+        
+      
+        
     }
 
     
@@ -158,7 +179,62 @@ void AMyProjectPlayerController::RequestServerForAimingChange(bool bIsAiming)
     UE_LOG(LogTemp, Log, TEXT("Requested server for aiming change: %s"), bIsAiming ? TEXT("True") : TEXT("False"));
 }
 
+void AMyProjectPlayerController::Tick(float DeltaTime)
+{
+    Super::Tick(DeltaTime);
 
+    FVector CameraLoc;
+    FRotator CameraRot;
+    GetPlayerViewPoint(CameraLoc, CameraRot); // 플레이어의 카메라 위치와 회전을 가져옴
+
+    FVector Start = CameraLoc + CameraRot.Vector() * 400;
+    FVector End = CameraLoc + CameraRot.Vector() * 10000; // 히트스캔 거리 설정
+
+    FHitResult HitResult;
+    FCollisionQueryParams Params;
+    Params.AddIgnoredActor(GetPawn()); // 자기 자신은 무시
+
+    bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Pawn, Params);
+    if (bHit)
+    {
+        if (HitResult.GetActor()) // 어떤 액터와 충돌했는지 확인
+        {
+            AEnemy1* HitEnemy1 = Cast<AEnemy1>(HitResult.GetActor());
+            AEnemy2* HitEnemy2 = Cast<AEnemy2>(HitResult.GetActor());
+
+            if (HitEnemy1) // 충돌한 액터가 AEnemy1인지 확인
+            {
+                ShowEnemyInfo(HitEnemy1);
+            }
+            else if (HitEnemy2) // 충돌한 액터가 AEnemy2인지 확인
+            {
+                ShowEnemyInfo(HitEnemy2);
+            }
+            else
+            {
+                RemoveEnemyInfo(); // 충돌한 액터가 AEnemy1이나 AEnemy2가 아닌 경우
+            }
+        }
+        else
+        {
+            RemoveEnemyInfo(); // 충돌한 액터가 없는 경우
+        }
+    }
+    else
+    {
+        RemoveEnemyInfo(); // LineTrace가 실패한 경우
+    }
+}
+
+void AMyProjectPlayerController::RemoveEnemyInfo()
+{
+    // 현재 화면에 표시된 위젯 제거
+    if (CurrentEnemyInfoWidget)
+    {
+        CurrentEnemyInfoWidget->RemoveFromViewport();
+        CurrentEnemyInfoWidget = nullptr;
+    }
+}
 
 
 void AMyProjectPlayerController::SetupInputComponent()
@@ -260,6 +336,56 @@ void AMyProjectPlayerController::FireWeapon()
     
 }
 
+void AMyProjectPlayerController::ShowEnemyInfo(AEnemy1* Enemy)
+{
+    UE_LOG(LogTemp, Log, TEXT("ShowEnemyInfo called for AEnemy1"));
+    ShowEnemyInfo_Internal(Enemy->EnemyName, Enemy->Health);
+}
+
+void AMyProjectPlayerController::ShowEnemyInfo(AEnemy2* Enemy)
+{
+    UE_LOG(LogTemp, Log, TEXT("ShowEnemyInfo called for AEnemy2"));
+    ShowEnemyInfo_Internal(Enemy->EnemyName, Enemy->Health);
+}
+
+void AMyProjectPlayerController::ShowEnemyInfo_Internal(FString EnemyName, float Health)
+{
+    if (!CurrentEnemyInfoWidget && EnemyInfoWidgetClass)
+    {
+        UE_LOG(LogTemp, Log, TEXT("Attempting to create EnemyInfoWidget"));
+
+        try
+        {
+            CurrentEnemyInfoWidget = CreateWidget<UEnemyInfoWidget>(this, EnemyInfoWidgetClass);
+            UE_LOG(LogTemp, Log, TEXT("CreateWidget called"));
+
+            if (CurrentEnemyInfoWidget)
+            {
+                CurrentEnemyInfoWidget->AddToViewport();
+                UE_LOG(LogTemp, Log, TEXT("Success to add EnemyInfoWidget"));
+            }
+            else
+            {
+                UE_LOG(LogTemp, Warning, TEXT("Failed to add EnemyInfoWidget"));
+            }
+        }
+        catch (const std::exception& e)
+        {
+            UE_LOG(LogTemp, Error, TEXT("Exception occurred while creating EnemyInfoWidget: %s"), *FString(e.what()));
+        }
+    }
+
+    if (CurrentEnemyInfoWidget)
+    {
+        UE_LOG(LogTemp, Log, TEXT("Setting enemy info: %s"), *EnemyName);
+        CurrentEnemyInfoWidget->SetEnemyName(EnemyName);
+        CurrentEnemyInfoWidget->SetEnemyHealth(Health / 100.0f);
+    }
+    else
+    {
+        UE_LOG(LogTemp, Warning, TEXT("CurrentEnemyInfoWidget is null"));
+    }
+}
 
 void AMyProjectPlayerController::AttemptToFireWeapon()
 {

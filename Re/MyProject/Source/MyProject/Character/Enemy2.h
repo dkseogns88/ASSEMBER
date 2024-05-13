@@ -35,6 +35,11 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enemy Info")
+	FString EnemyName;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enemy Info")
+	float Health;
 
 	// Box Component for collision
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
