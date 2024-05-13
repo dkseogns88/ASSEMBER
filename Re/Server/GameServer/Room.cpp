@@ -125,7 +125,7 @@ void Room::Init()
 
 		monster->posInfo->set_x(1510.f);
 		monster->posInfo->set_y(2880.f);
-		monster->posInfo->set_z(100.f);
+		monster->posInfo->set_z(160.f);
 		monster->posInfo->set_yaw(Utils::GetRandom(0.f, 500.f));
 	}
 
@@ -136,7 +136,7 @@ void Room::Init()
 
 		monster->posInfo->set_x(1200.f);
 		monster->posInfo->set_y(2880.f);
-		monster->posInfo->set_z(100.f);
+		monster->posInfo->set_z(160.f);
 		monster->posInfo->set_yaw(Utils::GetRandom(0.f, 500.f));
 	}
 
@@ -147,7 +147,7 @@ void Room::Init()
 
 		monster->posInfo->set_x(-2200.f);
 		monster->posInfo->set_y(1210.f);
-		monster->posInfo->set_z(140.f);
+		monster->posInfo->set_z(-100.f);
 		monster->posInfo->set_yaw(Utils::GetRandom(0.f, 500.f));
 	}
 
@@ -158,7 +158,7 @@ void Room::Init()
 
 		monster->posInfo->set_x(-2460.f);
 		monster->posInfo->set_y(1210.f);
-		monster->posInfo->set_z(-140.f);
+		monster->posInfo->set_z(-100.f);
 		monster->posInfo->set_yaw(Utils::GetRandom(0.f, 500.f));
 	}
 
@@ -169,7 +169,7 @@ void Room::Init()
 
 		monster->posInfo->set_x(-2740.f);
 		monster->posInfo->set_y(1210.f);
-		monster->posInfo->set_z(-140.f);
+		monster->posInfo->set_z(-100.f);
 		monster->posInfo->set_yaw(Utils::GetRandom(0.f, 500.f));
 	}
 
@@ -180,7 +180,7 @@ void Room::Init()
 
 		monster->posInfo->set_x(-4480.f);
 		monster->posInfo->set_y(430.f);
-		monster->posInfo->set_z(-140.f);
+		monster->posInfo->set_z(-100.f);
 		monster->posInfo->set_yaw(Utils::GetRandom(0.f, 500.f));
 	}
 
@@ -191,7 +191,7 @@ void Room::Init()
 
 		monster->posInfo->set_x(-4480.f);
 		monster->posInfo->set_y(-790.f);
-		monster->posInfo->set_z(-140.f);
+		monster->posInfo->set_z(-100.f);
 		monster->posInfo->set_yaw(Utils::GetRandom(0.f, 500.f));
 	}
 
@@ -202,7 +202,7 @@ void Room::Init()
 
 		monster->posInfo->set_x(-1570.f);
 		monster->posInfo->set_y(-1020.f);
-		monster->posInfo->set_z(120.f);
+		monster->posInfo->set_z(160.f);
 		monster->posInfo->set_yaw(Utils::GetRandom(0.f, 500.f));
 	}
 
