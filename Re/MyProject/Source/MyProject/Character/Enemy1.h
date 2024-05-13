@@ -9,6 +9,10 @@
 #include "Network/Protocol.pb.h"
 #include "Enemy1.generated.h"
 
+
+
+
+
 UCLASS()
 class MYPROJECT_API AEnemy1 : public ACharacter
 {
@@ -37,6 +41,8 @@ public:
 	// Box Component for collision
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	UBoxComponent* BoxComponent;
+
+	
 
 protected:
 	// Called when the game starts or when spawned
