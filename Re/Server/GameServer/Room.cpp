@@ -24,8 +24,8 @@ bool Room::HandleEnterPlayer(PlayerRef player)
 	bool success = AddPlayer(player);
 
 	// ·£´ý À§Ä¡
-	player->posInfo->set_x(Utils::GetRandom(300.f, 300.f));
-	player->posInfo->set_y(Utils::GetRandom(400.f, 400.f));
+	player->posInfo->set_x(Utils::GetRandom(0.f, 300.f));
+	player->posInfo->set_y(Utils::GetRandom(0.f, 400.f));
 	player->posInfo->set_z(Utils::GetRandom(100.f, 100.f));
 	player->posInfo->set_yaw(Utils::GetRandom(0.f, 500.f));
 
@@ -235,9 +235,9 @@ void Room::MonserSpawn()
 	if (AddMonster(monster) == false)
 		return;
 
-	monster->posInfo->set_x(Utils::GetRandom(250.f, 250.f));
-	monster->posInfo->set_y(Utils::GetRandom(250.f, 250.f));
-	monster->posInfo->set_z(Utils::GetRandom(200.f, 200.f));
+	monster->posInfo->set_x(Utils::GetRandom(100.f, 250.f));
+	monster->posInfo->set_y(Utils::GetRandom(100.f, 250.f));
+	monster->posInfo->set_z(Utils::GetRandom(150.f, 150.f));
 	monster->posInfo->set_yaw(Utils::GetRandom(0.f, 500.f));
 
 
@@ -248,6 +248,11 @@ void Room::MonserSpawn()
 
 	SendBufferRef sendBuffer = ClientPacketHandler::MakeSendBuffer(spawnKkt);
 	Broadcast(sendBuffer);
+
+	{
+		DoTimer(10'000, &Room::MonserSpawn);
+	}
+
 }
 
 RoomRef Room::GetRoomRef()
