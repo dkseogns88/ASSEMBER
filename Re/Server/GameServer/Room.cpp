@@ -3,7 +3,9 @@
 #include "Player.h"
 #include "GameSession.h"
 #include "Monster.h"
+#include "Physics.h"
 #include "ObjectUtils.h"
+#include <cmath>
 
 RoomRef GRoom = make_shared<Room>();
 
@@ -22,8 +24,8 @@ bool Room::HandleEnterPlayer(PlayerRef player)
 	bool success = AddPlayer(player);
 
 	// 랜덤 위치
-	player->posInfo->set_x(Utils::GetRandom(0.f, 500.f));
-	player->posInfo->set_y(Utils::GetRandom(0.f, 500.f));
+	player->posInfo->set_x(Utils::GetRandom(300.f, 300.f));
+	player->posInfo->set_y(Utils::GetRandom(400.f, 400.f));
 	player->posInfo->set_z(Utils::GetRandom(100.f, 100.f));
 	player->posInfo->set_yaw(Utils::GetRandom(0.f, 500.f));
 
@@ -49,7 +51,7 @@ bool Room::HandleEnterPlayer(PlayerRef player)
 		objectInfo->CopyFrom(*player->objectInfo);
 
 		SendBufferRef sendBuffer = ClientPacketHandler::MakeSendBuffer(spawnPkt);
-		Broadcast(sendBuffer, player->objectInfo->object_id());
+		Broadcast(sendBuffer);
 	}
 
 	// 입장한 플레이어들을 새로운 플레이어에게 알려줘야 한다.
@@ -72,14 +74,17 @@ bool Room::HandleEnterPlayer(PlayerRef player)
 
 	// 입장한 플레이어 모두에게 기존 몬스터들을 알리자.
 	{
-		Protocol::S_SPAWN_MONSTER spawnKkt;
+		Protocol::S_SPAWN_MONSTER spawnPkt;
 
 		for (auto& item : _monsters)
 		{
-			Protocol::ObjectInfo* objectInfo = spawnKkt.add_monsters();
+			Protocol::ObjectInfo* objectInfo = spawnPkt.add_monsters();
 			objectInfo->CopyFrom(*item.second->objectInfo);
-		}
 
+			SendBufferRef sendBuffer = ClientPacketHandler::MakeSendBuffer(spawnPkt);
+			Broadcast(sendBuffer);
+
+		}
 	}
 
 
@@ -188,6 +193,26 @@ void Room::HandleZoom(Protocol::C_ZOOM pkt)
 
 }
 
+void Room::HandleHit(Protocol::C_HIT pkt)
+{
+	
+	const uint64 objectId = pkt.object_id(); // 몬스터 id
+	if (_monsters.find(objectId) == _monsters.end())
+		return;
+
+	{
+
+		Protocol::S_HIT hitPkt;
+		hitPkt.set_object_id(pkt.object_id());
+		hitPkt.set_on_hit(pkt.on_hit());
+
+		SendBufferRef sendBuffer = ClientPacketHandler::MakeSendBuffer(hitPkt);
+		Broadcast(sendBuffer);
+	}
+
+}
+
+
 void Room::HandleSelect(Protocol::C_SELECT pkt)
 {
 	auto& msg_pkt = pkt.msg();
@@ -207,12 +232,14 @@ void Room::MonserSpawn()
 {
 
 	MonsterRef monster = ObjectUtils::CreateMonster();
-	monster->posInfo->set_x(Utils::GetRandom(0.f, 500.f));
-	monster->posInfo->set_y(Utils::GetRandom(0.f, 500.f));
-	monster->posInfo->set_z(Utils::GetRandom(100.f, 100.f));
+	if (AddMonster(monster) == false)
+		return;
+
+	monster->posInfo->set_x(Utils::GetRandom(250.f, 250.f));
+	monster->posInfo->set_y(Utils::GetRandom(250.f, 250.f));
+	monster->posInfo->set_z(Utils::GetRandom(200.f, 200.f));
 	monster->posInfo->set_yaw(Utils::GetRandom(0.f, 500.f));
 
-	AddMonster(monster);
 
 
 	Protocol::S_SPAWN_MONSTER spawnKkt;
@@ -221,12 +248,7 @@ void Room::MonserSpawn()
 
 	SendBufferRef sendBuffer = ClientPacketHandler::MakeSendBuffer(spawnKkt);
 	Broadcast(sendBuffer);
-
-	{
-		DoTimer(1000, &Room::MonserSpawn);
-	}
 }
-
 
 RoomRef Room::GetRoomRef()
 {

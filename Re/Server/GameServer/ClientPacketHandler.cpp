@@ -42,8 +42,7 @@ bool Handle_C_ENTER_GAME(PacketSessionRef& session, Protocol::C_ENTER_GAME& pkt)
 	PlayerRef player = ObjectUtils::CreatePlayer(static_pointer_cast<GameSession>(session));
 
 	// 방에 입장
-	GRoom->DoAsync(&Room::HandleEnterPlayer, player); // JobQueue 방식
-	//GRoom->HandleEnterPlayer(player);ㄹ
+	GRoom->DoAsync(&Room::HandleEnterPlayer, player);
 	
 	return true;
 }
@@ -80,6 +79,7 @@ bool Handle_C_MOVE(PacketSessionRef& session, Protocol::C_MOVE& pkt)
 
 	room->DoAsync(&Room::HandleMove, pkt);
 	//room->HandleMove(pkt);
+
 
 	return true;
 }
@@ -141,6 +141,25 @@ bool Handle_C_ZOOM(PacketSessionRef& session, Protocol::C_ZOOM& pkt)
 		return false;
 
 	room->DoAsync(&Room::HandleZoom, pkt);
+
+	return true;
+}
+
+
+bool Handle_C_HIT(PacketSessionRef& session, Protocol::C_HIT& pkt)
+{
+	auto gameSession = static_pointer_cast<GameSession>(session);
+
+	PlayerRef player = gameSession->player.load();
+	if (player == nullptr)
+		return false;
+
+	RoomRef room = player->room.load().lock();
+	if (room == nullptr)
+		return false;
+
+	if(pkt.on_hit() == true)
+		room->DoAsync(&Room::HandleHit, pkt);
 
 	return true;
 }

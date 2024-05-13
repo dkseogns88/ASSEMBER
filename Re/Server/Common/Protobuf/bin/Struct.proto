@@ -35,3 +35,13 @@ message ZoomInfo
 	bool b_zoom			= 2;
 }
 
+message FireInfo
+{
+	uint64 object_id	= 1;
+	float s_x			= 2;
+	float s_y			= 3;
+	float s_z			= 4;
+	float e_x			= 5;
+	float e_y			= 6;
+	float e_z			= 7;
+}

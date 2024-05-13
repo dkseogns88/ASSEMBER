@@ -8,6 +8,7 @@ public:
 	virtual ~Room();
 
 
+	// 클라에게에서 넘어온 패킷을 처리
 	bool HandleEnterPlayer(PlayerRef player);
 	bool HandleLeavePlayer(PlayerRef player);
 
@@ -15,9 +16,12 @@ public:
 	void HandleJump(Protocol::C_JUMP pkt);
 
 	void HandleZoom(Protocol::C_ZOOM pkt);
+	
+	void HandleHit(Protocol::C_HIT pkt);
 
 	void HandleSelect(Protocol::C_SELECT pkt);
 
+	// 몬스터 관련
 	void MonserSpawn();
 
 

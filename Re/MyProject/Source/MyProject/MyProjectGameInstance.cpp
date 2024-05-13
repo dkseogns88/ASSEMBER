@@ -19,9 +19,8 @@
 #include "MyProjectPlayerController.h"
 #include "AnimInstanceCustom.h"
 #include "UObject/ConstructorHelpers.h"
-
-
-
+#include "Components/StaticMeshComponent.h"
+#include "Engine/StaticMeshActor.h"
 UMyProjectGameInstance::UMyProjectGameInstance()
 {
 
@@ -53,7 +52,6 @@ void UMyProjectGameInstance::ConnectToGameServer()
 		GameServerSession = MakeShared<PacketSession>(Socket);
 		GameServerSession->Run();
 
-		// �α��� �õ�(���Ŀ� ���̵�, ��� �߰�?)
 		Protocol::C_LOGIN Pkt;
 		SendBufferRef SendBuffer = ServerPacketHandler::MakeSendBuffer(Pkt);
 		SendPacket(SendBuffer);
@@ -74,12 +72,6 @@ void UMyProjectGameInstance::DisconnectToGameServer()
 	Protocol::C_LEAVE_GAME LeavePkt;
 	SEND_PACKET(LeavePkt);
 
-	/*if (Socket)
-	{
-		ISocketSubsystem* SocketSubsystem = ISocketSubsystem::Get();
-		SocketSubsystem->DestroySocket(Socket);
-		Socket = nullptr;
-	}*/
 }
 
 void UMyProjectGameInstance::HandleRecvPackets()
@@ -107,7 +99,6 @@ void UMyProjectGameInstance::HandleSpawn(const Protocol::ObjectInfo& objectInfo,
 	if (World == nullptr)
 		return;
 
-	// �ߺ� ó�� üũ
 	const uint64 ObjectId = objectInfo.object_id();
 	if (Players.Find(ObjectId) != nullptr)
 		return;
@@ -269,34 +260,61 @@ void UMyProjectGameInstance::HandleMonsterSpawn(const Protocol::ObjectInfo& Mons
 	if (World == nullptr)
 		return;
 
-	FVector Location(MonsterInfo.pos_info().x(), MonsterInfo.pos_info().y(), MonsterInfo.pos_info().z());
-
-	//이부분 수정해야함,
-	//SpawnMonsterAtLocation(Location);
+	if (MonsterInfo.monster_type() == Protocol::MONSTER_TYPE_TEST) {
+		SpawnMonsterAtLocation(MonsterClass1, MonsterInfo.pos_info());
+	}
 }
 
-void UMyProjectGameInstance::SpawnMonsterAtLocation(UClass* MonsterClass, const FVector& Location)
+void UMyProjectGameInstance::HandleHIT(const Protocol::S_HIT& pkt)
+{
+	if (Socket == nullptr || GameServerSession == nullptr)
+		return;
+
+	auto* World = GetWorld();
+	if (World == nullptr)
+		return;
+
+	bool OnHit = pkt.on_hit();
+	int HitId = pkt.object_id();
+
+	if (OnHit)
+	{
+		ACharacter** FindActor = monsters.Find(HitId);
+		if (FindActor == nullptr) return;
+
+		World->DestroyActor(*FindActor);
+	}
+
+}
+
+void UMyProjectGameInstance::SpawnMonsterAtLocation(UClass* MonsterClass, const Protocol::PosInfo& Info)
 {
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 	
 
+	FVector Location = FVector(Info.x(), Info.y(), Info.z());
+
 	// 스폰할 몬스터의 클래스를 지정
-	AActor* SpawnedMonster = GetWorld()->SpawnActor<AActor>(MonsterClass, Location, FRotator::ZeroRotator, SpawnParams);
+	AEnemy1* SpawnedMonster = GetWorld()->SpawnActor<AEnemy1>(MonsterClass, Location, FRotator::ZeroRotator, SpawnParams);
 	if (SpawnedMonster)
 	{
 		UE_LOG(LogTemp, Log, TEXT("Monster spawned successfully at %s"), *Location.ToString());
-		SpawnedMonsters.Add(SpawnedMonster);  // 스폰된 몬스터를 배열에 추가
 		SpawnedMonster->SetActorEnableCollision(true);
+		monsters.Add(Info.object_id(), SpawnedMonster);
 
+		if (Info.object_id() != 0)
+		{
+			assert(PlayerInfo->object_id() == Info.object_id());
+		}
+
+		SpawnedMonster->MonsterInfo->CopyFrom(Info);
 	}
 	else
 	{
 		UE_LOG(LogTemp, Error, TEXT("Failed to spawn monster at %s"), *Location.ToString());
 	}
 }
-
-
 
 void UMyProjectGameInstance::Init()
 {
@@ -311,7 +329,7 @@ void UMyProjectGameInstance::Init()
 	MonsterClass2 = AEnemy2::StaticClass();
 	
 	//스폰안정화를위해 월드 완전히생성후 텀을두어 몬스터소환
-	GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, this, &UMyProjectGameInstance::SpawnNPC, 1.0f, false);
+	//GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, this, &UMyProjectGameInstance::SpawnNPC, 1.0f, false);
 
 
 }
@@ -319,14 +337,14 @@ void UMyProjectGameInstance::Init()
 void UMyProjectGameInstance::SpawnNPC()
 {
 	// AEnemy1 스폰 위치 설정
-	FVector MonsterSpawnLocation1 = FVector(0.0f, 0.0f, 150.0f);
-	SpawnMonsterAtLocation(MonsterClass1, MonsterSpawnLocation1);
-	UE_LOG(LogTemp, Log, TEXT("AEnemy1 Spawned at %s"), *MonsterSpawnLocation1.ToString());
+	//FVector MonsterSpawnLocation1 = FVector(0.0f, 0.0f, 150.0f);
+	//SpawnMonsterAtLocation(MonsterClass1, MonsterSpawnLocation1);
+	//UE_LOG(LogTemp, Log, TEXT("AEnemy1 Spawned at %s"), *MonsterSpawnLocation1.ToString());
 
 	// AEnemy2 스폰 위치 설정
-	FVector MonsterSpawnLocation2 = FVector(200.0f, 200.0f, 150.0f);
-	SpawnMonsterAtLocation(MonsterClass2, MonsterSpawnLocation2);
-	UE_LOG(LogTemp, Log, TEXT("AEnemy2 Spawned at %s"), *MonsterSpawnLocation2.ToString());
+	//FVector MonsterSpawnLocation2 = FVector(200.0f, 200.0f, 150.0f);
+	//SpawnMonsterAtLocation(MonsterClass2, MonsterSpawnLocation2);
+	//UE_LOG(LogTemp, Log, TEXT("AEnemy2 Spawned at %s"), *MonsterSpawnLocation2.ToString());
 
 }
 

@@ -46,6 +46,9 @@ struct TableStruct_Struct_2eproto {
 };
 extern const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_Struct_2eproto;
 namespace Protocol {
+class FireInfo;
+struct FireInfoDefaultTypeInternal;
+extern FireInfoDefaultTypeInternal _FireInfo_default_instance_;
 class ObjectInfo;
 struct ObjectInfoDefaultTypeInternal;
 extern ObjectInfoDefaultTypeInternal _ObjectInfo_default_instance_;
@@ -57,6 +60,7 @@ struct ZoomInfoDefaultTypeInternal;
 extern ZoomInfoDefaultTypeInternal _ZoomInfo_default_instance_;
 }  // namespace Protocol
 PROTOBUF_NAMESPACE_OPEN
+template<> ::Protocol::FireInfo* Arena::CreateMaybeMessage<::Protocol::FireInfo>(Arena*);
 template<> ::Protocol::ObjectInfo* Arena::CreateMaybeMessage<::Protocol::ObjectInfo>(Arena*);
 template<> ::Protocol::PosInfo* Arena::CreateMaybeMessage<::Protocol::PosInfo>(Arena*);
 template<> ::Protocol::ZoomInfo* Arena::CreateMaybeMessage<::Protocol::ZoomInfo>(Arena*);
@@ -670,6 +674,220 @@ class ZoomInfo final :
   union { Impl_ _impl_; };
   friend struct ::TableStruct_Struct_2eproto;
 };
+// -------------------------------------------------------------------
+
+class FireInfo final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:Protocol.FireInfo) */ {
+ public:
+  inline FireInfo() : FireInfo(nullptr) {}
+  ~FireInfo() override;
+  explicit PROTOBUF_CONSTEXPR FireInfo(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+
+  FireInfo(const FireInfo& from);
+  FireInfo(FireInfo&& from) noexcept
+    : FireInfo() {
+    *this = ::std::move(from);
+  }
+
+  inline FireInfo& operator=(const FireInfo& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline FireInfo& operator=(FireInfo&& from) noexcept {
+    if (this == &from) return *this;
+    if (GetOwningArena() == from.GetOwningArena()
+  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
+        && GetOwningArena() != nullptr
+  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
+    ) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const FireInfo& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const FireInfo* internal_default_instance() {
+    return reinterpret_cast<const FireInfo*>(
+               &_FireInfo_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    3;
+
+  friend void swap(FireInfo& a, FireInfo& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(FireInfo* other) {
+    if (other == this) return;
+  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() != nullptr &&
+        GetOwningArena() == other->GetOwningArena()) {
+   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() == other->GetOwningArena()) {
+  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
+      InternalSwap(other);
+    } else {
+      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(FireInfo* other) {
+    if (other == this) return;
+    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  FireInfo* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
+    return CreateMaybeMessage<FireInfo>(arena);
+  }
+  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
+  void CopyFrom(const FireInfo& from);
+  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
+  void MergeFrom( const FireInfo& from) {
+    FireInfo::MergeImpl(*this, from);
+  }
+  private:
+  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg);
+  public:
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  uint8_t* _InternalSerialize(
+      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena, bool is_message_owned);
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(FireInfo* other);
+
+  private:
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "Protocol.FireInfo";
+  }
+  protected:
+  explicit FireInfo(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                       bool is_message_owned = false);
+  public:
+
+  static const ClassData _class_data_;
+  const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetClassData() const final;
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kObjectIdFieldNumber = 1,
+    kSXFieldNumber = 2,
+    kSYFieldNumber = 3,
+    kSZFieldNumber = 4,
+    kEXFieldNumber = 5,
+    kEYFieldNumber = 6,
+    kEZFieldNumber = 7,
+  };
+  // uint64 object_id = 1;
+  void clear_object_id();
+  uint64_t object_id() const;
+  void set_object_id(uint64_t value);
+  private:
+  uint64_t _internal_object_id() const;
+  void _internal_set_object_id(uint64_t value);
+  public:
+
+  // float s_x = 2;
+  void clear_s_x();
+  float s_x() const;
+  void set_s_x(float value);
+  private:
+  float _internal_s_x() const;
+  void _internal_set_s_x(float value);
+  public:
+
+  // float s_y = 3;
+  void clear_s_y();
+  float s_y() const;
+  void set_s_y(float value);
+  private:
+  float _internal_s_y() const;
+  void _internal_set_s_y(float value);
+  public:
+
+  // float s_z = 4;
+  void clear_s_z();
+  float s_z() const;
+  void set_s_z(float value);
+  private:
+  float _internal_s_z() const;
+  void _internal_set_s_z(float value);
+  public:
+
+  // float e_x = 5;
+  void clear_e_x();
+  float e_x() const;
+  void set_e_x(float value);
+  private:
+  float _internal_e_x() const;
+  void _internal_set_e_x(float value);
+  public:
+
+  // float e_y = 6;
+  void clear_e_y();
+  float e_y() const;
+  void set_e_y(float value);
+  private:
+  float _internal_e_y() const;
+  void _internal_set_e_y(float value);
+  public:
+
+  // float e_z = 7;
+  void clear_e_z();
+  float e_z() const;
+  void set_e_z(float value);
+  private:
+  float _internal_e_z() const;
+  void _internal_set_e_z(float value);
+  public:
+
+  // @@protoc_insertion_point(class_scope:Protocol.FireInfo)
+ private:
+  class _Internal;
+
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  typedef void InternalArenaConstructable_;
+  typedef void DestructorSkippable_;
+  struct Impl_ {
+    uint64_t object_id_;
+    float s_x_;
+    float s_y_;
+    float s_z_;
+    float e_x_;
+    float e_y_;
+    float e_z_;
+    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_Struct_2eproto;
+};
 // ===================================================================
 
 
@@ -1099,9 +1317,155 @@ inline void ZoomInfo::set_b_zoom(bool value) {
   // @@protoc_insertion_point(field_set:Protocol.ZoomInfo.b_zoom)
 }
 
+// -------------------------------------------------------------------
+
+// FireInfo
+
+// uint64 object_id = 1;
+inline void FireInfo::clear_object_id() {
+  _impl_.object_id_ = uint64_t{0u};
+}
+inline uint64_t FireInfo::_internal_object_id() const {
+  return _impl_.object_id_;
+}
+inline uint64_t FireInfo::object_id() const {
+  // @@protoc_insertion_point(field_get:Protocol.FireInfo.object_id)
+  return _internal_object_id();
+}
+inline void FireInfo::_internal_set_object_id(uint64_t value) {
+  
+  _impl_.object_id_ = value;
+}
+inline void FireInfo::set_object_id(uint64_t value) {
+  _internal_set_object_id(value);
+  // @@protoc_insertion_point(field_set:Protocol.FireInfo.object_id)
+}
+
+// float s_x = 2;
+inline void FireInfo::clear_s_x() {
+  _impl_.s_x_ = 0;
+}
+inline float FireInfo::_internal_s_x() const {
+  return _impl_.s_x_;
+}
+inline float FireInfo::s_x() const {
+  // @@protoc_insertion_point(field_get:Protocol.FireInfo.s_x)
+  return _internal_s_x();
+}
+inline void FireInfo::_internal_set_s_x(float value) {
+  
+  _impl_.s_x_ = value;
+}
+inline void FireInfo::set_s_x(float value) {
+  _internal_set_s_x(value);
+  // @@protoc_insertion_point(field_set:Protocol.FireInfo.s_x)
+}
+
+// float s_y = 3;
+inline void FireInfo::clear_s_y() {
+  _impl_.s_y_ = 0;
+}
+inline float FireInfo::_internal_s_y() const {
+  return _impl_.s_y_;
+}
+inline float FireInfo::s_y() const {
+  // @@protoc_insertion_point(field_get:Protocol.FireInfo.s_y)
+  return _internal_s_y();
+}
+inline void FireInfo::_internal_set_s_y(float value) {
+  
+  _impl_.s_y_ = value;
+}
+inline void FireInfo::set_s_y(float value) {
+  _internal_set_s_y(value);
+  // @@protoc_insertion_point(field_set:Protocol.FireInfo.s_y)
+}
+
+// float s_z = 4;
+inline void FireInfo::clear_s_z() {
+  _impl_.s_z_ = 0;
+}
+inline float FireInfo::_internal_s_z() const {
+  return _impl_.s_z_;
+}
+inline float FireInfo::s_z() const {
+  // @@protoc_insertion_point(field_get:Protocol.FireInfo.s_z)
+  return _internal_s_z();
+}
+inline void FireInfo::_internal_set_s_z(float value) {
+  
+  _impl_.s_z_ = value;
+}
+inline void FireInfo::set_s_z(float value) {
+  _internal_set_s_z(value);
+  // @@protoc_insertion_point(field_set:Protocol.FireInfo.s_z)
+}
+
+// float e_x = 5;
+inline void FireInfo::clear_e_x() {
+  _impl_.e_x_ = 0;
+}
+inline float FireInfo::_internal_e_x() const {
+  return _impl_.e_x_;
+}
+inline float FireInfo::e_x() const {
+  // @@protoc_insertion_point(field_get:Protocol.FireInfo.e_x)
+  return _internal_e_x();
+}
+inline void FireInfo::_internal_set_e_x(float value) {
+  
+  _impl_.e_x_ = value;
+}
+inline void FireInfo::set_e_x(float value) {
+  _internal_set_e_x(value);
+  // @@protoc_insertion_point(field_set:Protocol.FireInfo.e_x)
+}
+
+// float e_y = 6;
+inline void FireInfo::clear_e_y() {
+  _impl_.e_y_ = 0;
+}
+inline float FireInfo::_internal_e_y() const {
+  return _impl_.e_y_;
+}
+inline float FireInfo::e_y() const {
+  // @@protoc_insertion_point(field_get:Protocol.FireInfo.e_y)
+  return _internal_e_y();
+}
+inline void FireInfo::_internal_set_e_y(float value) {
+  
+  _impl_.e_y_ = value;
+}
+inline void FireInfo::set_e_y(float value) {
+  _internal_set_e_y(value);
+  // @@protoc_insertion_point(field_set:Protocol.FireInfo.e_y)
+}
+
+// float e_z = 7;
+inline void FireInfo::clear_e_z() {
+  _impl_.e_z_ = 0;
+}
+inline float FireInfo::_internal_e_z() const {
+  return _impl_.e_z_;
+}
+inline float FireInfo::e_z() const {
+  // @@protoc_insertion_point(field_get:Protocol.FireInfo.e_z)
+  return _internal_e_z();
+}
+inline void FireInfo::_internal_set_e_z(float value) {
+  
+  _impl_.e_z_ = value;
+}
+inline void FireInfo::set_e_z(float value) {
+  _internal_set_e_z(value);
+  // @@protoc_insertion_point(field_set:Protocol.FireInfo.e_z)
+}
+
 #ifdef __GNUC__
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------

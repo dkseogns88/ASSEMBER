@@ -12,7 +12,6 @@
 #include "Protocol.pb.h"
 
 
-
 AMyProjectPlayerController::AMyProjectPlayerController()
 {
     // 위젯 블루프린트 클래스 로드
@@ -191,7 +190,6 @@ void AMyProjectPlayerController::OnAimReleased()
 
 void AMyProjectPlayerController::FireWeapon()
 {
-    
     FVector CameraLoc;
     FRotator CameraRot;
     GetPlayerViewPoint(CameraLoc, CameraRot); // 플레이어의 카메라 위치와 회전을 가져옴
@@ -201,32 +199,65 @@ void AMyProjectPlayerController::FireWeapon()
 
     FVector End = CameraLoc + CameraRot.Vector() * 10000; // 히트스캔 거리 설정
 
+    /*
+    Protocol::C_FIRE FirePkt;
+    Protocol::FireInfo* fireInfo = FirePkt.mutable_info();
+
+    AMyProjectMyPlayer* MyCharacter = Cast<AMyProjectMyPlayer>(GetPawn());
+    fireInfo->set_object_id(MyCharacter->GetPlayerInfo()->object_id());
+    fireInfo->set_s_x(Start.X);
+    fireInfo->set_s_y(Start.Y);
+    fireInfo->set_s_z(Start.Z);
+
+    fireInfo->set_e_x(End.X);
+    fireInfo->set_e_y(End.Y);
+    fireInfo->set_e_z(End.Z);
+    SEND_PACKET(FirePkt);
+    */
+
+    // 디버깅용 라인 그리기 (에디터에서만 보임)
+    DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 1.0f, 0, 1.0f);
+
+
+    if (FireSound)
+    {
+
+        UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetPawn()->GetActorLocation());
+    }
+
+
+
+    // 클라이언트
+    
     FHitResult HitResult;
     FCollisionQueryParams Params;
     Params.AddIgnoredActor(GetPawn()); // 자기 자신은 무시
 
     if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Pawn, Params))
     {
-        if (HitResult.GetActor()) // 어떤 액터와 충돌했는지 확인
+        if (AEnemy1* Enemy = Cast<AEnemy1>(HitResult.GetActor())) // 어떤 액터와 충돌했는지 확인
         {
-            UE_LOG(LogTemp, Log, TEXT("Hit: %s"), *HitResult.GetActor()->GetName());
+           //UE_LOG(LogTemp, Log, TEXT("Hit: %s"), *HitResult.GetActor()->GetName());
+            
+            if (auto* GameInstance = Cast<UMyProjectGameInstance>(GWorld->GetGameInstance()))
+            {
+                if (GameInstance->monsters.Find(Enemy->MonsterInfo->object_id()))
+                {
 
-            // TODO: 몬스터 타입 확인 및 데미지 처리
+                    Protocol::C_HIT HitPkt;
+                    HitPkt.set_object_id(Enemy->MonsterInfo->object_id());
+                    HitPkt.set_on_hit(true);
+
+                    SEND_PACKET(HitPkt);
+                }
+                
+            }
+
         }
     }
-
     // 디버깅용 라인 그리기 (에디터에서만 보임)
     DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 1.0f, 0, 1.0f);
-
-    if (FireSound)
-    {
-        
-        UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetPawn()->GetActorLocation());
-    }
-    else
-    {
-        UE_LOG(LogTemp, Error, TEXT("Fail to load Firesound"));
-    }
+    
 }
 
 

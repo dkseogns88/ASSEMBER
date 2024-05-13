@@ -11,7 +11,7 @@
 #endif
 
 #include "CorePch.h"
-
+#include "Point3D.h"
 
 #include "Enum.pb.h"
 #include "ClientPacketHandler.h"

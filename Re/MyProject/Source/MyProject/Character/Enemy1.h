@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "Animation/AnimSequence.h"
 #include "Components/BoxComponent.h"
+#include "Network/Protocol.pb.h"
 #include "Enemy1.generated.h"
 
 UCLASS()
@@ -21,6 +22,7 @@ private:
 public:
 	// Sets default values for this character's properties
 	AEnemy1();
+	~AEnemy1();
 	void UpdateAnimation();
 
 	// Function to get the box component's corner points
@@ -44,5 +46,8 @@ public:
 	
 	void CheckMeshSetup();
 
+public:
+	class Protocol::PosInfo* MonsterInfo;
+	class Protocol::PosInfo* DestInfo;
 
 };

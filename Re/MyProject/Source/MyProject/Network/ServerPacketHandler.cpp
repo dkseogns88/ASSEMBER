@@ -123,3 +123,13 @@ bool Handle_S_SPAWN_MONSTER(PacketSessionRef& session, Protocol::S_SPAWN_MONSTER
 
 	return true;
 }
+
+bool Handle_S_HIT(PacketSessionRef& session, Protocol::S_HIT& pkt)
+{
+	if (auto* GameInstance = Cast<UMyProjectGameInstance>(GWorld->GetGameInstance()))
+	{
+		GameInstance->HandleHIT(pkt);
+	}
+
+	return true;
+}

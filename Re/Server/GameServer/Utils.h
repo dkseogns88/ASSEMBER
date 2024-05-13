@@ -20,6 +20,6 @@ public:
 			std::uniform_real_distribution<T> urd(min, max);
 			return urd(dre);
 		}
+
 	}
 };
-

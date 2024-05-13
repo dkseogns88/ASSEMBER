@@ -67,7 +67,16 @@ AEnemy1::AEnemy1()
         UE_LOG(LogTemp, Error, TEXT("Failed to load animation blueprint class."));
     }
    
-    
+    MonsterInfo = new Protocol::PosInfo();
+    DestInfo = new Protocol::PosInfo();
+}
+
+AEnemy1::~AEnemy1()
+{
+    delete MonsterInfo;
+    delete DestInfo;
+    MonsterInfo = nullptr;
+    DestInfo = nullptr;
 }
 
 void AEnemy1::CheckAndTeleport()
