@@ -41,6 +41,7 @@ bool Handle_C_ENTER_GAME(PacketSessionRef& session, Protocol::C_ENTER_GAME& pkt)
 	// 플레이어 생성
 	PlayerRef player = ObjectUtils::CreatePlayer(static_pointer_cast<GameSession>(session));
 
+
 	// 방에 입장
 	GRoom->DoAsync(&Room::HandleEnterPlayer, player);
 	

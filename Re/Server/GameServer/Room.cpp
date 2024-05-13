@@ -11,7 +11,104 @@ RoomRef GRoom = make_shared<Room>();
 
 Room::Room()
 {
+	/*{
+		MonsterRef monster = ObjectUtils::CreateMonster();
+		if (AddMonster(monster) == false)
+			return;
 
+		monster->posInfo->set_x(1510.f);
+		monster->posInfo->set_y(2880.f);
+		monster->posInfo->set_z(100.f);
+		monster->posInfo->set_yaw(Utils::GetRandom(0.f, 500.f));
+	}
+
+	{
+		MonsterRef monster = ObjectUtils::CreateMonster();
+		if (AddMonster(monster) == false)
+			return;
+
+		monster->posInfo->set_x(1200.f);
+		monster->posInfo->set_y(2880.f);
+		monster->posInfo->set_z(100.f);
+		monster->posInfo->set_yaw(Utils::GetRandom(0.f, 500.f));
+	}
+
+	{
+		MonsterRef monster = ObjectUtils::CreateMonster();
+		if (AddMonster(monster) == false)
+			return;
+
+		monster->posInfo->set_x(-2200.f);
+		monster->posInfo->set_y(1210.f);
+		monster->posInfo->set_z(140.f);
+		monster->posInfo->set_yaw(Utils::GetRandom(0.f, 500.f));
+	}
+
+	{
+		MonsterRef monster = ObjectUtils::CreateMonster();
+		if (AddMonster(monster) == false)
+			return;
+
+		monster->posInfo->set_x(-2460.f);
+		monster->posInfo->set_y(1210.f);
+		monster->posInfo->set_z(-140.f);
+		monster->posInfo->set_yaw(Utils::GetRandom(0.f, 500.f));
+	}
+
+	{
+		MonsterRef monster = ObjectUtils::CreateMonster();
+		if (AddMonster(monster) == false)
+			return;
+
+		monster->posInfo->set_x(-2740.f);
+		monster->posInfo->set_y(1210.f);
+		monster->posInfo->set_z(-140.f);
+		monster->posInfo->set_yaw(Utils::GetRandom(0.f, 500.f));
+	}
+
+	{
+		MonsterRef monster = ObjectUtils::CreateMonster();
+		if (AddMonster(monster) == false)
+			return;
+
+		monster->posInfo->set_x(-4480.f);
+		monster->posInfo->set_y(430.f);
+		monster->posInfo->set_z(-140.f);
+		monster->posInfo->set_yaw(Utils::GetRandom(0.f, 500.f));
+	}
+
+	{
+		MonsterRef monster = ObjectUtils::CreateMonster();
+		if (AddMonster(monster) == false)
+			return;
+
+		monster->posInfo->set_x(-4480.f);
+		monster->posInfo->set_y(-790.f);
+		monster->posInfo->set_z(-140.f);
+		monster->posInfo->set_yaw(Utils::GetRandom(0.f, 500.f));
+	}
+
+	{
+		MonsterRef monster = ObjectUtils::CreateMonster();
+		if (AddMonster(monster) == false)
+			return;
+
+		monster->posInfo->set_x(-1570.f);
+		monster->posInfo->set_y(-1020.f);
+		monster->posInfo->set_z(120.f);
+		monster->posInfo->set_yaw(Utils::GetRandom(0.f, 500.f));
+	}
+
+	{
+		MonsterRef monster = ObjectUtils::CreateMonster();
+		if (AddMonster(monster) == false)
+			return;
+
+		monster->posInfo->set_x(-230.f);
+		monster->posInfo->set_y(-730.f);
+		monster->posInfo->set_z(-120.f);
+		monster->posInfo->set_yaw(Utils::GetRandom(0.f, 500.f));
+	};*/
 }
 
 Room::~Room()
@@ -19,16 +116,142 @@ Room::~Room()
 
 }
 
+void Room::Init()
+{
+	{
+		MonsterRef monster = ObjectUtils::CreateMonster();
+		if (AddMonster(monster) == false)
+			return;
+
+		monster->posInfo->set_x(1510.f);
+		monster->posInfo->set_y(2880.f);
+		monster->posInfo->set_z(100.f);
+		monster->posInfo->set_yaw(Utils::GetRandom(0.f, 500.f));
+	}
+
+	{
+		MonsterRef monster = ObjectUtils::CreateMonster();
+		if (AddMonster(monster) == false)
+			return;
+
+		monster->posInfo->set_x(1200.f);
+		monster->posInfo->set_y(2880.f);
+		monster->posInfo->set_z(100.f);
+		monster->posInfo->set_yaw(Utils::GetRandom(0.f, 500.f));
+	}
+
+	{
+		MonsterRef monster = ObjectUtils::CreateMonster();
+		if (AddMonster(monster) == false)
+			return;
+
+		monster->posInfo->set_x(-2200.f);
+		monster->posInfo->set_y(1210.f);
+		monster->posInfo->set_z(140.f);
+		monster->posInfo->set_yaw(Utils::GetRandom(0.f, 500.f));
+	}
+
+	{
+		MonsterRef monster = ObjectUtils::CreateMonster();
+		if (AddMonster(monster) == false)
+			return;
+
+		monster->posInfo->set_x(-2460.f);
+		monster->posInfo->set_y(1210.f);
+		monster->posInfo->set_z(-140.f);
+		monster->posInfo->set_yaw(Utils::GetRandom(0.f, 500.f));
+	}
+
+	{
+		MonsterRef monster = ObjectUtils::CreateMonster();
+		if (AddMonster(monster) == false)
+			return;
+
+		monster->posInfo->set_x(-2740.f);
+		monster->posInfo->set_y(1210.f);
+		monster->posInfo->set_z(-140.f);
+		monster->posInfo->set_yaw(Utils::GetRandom(0.f, 500.f));
+	}
+
+	{
+		MonsterRef monster = ObjectUtils::CreateMonster();
+		if (AddMonster(monster) == false)
+			return;
+
+		monster->posInfo->set_x(-4480.f);
+		monster->posInfo->set_y(430.f);
+		monster->posInfo->set_z(-140.f);
+		monster->posInfo->set_yaw(Utils::GetRandom(0.f, 500.f));
+	}
+
+	{
+		MonsterRef monster = ObjectUtils::CreateMonster();
+		if (AddMonster(monster) == false)
+			return;
+
+		monster->posInfo->set_x(-4480.f);
+		monster->posInfo->set_y(-790.f);
+		monster->posInfo->set_z(-140.f);
+		monster->posInfo->set_yaw(Utils::GetRandom(0.f, 500.f));
+	}
+
+	{
+		MonsterRef monster = ObjectUtils::CreateMonster();
+		if (AddMonster(monster) == false)
+			return;
+
+		monster->posInfo->set_x(-1570.f);
+		monster->posInfo->set_y(-1020.f);
+		monster->posInfo->set_z(120.f);
+		monster->posInfo->set_yaw(Utils::GetRandom(0.f, 500.f));
+	}
+
+	{
+		MonsterRef monster = ObjectUtils::CreateMonster();
+		if (AddMonster(monster) == false)
+			return;
+
+		monster->posInfo->set_x(-230.f);
+		monster->posInfo->set_y(-730.f);
+		monster->posInfo->set_z(-120.f);
+		monster->posInfo->set_yaw(Utils::GetRandom(0.f, 500.f));
+	};
+}
+
 bool Room::HandleEnterPlayer(PlayerRef player)
 {
 	bool success = AddPlayer(player);
 
-	// 랜덤 위치
-	player->posInfo->set_x(Utils::GetRandom(0.f, 300.f));
-	player->posInfo->set_y(Utils::GetRandom(0.f, 400.f));
-	player->posInfo->set_z(Utils::GetRandom(100.f, 100.f));
-	player->posInfo->set_yaw(Utils::GetRandom(0.f, 500.f));
+	if (_player1 == nullptr)
+	{
+		_player1 = player;
 
+		player->posInfo->set_x(1210.f);
+		player->posInfo->set_y(100.f);
+		player->posInfo->set_z(140.f);
+		player->posInfo->set_yaw(Utils::GetRandom(0.f, 500.f));
+
+		// 랜덤 위치
+		/*player->posInfo->set_x(Utils::GetRandom(0.f, 300.f));
+		player->posInfo->set_y(Utils::GetRandom(0.f, 400.f));
+		player->posInfo->set_z(Utils::GetRandom(100.f, 100.f));
+		player->posInfo->set_yaw(Utils::GetRandom(0.f, 500.f));*/
+	}
+	else if (_player2 == nullptr)
+	{
+		_player2 = player;
+		player->posInfo->set_x(1480.f);
+		player->posInfo->set_y(100.f);
+		player->posInfo->set_z(140.f);
+		player->posInfo->set_yaw(Utils::GetRandom(0.f, 500.f));
+
+		// 랜덤 위치
+		//player->posInfo->set_x(Utils::GetRandom(0.f, 300.f));
+		//player->posInfo->set_y(Utils::GetRandom(0.f, 400.f));
+		//player->posInfo->set_z(Utils::GetRandom(100.f, 100.f));
+		//player->posInfo->set_yaw(Utils::GetRandom(0.f, 500.f));
+	}
+	
 	// 입장 사실을 들어온 플레이어에게 알린다.
 	{
 		Protocol::S_ENTER_GAME enterGamePkt;
@@ -81,16 +304,11 @@ bool Room::HandleEnterPlayer(PlayerRef player)
 			Protocol::ObjectInfo* objectInfo = spawnPkt.add_monsters();
 			objectInfo->CopyFrom(*item.second->objectInfo);
 
-			SendBufferRef sendBuffer = ClientPacketHandler::MakeSendBuffer(spawnPkt);
-			Broadcast(sendBuffer);
 
 		}
-	}
 
-
-	// 몬스터 생성 관련
-	{
-		DoTimer(1000, &Room::MonserSpawn);
+		SendBufferRef sendBuffer = ClientPacketHandler::MakeSendBuffer(spawnPkt);
+		Broadcast(sendBuffer);
 	}
 
 	return success;

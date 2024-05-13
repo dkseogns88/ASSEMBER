@@ -7,6 +7,7 @@ public:
 	Room();
 	virtual ~Room();
 
+	void Init();
 
 	// 클라에게에서 넘어온 패킷을 처리
 	bool HandleEnterPlayer(PlayerRef player);
@@ -23,7 +24,6 @@ public:
 
 	// 몬스터 관련
 	void MonserSpawn();
-
 
 public:
 
@@ -45,6 +45,10 @@ private:
 	unordered_map<uint64, ObjectRef> _objects;			// 모든 오브젝트 관리
 	unordered_map<uint64, ObjectRef> _players;			// 플레이어만 관리
 	unordered_map<uint64, ObjectRef> _monsters;			// 몬스터만 관리
+
+	// 플레이어 생성
+	PlayerRef _player1;
+	PlayerRef _player2;
 };
 
 extern RoomRef GRoom;

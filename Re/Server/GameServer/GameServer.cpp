@@ -34,6 +34,8 @@ void DoWorkerJob(ServerServiceRef& service)
 
 int main()
 {
+	GRoom->Init();
+
 	ClientPacketHandler::Init();
 
 	ServerServiceRef service = MakeShared<ServerService>(
