@@ -4,6 +4,8 @@
 #include "Character/Enemy1.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "UObject/ConstructorHelpers.h"
+#include "Animation/AnimInstance.h"
+#include "Animation/AnimMontage.h"
 
 // Sets default values
 AEnemy1::AEnemy1()
@@ -13,6 +15,10 @@ AEnemy1::AEnemy1()
 
     EnemyName = TEXT("Enemy 1");
     Health = 100.0f;
+    bIsAttacking = false;
+    bIsDamaged = false;
+    TimeSinceLastAttack = 0.0f;
+
     // Create and initialize the skeletal mesh component
     USkeletalMeshComponent* SkeletalMesh = GetMesh();
     if (!SkeletalMesh)
@@ -100,7 +106,7 @@ void AEnemy1::BeginPlay()
    
     GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
    
-    
+    Attack();
     CheckMeshSetup();
 }
 
@@ -108,6 +114,8 @@ void AEnemy1::BeginPlay()
 void AEnemy1::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+
     TArray<FVector> CornerPoints = GetBoxCornerPoints();
     FVector Pivot = BoxComponent->GetComponentLocation(); // 중심 피봇 좌표
     /*
@@ -123,8 +131,61 @@ void AEnemy1::Tick(float DeltaTime)
         UE_LOG(LogTemp, Log, TEXT(" Enemy 1 Relative Corner Point: %s"), *RelativePoint.ToString());
     }
     */
+
+    //애니메이션 연동테스트를위해 시간초로 설정함
+    // Update the time since the last attack
+    TimeSinceLastAttack += DeltaTime;
+
+    // Check if 3 seconds have passed
+    if (TimeSinceLastAttack >= AttackInterval)
+    {
+        // Trigger the attack
+        Attack();
+
+        // Reset the timer
+        TimeSinceLastAttack = 0.0f;
+    }
     CheckAndTeleport();
     //UpdateAnimation();
+}
+
+void AEnemy1::Attack()
+{
+    //애니메이션 연동테스트를위해 시간초로 설정함
+    if (!bIsAttacking)
+    {
+
+        bIsAttacking = true;
+       
+        UE_LOG(LogTemp, Log, TEXT("Attack triggered"));
+
+        // Reset attack after 1 second (duration of the attack animation)
+        GetWorld()->GetTimerManager().SetTimer(AttackResetTimerHandle, this, &AEnemy1::ResetAttack, 1.0f, false);
+    }
+}
+
+void AEnemy1::TakeDamage()
+{
+    if (!bIsDamaged)
+    {
+        bIsDamaged = true;
+        UE_LOG(LogTemp, Log, TEXT("Damage taken"));
+
+        // Reset damage after 0.5 seconds (duration of the damage animation)
+        GetWorld()->GetTimerManager().SetTimer(DamageResetTimerHandle, this, &AEnemy1::ResetDamage, 0.5f, false);
+    }
+}
+
+void AEnemy1::ResetAttack()
+{
+    bIsAttacking = false;
+    UE_LOG(LogTemp, Log, TEXT("Attack reset"));
+}
+
+void AEnemy1::ResetDamage()
+{
+    bIsDamaged = false;
+    UE_LOG(LogTemp, Log, TEXT("Damaged reset"));
 }
 
 TArray<FVector> AEnemy1::GetBoxCornerPoints() const

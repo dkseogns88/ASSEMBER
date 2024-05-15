@@ -283,7 +283,7 @@ void UMyProjectGameInstance::HandleHIT(const Protocol::S_HIT& pkt)
 		if (FindActor == nullptr) return;
 		if (AEnemy1* Enemy = Cast<AEnemy1>(*FindActor)) // 어떤 액터와 충돌했는지 확인
 		{
-			
+			Enemy->TakeDamage();
 
 			Enemy->Health -= 20;
 			if(Enemy->Health <= 0)

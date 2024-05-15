@@ -21,8 +21,14 @@ class MYPROJECT_API AEnemy1 : public ACharacter
 
 
 private:
-	
-
+	void ResetAttack();
+	void ResetDamage();
+	// Timer to track time between attacks
+	float TimeSinceLastAttack;
+	const float AttackInterval = 3.0f;  // 3 seconds interval
+	// Timer handle for resetting attack , Damage
+	FTimerHandle AttackResetTimerHandle;
+	FTimerHandle DamageResetTimerHandle;
 public:
 	// Sets default values for this character's properties
 	AEnemy1();
@@ -47,11 +53,25 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
+	
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	UFUNCTION(BlueprintCallable, Category = "Attack")
+	void Attack();
+
+	UFUNCTION(BlueprintCallable, Category = "Damage")
+	void TakeDamage();
+
+
+	
+
+	UPROPERTY(BlueprintReadWrite, Category = "Attack")
+	bool bIsAttacking;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Damage")
+	bool bIsDamaged;
 
 	void CheckAndTeleport();
 
