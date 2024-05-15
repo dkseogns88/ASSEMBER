@@ -286,9 +286,11 @@ void UMyProjectGameInstance::HandleHIT(const Protocol::S_HIT& pkt)
 			Enemy->TakeDamage();
 
 			Enemy->Health -= 20;
-			if(Enemy->Health <= 0)
-				World->DestroyActor(Enemy);
-
+			if (Enemy->Health <= 0)
+			{
+				Enemy->Die();
+				//World->DestroyActor(Enemy);
+			}
 		}
 	}
 

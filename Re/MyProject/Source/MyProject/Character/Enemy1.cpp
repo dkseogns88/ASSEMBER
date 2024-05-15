@@ -5,6 +5,7 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Animation/AnimInstance.h"
+#include "TimerManager.h"
 #include "Animation/AnimMontage.h"
 
 // Sets default values
@@ -17,6 +18,7 @@ AEnemy1::AEnemy1()
     Health = 100.0f;
     bIsAttacking = false;
     bIsDamaged = false;
+    bIsDead = false;
     TimeSinceLastAttack = 0.0f;
 
     // Create and initialize the skeletal mesh component
@@ -175,6 +177,25 @@ void AEnemy1::TakeDamage()
         GetWorld()->GetTimerManager().SetTimer(DamageResetTimerHandle, this, &AEnemy1::ResetDamage, 0.5f, false);
     }
 }
+
+void AEnemy1::Die()
+{
+    if (!bIsDead)
+    {
+        bIsDead = true;
+        UE_LOG(LogTemp, Log, TEXT("Enemy died"));
+
+        // Trigger death animation and schedule actor destruction
+        GetWorld()->GetTimerManager().SetTimer(DeathHandle, this, &AEnemy1::HandleDeath, 1.5f, false);
+    }
+}
+
+void AEnemy1::HandleDeath()
+{
+    // Destroy the actor after 1.5 seconds
+    Destroy();
+}
+
 
 void AEnemy1::ResetAttack()
 {
