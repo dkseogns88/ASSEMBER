@@ -36,7 +36,7 @@ public:
 	// Sets default values for this character's properties
 	AEnemy1();
 	~AEnemy1();
-	void UpdateAnimation();
+	
 
 	// Function to get the box component's corner points
 	TArray<FVector> GetBoxCornerPoints() const;

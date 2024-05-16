@@ -4,15 +4,22 @@
 #include "Character/Enemy2.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "UObject/ConstructorHelpers.h"
-
+#include "Animation/AnimInstance.h"
+#include "TimerManager.h"
+#include "Animation/AnimMontage.h"
 // Sets default values
 AEnemy2::AEnemy2()
 {
     // Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
     PrimaryActorTick.bCanEverTick = true;
 
-    EnemyName = TEXT("Enemy 2");
+    EnemyName = TEXT("Enemy 2 : Fanatic");
     Health = 100.0f;
+    bIsAttacking = false;
+    bIsDamaged = false;
+    bIsDead = false;
+    TimeSinceLastAttack = 0.0f;
+
     // Create and initialize the skeletal mesh component
     USkeletalMeshComponent* SkeletalMesh = GetMesh();
     if (!SkeletalMesh)
@@ -90,7 +97,7 @@ void AEnemy2::BeginPlay()
 
     GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
    
-
+    Attack();
     CheckMeshSetup();
 }
 
@@ -114,8 +121,80 @@ void AEnemy2::Tick(float DeltaTime)
         UE_LOG(LogTemp, Log, TEXT("Enemy 2 Relative Corner Point: %s"), *RelativePoint.ToString());
     }
    */
+
+   //애니메이션 연동테스트를위해 시간초로 설정함
+  // Update the time since the last attack
+    TimeSinceLastAttack += DeltaTime;
+
+    // Check if 3 seconds have passed
+    if (TimeSinceLastAttack >= AttackInterval)
+    {
+        // Trigger the attack
+        Attack();
+
+        // Reset the timer
+        TimeSinceLastAttack = 0.0f;
+    }
     CheckAndTeleport();
     //UpdateAnimation();
+}
+
+void AEnemy2::Attack()
+{
+    //애니메이션 연동테스트를위해 시간초로 설정함
+    if (!bIsAttacking)
+    {
+
+        bIsAttacking = true;
+
+        UE_LOG(LogTemp, Log, TEXT("Enemy 2 : Fanatic Attack triggered"));
+
+        // Reset attack after 1 second (duration of the attack animation)
+        GetWorld()->GetTimerManager().SetTimer(AttackResetTimerHandle, this, &AEnemy2::ResetAttack, 1.0f, false);
+    }
+}
+
+void AEnemy2::TakeDamage()
+{
+    if (!bIsDamaged)
+    {
+        bIsDamaged = true;
+        UE_LOG(LogTemp, Log, TEXT("Enemy 2 : Fanatic Damage taken"));
+
+        // Reset damage after 0.5 seconds (duration of the damage animation)
+        GetWorld()->GetTimerManager().SetTimer(DamageResetTimerHandle, this, &AEnemy2::ResetDamage, 0.5f, false);
+    }
+}
+
+void AEnemy2::Die()
+{
+    if (!bIsDead)
+    {
+        bIsDead = true;
+        UE_LOG(LogTemp, Log, TEXT("Enemy 2 : Fanatic died"));
+
+        // Trigger death animation and schedule actor destruction
+        GetWorld()->GetTimerManager().SetTimer(DeathHandle, this, &AEnemy2::HandleDeath, 1.5f, false);
+    }
+}
+
+void AEnemy2::HandleDeath()
+{
+    // Destroy the actor after 1.5 seconds
+    Destroy();
+}
+
+
+void AEnemy2::ResetAttack()
+{
+    bIsAttacking = false;
+    UE_LOG(LogTemp, Log, TEXT("Enemy 2 : Fanatic Attack reset"));
+}
+
+void AEnemy2::ResetDamage()
+{
+    bIsDamaged = false;
+    UE_LOG(LogTemp, Log, TEXT("Enemy 2 : Fanatic eDamaged reset"));
 }
 
 TArray<FVector> AEnemy2::GetBoxCornerPoints() const
@@ -186,9 +265,3 @@ void AEnemy2::CheckMeshSetup()
     }
 }
 
-void AEnemy2::UpdateAnimation()
-{
-
-
-
-}

@@ -17,12 +17,22 @@ class MYPROJECT_API AEnemy2 : public ACharacter
 
 
 private:
+	void ResetAttack();
+	void ResetDamage();
+	void HandleDeath();
 
+	// Timer to track time between attacks
+	float TimeSinceLastAttack;
+	const float AttackInterval = 3.0f;  // 3 seconds interval
+	// Timer handle for resetting attack , Damage
+	FTimerHandle AttackResetTimerHandle;
+	FTimerHandle DamageResetTimerHandle;
+	FTimerHandle DeathHandle;
 
 public:
 	// Sets default values for this character's properties
 	AEnemy2();
-	void UpdateAnimation();
+
 
 	// Function to get the box component's corner points
 	TArray<FVector> GetBoxCornerPoints() const;
@@ -45,6 +55,24 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	UBoxComponent* BoxComponent;
 
+	UFUNCTION(BlueprintCallable, Category = "Attack")
+	void Attack();
+
+	UFUNCTION(BlueprintCallable, Category = "Damage")
+	void TakeDamage();
+
+	UFUNCTION(BlueprintCallable, Category = "Death")
+	void Die();
+
+
+	UPROPERTY(BlueprintReadWrite, Category = "Attack")
+	bool bIsAttacking;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Damage")
+	bool bIsDamaged;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Death")
+	bool bIsDead;
 
 	void CheckAndTeleport();
 

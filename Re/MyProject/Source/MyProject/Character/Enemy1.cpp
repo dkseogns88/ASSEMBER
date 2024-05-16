@@ -14,7 +14,7 @@ AEnemy1::AEnemy1()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-    EnemyName = TEXT("Enemy 1");
+    EnemyName = TEXT("Enemy 1 : Cultist");
     Health = 100.0f;
     bIsAttacking = false;
     bIsDamaged = false;
@@ -159,7 +159,7 @@ void AEnemy1::Attack()
 
         bIsAttacking = true;
        
-        UE_LOG(LogTemp, Log, TEXT("Attack triggered"));
+        UE_LOG(LogTemp, Log, TEXT("Enemy 1 : Cultist Attack triggered"));
 
         // Reset attack after 1 second (duration of the attack animation)
         GetWorld()->GetTimerManager().SetTimer(AttackResetTimerHandle, this, &AEnemy1::ResetAttack, 1.0f, false);
@@ -171,7 +171,7 @@ void AEnemy1::TakeDamage()
     if (!bIsDamaged)
     {
         bIsDamaged = true;
-        UE_LOG(LogTemp, Log, TEXT("Damage taken"));
+        UE_LOG(LogTemp, Log, TEXT("Enemy 1 : Cultist Damage taken"));
 
         // Reset damage after 0.5 seconds (duration of the damage animation)
         GetWorld()->GetTimerManager().SetTimer(DamageResetTimerHandle, this, &AEnemy1::ResetDamage, 0.5f, false);
@@ -183,7 +183,7 @@ void AEnemy1::Die()
     if (!bIsDead)
     {
         bIsDead = true;
-        UE_LOG(LogTemp, Log, TEXT("Enemy died"));
+        UE_LOG(LogTemp, Log, TEXT("Enemy 1 : Cultist died"));
 
         // Trigger death animation and schedule actor destruction
         GetWorld()->GetTimerManager().SetTimer(DeathHandle, this, &AEnemy1::HandleDeath, 1.5f, false);
@@ -200,13 +200,13 @@ void AEnemy1::HandleDeath()
 void AEnemy1::ResetAttack()
 {
     bIsAttacking = false;
-    UE_LOG(LogTemp, Log, TEXT("Attack reset"));
+    UE_LOG(LogTemp, Log, TEXT("Enemy 1 : CultistAttack reset"));
 }
 
 void AEnemy1::ResetDamage()
 {
     bIsDamaged = false;
-    UE_LOG(LogTemp, Log, TEXT("Damaged reset"));
+    UE_LOG(LogTemp, Log, TEXT("Enemy 1 : Cultist Damaged reset"));
 }
 
 TArray<FVector> AEnemy1::GetBoxCornerPoints() const
@@ -276,9 +276,3 @@ void AEnemy1::CheckMeshSetup()
     }
 }
 
-void AEnemy1::UpdateAnimation()
-{
-   
-   
-    
-}
