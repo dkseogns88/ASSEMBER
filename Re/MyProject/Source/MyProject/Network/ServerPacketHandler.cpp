@@ -128,7 +128,7 @@ bool Handle_S_HIT(PacketSessionRef& session, Protocol::S_HIT& pkt)
 {
 	if (auto* GameInstance = Cast<UMyProjectGameInstance>(GWorld->GetGameInstance()))
 	{
-		//GameInstance->HandleHIT(pkt);
+		GameInstance->HandleHIT(pkt);
 	}
 
 	return true;

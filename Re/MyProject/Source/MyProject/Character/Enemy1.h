@@ -9,8 +9,6 @@
 
 
 
-
-
 UCLASS()
 class MYPROJECT_API AEnemy1 : public ANPC
 {

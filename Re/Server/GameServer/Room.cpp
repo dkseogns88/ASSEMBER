@@ -308,7 +308,8 @@ bool Room::HandleEnterPlayer(PlayerRef player)
 		}
 
 		SendBufferRef sendBuffer = ClientPacketHandler::MakeSendBuffer(spawnPkt);
-		Broadcast(sendBuffer);
+		if (auto session = player->session.lock())
+			session->Send(sendBuffer);
 	}
 
 	return success;

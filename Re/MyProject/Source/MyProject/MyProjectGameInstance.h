@@ -45,7 +45,7 @@ public:
 	void HandleMonsterSpawn(const Protocol::S_SPAWN_MONSTER& SpawnPkt);
 	void HandleMonsterSpawn(const Protocol::ObjectInfo& MonsterInfo);
 
-	//void HandleHIT(const Protocol::S_HIT& pkt);
+	void HandleHIT(const Protocol::S_HIT& pkt);
 	
 	void HandleChange(const FString& CharacterName);
 	// 캐릭터 클래스 찾기 함수
@@ -56,7 +56,7 @@ public:
 	// 초기화 함수
 	virtual void Init() override;
 	UMyProjectGameInstance();
-	void SpawnMonsterAtLocation(UClass* MonsterClass, const Protocol::PosInfo& Info);
+	void SpawnMonsterAtLocation(const Protocol::PosInfo& Info);
 
 private:
 	// 캐릭터 이름과 클래스를 매핑하는 맵
@@ -76,8 +76,8 @@ public:
 	TSubclassOf<AMyProjectPlayer> OtherPlayerClass;
 
 	// 몬스터 클래스 참조
-	UPROPERTY()
-	UClass* MonsterClass1;
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<ANPC> MonsterClass;
 
 	UPROPERTY()
 	UClass* MonsterClass2;

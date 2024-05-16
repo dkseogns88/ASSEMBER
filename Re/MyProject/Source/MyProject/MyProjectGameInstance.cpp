@@ -260,12 +260,20 @@ void UMyProjectGameInstance::HandleMonsterSpawn(const Protocol::ObjectInfo& Mons
 	if (World == nullptr)
 		return;
 
-	if (MonsterInfo.monster_type() == Protocol::MONSTER_TYPE_TEST) {
-		SpawnMonsterAtLocation(MonsterClass1, MonsterInfo.pos_info());
-	}
+	FVector Location = FVector(MonsterInfo.pos_info().x(), MonsterInfo.pos_info().y(), MonsterInfo.pos_info().z());
+
+	ANPC* Monster = Cast<ANPC>(World->SpawnActor(MonsterClass, &Location));
+	//Monster->SetPlayerInfo(MonsterInfo.pos_info().pos_info());
+	if(Monster)
+		monsters.Add(MonsterInfo.object_id(), Monster);
+
+
+	//if (MonsterInfo.monster_type() == Protocol::MONSTER_TYPE_TEST) {
+	//	SpawnMonsterAtLocation(MonsterInfo.pos_info());
+	//}
 }
 // 이부분 서버처리 수정해야함
-/*
+
 void UMyProjectGameInstance::HandleHIT(const Protocol::S_HIT& pkt)
 {
 	if (Socket == nullptr || GameServerSession == nullptr)
@@ -282,7 +290,6 @@ void UMyProjectGameInstance::HandleHIT(const Protocol::S_HIT& pkt)
 	{
 		ANPC** FindActor = monsters.Find(HitId);
 		if (FindActor == nullptr) return;
-
 		
 		if (AEnemy1* Enemy = Cast<AEnemy1>(*FindActor))
 		{
@@ -297,20 +304,24 @@ void UMyProjectGameInstance::HandleHIT(const Protocol::S_HIT& pkt)
 	}
 
 }
-*/
 
-void UMyProjectGameInstance::SpawnMonsterAtLocation(UClass* MonsterClass, const Protocol::PosInfo& Info)
+void UMyProjectGameInstance::SpawnMonsterAtLocation(const Protocol::PosInfo& Info)
 {
+
+
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 	
 
 	FVector Location = FVector(Info.x(), Info.y(), Info.z());
 
+
 	// 스폰할 몬스터의 클래스를 지정
 	AEnemy1* SpawnedMonster = GetWorld()->SpawnActor<AEnemy1>(MonsterClass, Location, FRotator::ZeroRotator, SpawnParams);
 	if (SpawnedMonster)
 	{
+
+
 		UE_LOG(LogTemp, Log, TEXT("Monster spawned successfully at %s"), *Location.ToString());
 		SpawnedMonster->SetActorEnableCollision(true);
 		monsters.Add(Info.object_id(), SpawnedMonster);
@@ -337,8 +348,8 @@ void UMyProjectGameInstance::Init()
 	CharacterBlueprintPaths.Add("Rinty", "Blueprint'/Game/MyBP/BP_Class/BP_MyPlayer.BP_MyPlayer_C'");
 	CharacterBlueprintPaths.Add("Sida", "Blueprint'/Game/MyBP/BP_Class/BP_MyPlayer_sida.BP_MyPlayer_sida_C'");
 
-	MonsterClass1 = ANPC::StaticClass();
-	MonsterClass2 = ANPC::StaticClass();
+	//MonsterClass1 = ANPC::StaticClass();
+	//MonsterClass2 = ANPC::StaticClass();
 	
 	//스폰안정화를위해 월드 완전히생성후 텀을두어 몬스터소환
 	//GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, this, &UMyProjectGameInstance::SpawnNPC, 1.0f, false);
