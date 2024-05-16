@@ -262,7 +262,6 @@ void AMyProjectPlayerController::OnAimReleased()
 }
 
 
-// 이부분 서버처리 하는거 수정해야함 
 
 void AMyProjectPlayerController::FireWeapon()
 {
@@ -311,8 +310,8 @@ void AMyProjectPlayerController::FireWeapon()
 
     if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Pawn, Params))
     {
-        /*
-        if (AEnemy1* Enemy = Cast<AEnemy1>(HitResult.GetActor())) // AEnemy1으로 캐스팅
+        
+        if (ANPC* Enemy = Cast<ANPC>(HitResult.GetActor())) // ANPC로 캐스팅
         {
            //UE_LOG(LogTemp, Log, TEXT("Hit: %s"), *HitResult.GetActor()->GetName());
             
@@ -331,7 +330,7 @@ void AMyProjectPlayerController::FireWeapon()
             }
 
         }
-        */
+       
     }
     // 디버깅용 라인 그리기 (에디터에서만 보임)
     DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 1.0f, 0, 1.0f);

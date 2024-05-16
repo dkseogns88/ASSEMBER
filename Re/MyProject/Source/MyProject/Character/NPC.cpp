@@ -20,10 +20,13 @@ ANPC::ANPC()
     BoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComponent"));
     BoxComponent->SetupAttachment(RootComponent);
 
+    MonsterInfo = new Protocol::PosInfo();
+    DestInfo = new Protocol::PosInfo();
 }
 ANPC::~ANPC()
 {
-
+    delete MonsterInfo;
+    delete DestInfo;
 }
 
 

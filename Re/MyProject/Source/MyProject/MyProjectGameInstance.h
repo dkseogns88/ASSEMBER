@@ -79,8 +79,7 @@ public:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<ANPC> MonsterClass;
 
-	UPROPERTY()
-	UClass* MonsterClass2;
+
 
 	// 스폰된 몬스터를 관리하기 위한 컨테이너
 	UPROPERTY()
