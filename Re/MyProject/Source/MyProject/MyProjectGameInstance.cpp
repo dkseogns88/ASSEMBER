@@ -2,8 +2,8 @@
 
 
 #include "MyProjectGameInstance.h"
-#include "Enemy1.h"
 #include "Sockets.h"
+#include "Enemy1.h"
 #include "Common/TcpSocketBuilder.h"
 #include "Serialization/ArrayWriter.h"
 #include "SocketSubsystem.h"
@@ -265,6 +265,7 @@ void UMyProjectGameInstance::HandleMonsterSpawn(const Protocol::ObjectInfo& Mons
 	}
 }
 
+/*
 void UMyProjectGameInstance::HandleHIT(const Protocol::S_HIT& pkt)
 {
 	if (Socket == nullptr || GameServerSession == nullptr)
@@ -279,22 +280,24 @@ void UMyProjectGameInstance::HandleHIT(const Protocol::S_HIT& pkt)
 
 	if (OnHit)
 	{
-		ACharacter** FindActor = monsters.Find(HitId);
+		ANPC** FindActor = monsters.Find(HitId);
 		if (FindActor == nullptr) return;
-		if (AEnemy1* Enemy = Cast<AEnemy1>(*FindActor)) // 어떤 액터와 충돌했는지 확인
-		{
-			Enemy->TakeDamage();
 
+		
+		if (AEnemy1* Enemy = Cast<AEnemy1>(*FindActor))
+		{
+			// Handle AEnemy1-specific logic
+			Enemy->TakeDamage();
 			Enemy->Health -= 20;
 			if (Enemy->Health <= 0)
 			{
 				Enemy->Die();
-				//World->DestroyActor(Enemy);
 			}
 		}
 	}
 
 }
+*/
 
 void UMyProjectGameInstance::SpawnMonsterAtLocation(UClass* MonsterClass, const Protocol::PosInfo& Info)
 {
@@ -334,8 +337,8 @@ void UMyProjectGameInstance::Init()
 	CharacterBlueprintPaths.Add("Rinty", "Blueprint'/Game/MyBP/BP_Class/BP_MyPlayer.BP_MyPlayer_C'");
 	CharacterBlueprintPaths.Add("Sida", "Blueprint'/Game/MyBP/BP_Class/BP_MyPlayer_sida.BP_MyPlayer_sida_C'");
 
-	MonsterClass1 = AEnemy1::StaticClass();
-	MonsterClass2 = AEnemy2::StaticClass();
+	MonsterClass1 = ANPC::StaticClass();
+	MonsterClass2 = ANPC::StaticClass();
 	
 	//스폰안정화를위해 월드 완전히생성후 텀을두어 몬스터소환
 	//GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, this, &UMyProjectGameInstance::SpawnNPC, 1.0f, false);

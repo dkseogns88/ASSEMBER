@@ -6,8 +6,7 @@
 #include "Engine/GameInstance.h"
 #include "\Program Files\Epic Games\UE_5.3\Engine\Source\Runtime\Engine\Classes\GameFramework\Actor.h"
 #include "MyProject.h"
-#include "Character/Enemy1.h"
-#include "Character/Enemy2.h"
+#include "Character/NPC.h"
 #include "MyProjectGameInstance.generated.h"
 
 
@@ -46,7 +45,7 @@ public:
 	void HandleMonsterSpawn(const Protocol::S_SPAWN_MONSTER& SpawnPkt);
 	void HandleMonsterSpawn(const Protocol::ObjectInfo& MonsterInfo);
 
-	void HandleHIT(const Protocol::S_HIT& pkt);
+	//void HandleHIT(const Protocol::S_HIT& pkt);
 	
 	void HandleChange(const FString& CharacterName);
 	// 캐릭터 클래스 찾기 함수
@@ -85,7 +84,7 @@ public:
 
 	// 스폰된 몬스터를 관리하기 위한 컨테이너
 	UPROPERTY()
-	TMap<uint64, ACharacter*> monsters;
+	TMap<uint64, ANPC*> monsters;
 
 	AMyProjectPlayer* MyPlayer;
 	TMap<uint64, AMyProjectPlayer*> Players;

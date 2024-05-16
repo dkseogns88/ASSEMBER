@@ -4,6 +4,7 @@
 #include "MyProjectPlayerController.h"
 #include "Blueprint/UserWidget.h"
 #include "EnhancedInputSubsystems.h"
+#include "Enemy1.h"
 #include "MyProjectMyPlayer.h"
 #include "MyProjectMyPlayerSida.h"
 #include "DrawDebugHelpers.h"
@@ -199,17 +200,14 @@ void AMyProjectPlayerController::Tick(float DeltaTime)
     {
         if (HitResult.GetActor()) // 어떤 액터와 충돌했는지 확인
         {
-            AEnemy1* HitEnemy1 = Cast<AEnemy1>(HitResult.GetActor());
-            AEnemy2* HitEnemy2 = Cast<AEnemy2>(HitResult.GetActor());
+            ANPC* HitNPC = Cast<ANPC>(HitResult.GetActor());
+           
 
-            if (HitEnemy1) // 충돌한 액터가 AEnemy1인지 확인
+            if (HitNPC) // 충돌한 액터가 AEnemy1인지 확인
             {
-                ShowEnemyInfo(HitEnemy1);
+                ShowEnemyInfo(HitNPC);
             }
-            else if (HitEnemy2) // 충돌한 액터가 AEnemy2인지 확인
-            {
-                ShowEnemyInfo(HitEnemy2);
-            }
+           
             else
             {
                 RemoveEnemyInfo(); // 충돌한 액터가 AEnemy1이나 AEnemy2가 아닌 경우
@@ -311,7 +309,8 @@ void AMyProjectPlayerController::FireWeapon()
 
     if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Pawn, Params))
     {
-        if (AEnemy1* Enemy = Cast<AEnemy1>(HitResult.GetActor())) // 어떤 액터와 충돌했는지 확인
+        /*
+        if (AEnemy1* Enemy = Cast<AEnemy1>(HitResult.GetActor())) // AEnemy1으로 캐스팅
         {
            //UE_LOG(LogTemp, Log, TEXT("Hit: %s"), *HitResult.GetActor()->GetName());
             
@@ -330,23 +329,35 @@ void AMyProjectPlayerController::FireWeapon()
             }
 
         }
+        */
     }
     // 디버깅용 라인 그리기 (에디터에서만 보임)
     DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 1.0f, 0, 1.0f);
     
 }
 
-void AMyProjectPlayerController::ShowEnemyInfo(AEnemy1* Enemy)
+
+
+
+void AMyProjectPlayerController::ShowEnemyInfo(ANPC* Enemy)
 {
-    UE_LOG(LogTemp, Log, TEXT("ShowEnemyInfo called for AEnemy1"));
-    ShowEnemyInfo_Internal(Enemy->EnemyName, Enemy->Health);
+    if (!CurrentEnemyInfoWidget && EnemyInfoWidgetClass)
+    {
+        CurrentEnemyInfoWidget = CreateWidget<UEnemyInfoWidget>(this, EnemyInfoWidgetClass);
+        if (CurrentEnemyInfoWidget)
+        {
+            CurrentEnemyInfoWidget->AddToViewport();
+        }
+    }
+
+    if (CurrentEnemyInfoWidget)
+    {
+        CurrentEnemyInfoWidget->SetEnemyName(Enemy->GetNPCName());
+        CurrentEnemyInfoWidget->SetEnemyHealth(Enemy->GetHealth() / 100.0f);
+    }
 }
 
-void AMyProjectPlayerController::ShowEnemyInfo(AEnemy2* Enemy)
-{
-    UE_LOG(LogTemp, Log, TEXT("ShowEnemyInfo called for AEnemy2"));
-    ShowEnemyInfo_Internal(Enemy->EnemyName, Enemy->Health);
-}
+
 
 void AMyProjectPlayerController::ShowEnemyInfo_Internal(FString EnemyName, float Health)
 {
@@ -458,4 +469,3 @@ void AMyProjectPlayerController::ToggleCharacterSelectUI()
 }
 
 
-/* Rinty가 서버로 정보가 넘어가지 않음*/
