@@ -264,7 +264,7 @@ void UMyProjectGameInstance::HandleMonsterSpawn(const Protocol::ObjectInfo& Mons
 		SpawnMonsterAtLocation(MonsterClass1, MonsterInfo.pos_info());
 	}
 }
-
+// 이부분 서버처리 수정해야함
 /*
 void UMyProjectGameInstance::HandleHIT(const Protocol::S_HIT& pkt)
 {

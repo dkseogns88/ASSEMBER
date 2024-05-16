@@ -262,6 +262,8 @@ void AMyProjectPlayerController::OnAimReleased()
 }
 
 
+// 이부분 서버처리 하는거 수정해야함 
+
 void AMyProjectPlayerController::FireWeapon()
 {
     FVector CameraLoc;
