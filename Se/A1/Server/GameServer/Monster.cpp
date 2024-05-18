@@ -23,17 +23,16 @@ void Monster::executeBehavior()
 
 void Monster::UpdateMonsterRandomPosition()
 {
-	posInfo->set_x(Utils::GetRandom(0.f, 1000.f));
-	posInfo->set_y(Utils::GetRandom(0.f, 1000.f));
+	posInfo->set_x(Utils::GetRandom(0.f, 2000.f));
+	posInfo->set_y(Utils::GetRandom(0.f, 2000.f));
 	posInfo->set_z(Utils::GetRandom(100.f, 100.f));
-	posInfo->set_yaw(Utils::GetRandom(0.f, 500.f));
 
 
 	Protocol::S_MOVE movePkt;
 	{
 		Protocol::PosInfo* info = movePkt.mutable_info();
-		info->set_state(Protocol::MOVE_STATE_RUN);
 		info->CopyFrom(*posInfo);
+		info->set_state(Protocol::MOVE_STATE_RUN);
 	}
 	{
 		SendBufferRef sendBuffer = ClientPacketHandler::MakeSendBuffer(movePkt);

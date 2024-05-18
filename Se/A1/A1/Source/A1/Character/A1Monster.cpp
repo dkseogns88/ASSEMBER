@@ -21,18 +21,31 @@ void AA1Monster::Tick(float DeltaTime)
 	if (IsMyPlayer() == false) {
 		const Protocol::MoveState State = DestInfo->state();
 
+		if (State == Protocol::MOVE_STATE_RUN)
 		{
-			FRotator NowRotation = GetActorRotation();
-			FRotator TargetRotation = FRotator(0, DestInfo->yaw(), 0);
+			FVector NowLocation = GetActorLocation();
+			FVector NewLocation = FVector(DestInfo->x(), DestInfo->y(), DestInfo->z());
+			
+			float DistanceToDestination = FVector::Dist(NowLocation, NewLocation);
 
+			// 목적지에 도달했는지 확인
+			if (DistanceToDestination < 10.f)
+			{
+				return;
+			}
+			
+			FVector ForwardDirection = (NewLocation - NowLocation);
+			ForwardDirection.Normalize();
+
+			FRotator Rotator = UKismetMathLibrary::FindLookAtRotation(NowLocation, NowLocation + ForwardDirection);
+
+			FRotator NowRotation = GetActorRotation();
+			FRotator TargetRotation = FRotator(0, Rotator.Yaw, 0);
 			FRotator NewRotation = FMath::RInterpTo(NowRotation, TargetRotation, DeltaTime, 5.f); // 보간 속도는 5.0f로 설정
 			SetActorRotation(NewRotation);
 
-			FVector NowLocation = GetActorLocation();
-			FVector NewLocation = FVector(DestInfo->x(), DestInfo->y(), DestInfo->z());
-			FVector ForwardDirection = (NewLocation - NowLocation);
-			ForwardDirection.Normalize();
 			AddMovementInput(ForwardDirection);
+
 
 		}
 	}
