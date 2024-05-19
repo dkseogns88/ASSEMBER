@@ -4,6 +4,8 @@
 #include "Character/Enemy2.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "UObject/ConstructorHelpers.h"
+#include "Animation/AnimInstance.h"
+#include "TimerManager.h"
 
 // Sets default values
 AEnemy2::AEnemy2()
@@ -11,8 +13,9 @@ AEnemy2::AEnemy2()
     // Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
     PrimaryActorTick.bCanEverTick = true;
 
-    EnemyName = TEXT("Enemy 2");
+    NPCName = TEXT("Enemy 2 : Fanatic");
     Health = 100.0f;
+
     // Create and initialize the skeletal mesh component
     USkeletalMeshComponent* SkeletalMesh = GetMesh();
     if (!SkeletalMesh)
@@ -44,7 +47,7 @@ AEnemy2::AEnemy2()
     SkeletalMesh->SetVisibility(true, true);
 
     // Create and initialize the box component for collision
-    BoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComponent"));
+   
     BoxComponent->SetupAttachment(RootComponent);
     BoxComponent->SetBoxExtent(FVector(25.0f, 25.0f, 100.0f));  // Adjust the size as necessary
     BoxComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
@@ -70,15 +73,6 @@ AEnemy2::AEnemy2()
 
 }
 
-void AEnemy2::CheckAndTeleport()
-{
-    FVector CurrentLocation = GetActorLocation();
-    if (CurrentLocation.Z < -300.0f)
-    {
-        FVector NewLocation(0.0f, 0.0f, 300.0f);
-        SetActorLocation(NewLocation);
-    }
-}
 // Called when the game starts or when spawned
 void AEnemy2::BeginPlay()
 {
@@ -90,7 +84,7 @@ void AEnemy2::BeginPlay()
 
     GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
    
-
+ 
     CheckMeshSetup();
 }
 
@@ -99,96 +93,11 @@ void AEnemy2::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
 
-    TArray<FVector> CornerPoints = GetBoxCornerPoints();
-    FVector Pivot = BoxComponent->GetComponentLocation(); // 중심 피봇 좌표
-    /*
-    UE_LOG(LogTemp, Log, TEXT("Enemy 2 Pivot Point: %s"), *Pivot.ToString()); // 피봇 좌표 출력
-    
-    for (const FVector& Point : CornerPoints)
-    {
-        DrawDebugSphere(GetWorld(), Point, 5.0f, 12, FColor::Green, false, -1.0f);
-        UE_LOG(LogTemp, Log, TEXT("Enemy 2 Corner Point: %s"), *Point.ToString());
-
-        // 꼭지점에서 피봇으로 나눈 상대 좌표
-        FVector RelativePoint = Point - Pivot;
-        UE_LOG(LogTemp, Log, TEXT("Enemy 2 Relative Corner Point: %s"), *RelativePoint.ToString());
-    }
-   */
     CheckAndTeleport();
-    //UpdateAnimation();
-}
-
-TArray<FVector> AEnemy2::GetBoxCornerPoints() const
-{
-    TArray<FVector> Points;
-    FVector Extent = BoxComponent->GetScaledBoxExtent();
-    FVector Origin = BoxComponent->GetComponentLocation();
-
-    // Calculate the corner points
-    FVector BoxPoints[] = {
-        FVector(Extent.X, Extent.Y, Extent.Z),
-        FVector(Extent.X, Extent.Y, -Extent.Z),
-        FVector(Extent.X, -Extent.Y, Extent.Z),
-        FVector(Extent.X, -Extent.Y, -Extent.Z),
-        FVector(-Extent.X, Extent.Y, Extent.Z),
-        FVector(-Extent.X, Extent.Y, -Extent.Z),
-        FVector(-Extent.X, -Extent.Y, Extent.Z),
-        FVector(-Extent.X, -Extent.Y, -Extent.Z)
-    };
-
-    for (const FVector& Point : BoxPoints)
-    {
-        Points.Add(Origin + Point);
-    }
-
-    return Points;
+    
 }
 
 
 
-void AEnemy2::CheckMeshSetup()
-{
-    USkeletalMeshComponent* SkeletalMeshComponent = GetMesh();
-    if (!SkeletalMeshComponent)
-    {
-        UE_LOG(LogTemp, Warning, TEXT("SkeletalMeshComponent not found in %s"), *GetName());
-        return;
-    }
-
-    // 스켈레탈 메시
-    USkeletalMesh* SkeletalMesh = SkeletalMeshComponent->SkeletalMesh;
-    if (!SkeletalMesh)
-    {
-        UE_LOG(LogTemp, Warning, TEXT("No skeletal mesh is set for %s"), *GetName());
-    }
-    else
-    {
-
-        UE_LOG(LogTemp, Log, TEXT("Skeletal Mesh for %s is %s"), *GetName(), *SkeletalMesh->GetName());
-    }
 
 
-    int32 MaterialCount = SkeletalMeshComponent->GetNumMaterials();
-    UE_LOG(LogTemp, Log, TEXT("Number of materials on %s: %d"), *GetName(), MaterialCount);
-
-
-    for (int32 i = 0; i < MaterialCount; ++i)
-    {
-        UMaterialInterface* Material = SkeletalMeshComponent->GetMaterial(i);
-        if (!Material)
-        {
-            UE_LOG(LogTemp, Warning, TEXT("Material %d on %s is not set"), i, *GetName());
-        }
-        else
-        {
-            UE_LOG(LogTemp, Log, TEXT("Material %d on %s is %s"), i, *GetName(), *Material->GetName());
-        }
-    }
-}
-
-void AEnemy2::UpdateAnimation()
-{
-
-
-
-}

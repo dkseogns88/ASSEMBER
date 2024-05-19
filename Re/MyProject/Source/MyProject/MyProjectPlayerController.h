@@ -8,8 +8,7 @@
 #include "Blueprint/UserWidget.h"
 #include "HealthBarWidgets.h"
 #include "AmmoWidget.h"
-#include "Enemy1.h"
-#include "Enemy2.h"
+#include "NPC.h"
 #include "MyProjectPlayerController.generated.h"
 
 class UInputMappingContext;
@@ -53,8 +52,8 @@ public:
 
 	void FireWeapon();
 
-	void ShowEnemyInfo(AEnemy1* Enemy);
-	void ShowEnemyInfo(AEnemy2* Enemy);
+	void ShowEnemyInfo(ANPC* Enemy);
+	
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
 	TSubclassOf<UUserWidget> AimUIClass;

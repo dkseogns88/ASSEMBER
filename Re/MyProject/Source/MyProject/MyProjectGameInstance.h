@@ -6,8 +6,7 @@
 #include "Engine/GameInstance.h"
 #include "\Program Files\Epic Games\UE_5.3\Engine\Source\Runtime\Engine\Classes\GameFramework\Actor.h"
 #include "MyProject.h"
-#include "Character/Enemy1.h"
-#include "Character/Enemy2.h"
+#include "Character/NPC.h"
 #include "MyProjectGameInstance.generated.h"
 
 
@@ -57,7 +56,7 @@ public:
 	// 초기화 함수
 	virtual void Init() override;
 	UMyProjectGameInstance();
-	void SpawnMonsterAtLocation(UClass* MonsterClass, const Protocol::PosInfo& Info);
+	void SpawnMonsterAtLocation(const Protocol::PosInfo& Info);
 
 private:
 	// 캐릭터 이름과 클래스를 매핑하는 맵
@@ -77,15 +76,14 @@ public:
 	TSubclassOf<AMyProjectPlayer> OtherPlayerClass;
 
 	// 몬스터 클래스 참조
-	UPROPERTY()
-	UClass* MonsterClass1;
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<ANPC> MonsterClass;
 
-	UPROPERTY()
-	UClass* MonsterClass2;
+
 
 	// 스폰된 몬스터를 관리하기 위한 컨테이너
 	UPROPERTY()
-	TMap<uint64, ACharacter*> monsters;
+	TMap<uint64, ANPC*> monsters;
 
 	AMyProjectPlayer* MyPlayer;
 	TMap<uint64, AMyProjectPlayer*> Players;

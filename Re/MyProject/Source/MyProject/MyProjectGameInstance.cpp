@@ -2,8 +2,8 @@
 
 
 #include "MyProjectGameInstance.h"
-#include "Enemy1.h"
 #include "Sockets.h"
+#include "Enemy1.h"
 #include "Common/TcpSocketBuilder.h"
 #include "Serialization/ArrayWriter.h"
 #include "SocketSubsystem.h"
@@ -23,9 +23,8 @@
 #include "Engine/StaticMeshActor.h"
 UMyProjectGameInstance::UMyProjectGameInstance()
 {
-
-
 	
+
 
 }
 
@@ -244,9 +243,9 @@ void UMyProjectGameInstance::HandleZoom(const Protocol::S_ZOOM& ZoomPkt)
 
 void UMyProjectGameInstance::HandleMonsterSpawn(const Protocol::S_SPAWN_MONSTER& SpawnPkt)
 {
-	for (auto& monster : SpawnPkt.monsters())
+	for (const auto& MonsterInfo : SpawnPkt.monsters())
 	{
-		HandleMonsterSpawn(monster);
+		HandleMonsterSpawn(MonsterInfo);
 	}
 
 }
@@ -256,14 +255,36 @@ void UMyProjectGameInstance::HandleMonsterSpawn(const Protocol::ObjectInfo& Mons
 	if (Socket == nullptr || GameServerSession == nullptr)
 		return;
 
-	auto* World = GetWorld();
+	UWorld* World = GetWorld();
 	if (World == nullptr)
 		return;
 
+	FVector Location(MonsterInfo.pos_info().x(), MonsterInfo.pos_info().y(), MonsterInfo.pos_info().z());
+	FRotator Rotation(0.0f, 0.0f, 0.0f);
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+	// MonsterClass를 사용하여 몬스터 스폰
+	ANPC* SpawnedMonster = World->SpawnActor<ANPC>(MonsterClass, Location, Rotation, SpawnParams);
+	if (SpawnedMonster)
+	{
+		// 필요에 따라 MonsterInfo의 속성으로 설정
+		SpawnedMonster->SetActorEnableCollision(true);
+		// 스폰된 몬스터 정보를 monsters 맵에 추가
+		monsters.Add(MonsterInfo.object_id(), SpawnedMonster);
+		UE_LOG(LogTemp, Log, TEXT("Monster spawned successfully at %s"), *Location.ToString());
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("Failed to spawn monster at %s"), *Location.ToString());
+	}
+
+
 	if (MonsterInfo.monster_type() == Protocol::MONSTER_TYPE_TEST) {
-		SpawnMonsterAtLocation(MonsterClass1, MonsterInfo.pos_info());
+		SpawnMonsterAtLocation(MonsterInfo.pos_info());
 	}
 }
+// 이부분 서버처리 수정해야함
 
 void UMyProjectGameInstance::HandleHIT(const Protocol::S_HIT& pkt)
 {
@@ -279,34 +300,60 @@ void UMyProjectGameInstance::HandleHIT(const Protocol::S_HIT& pkt)
 
 	if (OnHit)
 	{
-		ACharacter** FindActor = monsters.Find(HitId);
+		ANPC** FindActor = monsters.Find(HitId);
 		if (FindActor == nullptr) return;
-		if (AEnemy1* Enemy = Cast<AEnemy1>(*FindActor)) // 어떤 액터와 충돌했는지 확인
+		
+		if (ANPC* Enemy = Cast<ANPC>(*FindActor))
 		{
-			
-
+			// Handle AEnemy1-specific logic
+			Enemy->TakeDamage();
 			Enemy->Health -= 20;
-			if(Enemy->Health <= 0)
-				World->DestroyActor(Enemy);
-
+			if (Enemy->Health <= 0)
+			{
+				Enemy->Die();
+			}
 		}
 	}
 
 }
 
-void UMyProjectGameInstance::SpawnMonsterAtLocation(UClass* MonsterClass, const Protocol::PosInfo& Info)
+void UMyProjectGameInstance::SpawnMonsterAtLocation (const Protocol::PosInfo& Info)
 {
+	UWorld* World = GetWorld();
+	if (World == nullptr)
+	{
+		UE_LOG(LogTemp, Error, TEXT("World is null"));
+		return;
+	}
+
+
+	FRotator Rotation(0.0f, 0.0f, 0.0f);
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 	
 
 	FVector Location = FVector(Info.x(), Info.y(), Info.z());
 
+
 	// 스폰할 몬스터의 클래스를 지정
-	AEnemy1* SpawnedMonster = GetWorld()->SpawnActor<AEnemy1>(MonsterClass, Location, FRotator::ZeroRotator, SpawnParams);
+	ANPC* SpawnedMonster = World->SpawnActor<ANPC>(MonsterClass, Location, Rotation, SpawnParams);
 	if (SpawnedMonster)
 	{
 		UE_LOG(LogTemp, Log, TEXT("Monster spawned successfully at %s"), *Location.ToString());
+
+		// 초기화 여부 확인
+		if (SpawnedMonster->MonsterInfo == nullptr)
+		{
+			SpawnedMonster->MonsterInfo = new Protocol::PosInfo();
+			UE_LOG(LogTemp, Warning, TEXT("MonsterInfo was null, created new instance"));
+		}
+
+		if (SpawnedMonster->DestInfo == nullptr)
+		{
+			SpawnedMonster->DestInfo = new Protocol::PosInfo();
+			UE_LOG(LogTemp, Warning, TEXT("DestInfo was null, created new instance"));
+		}
+
 		SpawnedMonster->SetActorEnableCollision(true);
 		monsters.Add(Info.object_id(), SpawnedMonster);
 
@@ -315,7 +362,15 @@ void UMyProjectGameInstance::SpawnMonsterAtLocation(UClass* MonsterClass, const 
 			assert(PlayerInfo->object_id() == Info.object_id());
 		}
 
-		SpawnedMonster->MonsterInfo->CopyFrom(Info);
+		// 안전한 메모리 접근
+		if (SpawnedMonster->MonsterInfo)
+		{
+			SpawnedMonster->MonsterInfo->CopyFrom(Info);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("MonsterInfo is still null"));
+		}
 	}
 	else
 	{
@@ -328,13 +383,13 @@ void UMyProjectGameInstance::Init()
 	Super::Init();
 
 	
+	MonsterClass = AEnemy1::StaticClass();
+	
+	
 	// 캐릭터 클래스 매핑 초기화
 	CharacterBlueprintPaths.Add("Rinty", "Blueprint'/Game/MyBP/BP_Class/BP_MyPlayer.BP_MyPlayer_C'");
 	CharacterBlueprintPaths.Add("Sida", "Blueprint'/Game/MyBP/BP_Class/BP_MyPlayer_sida.BP_MyPlayer_sida_C'");
 
-	MonsterClass1 = AEnemy1::StaticClass();
-	MonsterClass2 = AEnemy2::StaticClass();
-	
 	//스폰안정화를위해 월드 완전히생성후 텀을두어 몬스터소환
 	//GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, this, &UMyProjectGameInstance::SpawnNPC, 1.0f, false);
 
