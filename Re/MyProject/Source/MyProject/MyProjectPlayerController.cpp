@@ -5,6 +5,8 @@
 #include "Blueprint/UserWidget.h"
 #include "EnhancedInputSubsystems.h"
 #include "Enemy1.h"
+#include "Skill.h"
+#include "Kismet/GameplayStatics.h"
 #include "MyProjectMyPlayer.h"
 #include "MyProjectMyPlayerSida.h"
 #include "DrawDebugHelpers.h"
@@ -12,6 +14,7 @@
 #include "Components/InputComponent.h"
 #include "MyProject.h"
 #include "Protocol.pb.h"
+#include "GameFramework/PlayerState.h"
 
 
 AMyProjectPlayerController::AMyProjectPlayerController()
@@ -55,6 +58,13 @@ AMyProjectPlayerController::AMyProjectPlayerController()
         UE_LOG(LogTemp, Error, TEXT("Failed to find BP_EnemyInfoWidget"));
     }
 
+    SkillManager = CreateDefaultSubobject<USkillManager>(TEXT("SkillManager"));
+
+    //스킬 추가
+    USkill* Hellgun = NewObject<USkill>();
+    Hellgun->Initialize("Hellgun", 300.0f, 50.0f);
+    SkillManager->AddSkill(Hellgun);
+    
 
 }
 
@@ -238,6 +248,7 @@ void AMyProjectPlayerController::RemoveEnemyInfo()
 void AMyProjectPlayerController::SetupInputComponent()
 {
     Super::SetupInputComponent();
+
     InputComponent->BindAction("CharacterSelect", IE_Pressed, this, &AMyProjectPlayerController::ToggleCharacterSelectUI);
     InputComponent->BindAction("Aim", IE_Pressed, this, &AMyProjectPlayerController::OnAimPressed);
     InputComponent->BindAction("Aim", IE_Released, this, &AMyProjectPlayerController::OnAimReleased);
@@ -245,8 +256,58 @@ void AMyProjectPlayerController::SetupInputComponent()
     InputComponent->BindAction("Fire", IE_Pressed, this, &AMyProjectPlayerController::AttemptToFireWeapon);
 
     InputComponent->BindAction("Reload", IE_Pressed, this, &AMyProjectPlayerController::ReloadWeapon);
+
+    InputComponent->BindAction("UseSkill", IE_Pressed, this, &AMyProjectPlayerController::UseSkill);
     
 }
+
+void AMyProjectPlayerController::PerformSkill(FName SkillName)
+{
+    if (SkillManager)
+    {
+        UE_LOG(LogTemp, Log, TEXT("SkillManager is valid"));
+
+
+        USkill* SkillToUse = SkillManager->GetSkillByName(SkillName);
+        if (SkillToUse)
+        {
+            APawn* MyPawn = GetPawn();
+            if (MyPawn)
+            {
+                SkillToUse->ExecuteSkill(MyPawn);
+                UE_LOG(LogTemp, Log, TEXT("Success to use skill"));
+            }
+        }
+        else
+        {
+            UE_LOG(LogTemp, Warning, TEXT("Fail to call Using skill"));
+        }
+    }
+    else
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Fail to call skill Manager"));
+    }
+}
+void AMyProjectPlayerController::LogSkillUsage(FName SkillName)
+{
+    int32& UsageCount = SkillUsageCount.FindOrAdd(SkillName);
+    UsageCount++;
+
+    APlayerState* MyPlayerState = GetPlayerState<APlayerState>();
+    if (MyPlayerState)
+    {
+        int32 PlayerId = MyPlayerState->GetPlayerId();
+        UE_LOG(LogTemp, Log, TEXT("Player %d used skill %s, total usage: %d"), PlayerId, *SkillName.ToString(), UsageCount);
+    }
+}
+
+void AMyProjectPlayerController::UseSkill()
+{
+    UE_LOG(LogTemp, Log, TEXT("Try to use skill"));
+    LogSkillUsage("Hellgun");
+    PerformSkill("Hellgun");
+}
+
 
 
 void AMyProjectPlayerController::OnAimPressed()

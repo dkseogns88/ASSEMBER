@@ -83,6 +83,8 @@ public:
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
 
+
+
 protected:
 	const float MOVE_PACKET_SEND_DELAY = 0.2f;
 	float MovePacketSendTimer = MOVE_PACKET_SEND_DELAY;

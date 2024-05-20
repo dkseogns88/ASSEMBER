@@ -8,32 +8,30 @@
 #include "Network/Protocol.pb.h"
 #include "MyProjectPlayer.generated.h"
 
-
 UCLASS()
 class MYPROJECT_API AMyProjectPlayer : public ACharacter
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
 public:
-	AMyProjectPlayer();
-	virtual ~AMyProjectPlayer();
+    AMyProjectPlayer();
+    virtual ~AMyProjectPlayer();
 
 protected:
-	virtual void BeginPlay() override ;
-	virtual void Tick(float DeltaSeconds) override;
+    virtual void BeginPlay() override;
+    virtual void Tick(float DeltaSeconds) override;
 
 public:
-	bool IsMyPlayer();
+    bool IsMyPlayer();
 
-	Protocol::MoveState GetMoveState() { return PlayerInfo->state(); }
-	void SetMoveState(Protocol::MoveState State);
+    Protocol::MoveState GetMoveState() { return PlayerInfo->state(); }
+    void SetMoveState(Protocol::MoveState State);
 
-public:
-	void SetPlayerInfo(const Protocol::PosInfo& Info);
-	void SetDestInfo(const Protocol::PosInfo& Info);
-	Protocol::PosInfo* GetPlayerInfo() { return PlayerInfo; }
+    void SetPlayerInfo(const Protocol::PosInfo& Info);
+    void SetDestInfo(const Protocol::PosInfo& Info);
+    Protocol::PosInfo* GetPlayerInfo() { return PlayerInfo; }
 
 protected:
-	class Protocol::PosInfo* PlayerInfo;
-	class Protocol::PosInfo* DestInfo;
+    class Protocol::PosInfo* PlayerInfo;
+    class Protocol::PosInfo* DestInfo;
 };

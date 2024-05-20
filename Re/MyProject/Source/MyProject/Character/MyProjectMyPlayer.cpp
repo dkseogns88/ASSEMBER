@@ -23,7 +23,7 @@
 
 AMyProjectMyPlayer::AMyProjectMyPlayer()
 {
-	// 기존의 카메라 설정 비활성화
+	
 	if (CameraBoom)
 	{
 		CameraBoom->DestroyComponent();
@@ -261,7 +261,7 @@ void AMyProjectMyPlayer::SetAiming(bool bNewAiming)
 	UE_LOG(LogTemp, Log, TEXT("Aiming state set to: %s"), bIsAiming ? TEXT("True") : TEXT("False"));
 
 	
-	//애니메이션 직접조작, 현재는 클라이언트에서만 작동
+	
 	UAnimInstanceCustom* AnimInstance = Cast<UAnimInstanceCustom>(GetMesh()->GetAnimInstance());
 	if (AnimInstance)
 	{

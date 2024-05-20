@@ -9,6 +9,7 @@
 #include "HealthBarWidgets.h"
 #include "AmmoWidget.h"
 #include "NPC.h"
+#include "SkillManager.h"
 #include "MyProjectPlayerController.generated.h"
 
 class UInputMappingContext;
@@ -76,6 +77,7 @@ public:
 private:
 	
 	void ShowEnemyInfo_Internal(FString EnemyName, float Health);
+	
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
@@ -134,6 +136,19 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ammo")
 	int32 MaxAmmo;
+
+
+private:
+		void UseSkill();
+		void PerformSkill(FName SkillName);
+
+		UPROPERTY(EditDefaultsOnly, Category = "Skill")
+		USkillManager* SkillManager;
+
+		// 스킬 사용 횟수를 저장하는 변수
+		TMap<FName, int32> SkillUsageCount;
+
+		void LogSkillUsage(FName SkillName);
 
 	// End Actor interface
 };

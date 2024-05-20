@@ -13,6 +13,8 @@
 #include "InputActionValue.h"
 #include "MyProjectMyPlayer.h"
 #include "MyProjectGameInstance.h"
+#include "..\..\Source\MyProject\AnimInstanceCustom.h"
+
 
 AMyProjectPlayer::AMyProjectPlayer()
 {
@@ -23,23 +25,23 @@ AMyProjectPlayer::AMyProjectPlayer()
 	bUseControllerRotationRoll = false;
 
 	// Configure character movement
-	GetCharacterMovement()->bOrientRotationToMovement = true; // Character moves in the direction of input...	
+	GetCharacterMovement()->bOrientRotationToMovement = true; // Character moves in the direction of input...
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f); // ...at this rotation rate
-
-	GetCharacterMovement()->JumpZVelocity = 400.f;
+	GetCharacterMovement()->JumpZVelocity = 700.f;
 	GetCharacterMovement()->AirControl = 0.35f;
-	GetCharacterMovement()->MaxWalkSpeed = 300.f;
+	GetCharacterMovement()->MaxWalkSpeed = 500.f;
 	GetCharacterMovement()->MinAnalogWalkSpeed = 20.f;
 	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
+
 	GetCharacterMovement()->BrakingDecelerationFalling = 1500.0f;
-	
+
 	GetCharacterMovement()->bRunPhysicsWithNoController = true;
 
 	PlayerInfo = new Protocol::PosInfo();
 	DestInfo = new Protocol::PosInfo();
 }
 
-AMyProjectPlayer::~AMyProjectPlayer()
+AMyProjectPlayer::~AMyProjectPlayer() 
 {
 	delete PlayerInfo;
 	delete DestInfo;
@@ -69,10 +71,10 @@ void AMyProjectPlayer::BeginPlay()
 	}
 }
 
+
 void AMyProjectPlayer::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-
 	{
 		FVector Location = GetActorLocation();
 		PlayerInfo->set_x(Location.X);
@@ -81,7 +83,7 @@ void AMyProjectPlayer::Tick(float DeltaSeconds)
 		PlayerInfo->set_yaw(GetControlRotation().Yaw);
 	}
 
-	bool MyPlayer; 
+	bool MyPlayer;
 	auto* GameInstance = Cast<UMyProjectGameInstance>(GWorld->GetGameInstance());
 	if (GameInstance->MyPlayer != this)
 		MyPlayer = false;
@@ -121,7 +123,7 @@ void AMyProjectPlayer::Tick(float DeltaSeconds)
 	}
 }
 
-bool AMyProjectPlayer::IsMyPlayer()
+bool AMyProjectPlayer::IsMyPlayer() 
 {
 	if (Cast<AMyProjectMyPlayer>(this) != nullptr)
 		return true;
@@ -130,14 +132,13 @@ bool AMyProjectPlayer::IsMyPlayer()
 	return false;
 }
 
+
 void AMyProjectPlayer::SetMoveState(Protocol::MoveState State)
 {
 	if (PlayerInfo->state() == State)
 		return;
 
 	PlayerInfo->set_state(State);
-
-	// TODO
 }
 
 void AMyProjectPlayer::SetPlayerInfo(const Protocol::PosInfo& Info)
