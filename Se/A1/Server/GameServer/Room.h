@@ -35,6 +35,7 @@ private:
 
 public:
 	void Broadcast(SendBufferRef sendBuffer, uint64 exceptId = 0);
+	shared_ptr<Player> _testPlayer;
 
 private:
 	unordered_map<uint64, ObjectRef> _objects;			// 모든 오브젝트 관리

@@ -8,6 +8,8 @@
 #include "ActionNode.h"
 #include "SelectorNode.h"
 #include "BehaviorTree.h"
+#include "FindTargetNode.h"
+#include "ConditionNode.h"
 
 RoomRef GRoom = make_shared<Room>();
 
@@ -23,36 +25,60 @@ Room::~Room()
 
 void Room::InitializationRoom()
 {
-	Node* behaviorTreeRoot = new SequenceNode({
-	   new ActionNode([]() { return waitForSeconds(); }) // 랜덤한 방향으로 이동
-		});
-	BehaviorTree* behaviorTree = new BehaviorTree(behaviorTreeRoot);
-
 	MonsterRef monster = ObjectUtils::CreateMonster();
 	monster->posInfo->set_x(Utils::GetRandom(0.f, 500.f));
 	monster->posInfo->set_y(Utils::GetRandom(0.f, 500.f));
 	monster->posInfo->set_z(Utils::GetRandom(100.f, 100.f));
-	monster->posInfo->set_yaw(Utils::GetRandom(0.f, 500.f));
-	monster->_behaviorTree = behaviorTree;
+	if (AddMonster(monster)) {
 
-	AddMonster(monster);
 
-	_testMonster = monster;
+		// 행동 노드: 랜덤 이동
+		ActionNode* wander = new ActionNode([monster]() {
+			monster->MoveToRandom();
+			return true;
+			});
 
+		// 행동 노드: 플레이어 추적
+		ActionNode* chasePlayer = new ActionNode([monster]() {
+			monster->ChasePlayer();
+			return true;
+			});
+
+		// 시퀀스 노드: 조건을 확인하고 플레이어를 추적
+		SequenceNode* chaseSequence = new SequenceNode({ chasePlayer });
+
+		// 타겟이 있을 때 행동하는 선택자 노드
+		SelectorNode* targetSelector = new SelectorNode({ chaseSequence });
+
+		// 타겟이 없을 때 행동하는 시퀀스 노드
+		SequenceNode* noTargetSequence = new SequenceNode({ wander });
+
+
+		FindTargetNode* behaviorTreeRoot = new FindTargetNode(
+			monster, targetSelector, noTargetSequence
+			);
+		BehaviorTree* behaviorTree = new BehaviorTree(behaviorTreeRoot);
+		monster->_behaviorTree = behaviorTree;
+		_testMonster = monster;
+	}
 	
 }
 
 void Room::TestMonsterAI()
 {
-	_testMonster->executeBehavior();
+	this_thread::sleep_for(2s);
+	while (true) {
+		_testMonster->executeBehavior();
+	}
 
-	DoTimer(3000, &Room::TestMonsterAI);
+	//DoTimer(3000, &Room::TestMonsterAI);
 
 }
 
 bool Room::HandleEnterPlayer(PlayerRef player)
 {
 	bool success = AddPlayer(player);
+	_testPlayer = player;
 
 	// 랜덤 위치
 	player->posInfo->set_x(Utils::GetRandom(0.f, 500.f));
@@ -129,8 +155,14 @@ bool Room::HandleEnterPlayer(PlayerRef player)
 		if (auto session = player->session.lock())
 			session->Send(sendBuffer);
 
-		DoTimer(3000, &Room::TestMonsterAI);
+		//DoTimer(3000, &Room::TestMonsterAI);
 	}
+
+
+	// 몬스터 AI 테스트
+	thread testThread(&Room::TestMonsterAI, this);
+	testThread.detach();
+
 
 	return success;
 }
@@ -274,6 +306,7 @@ bool Room::AddPlayer(ObjectRef object)
 	if (_players.find(object->objectInfo->object_id()) != _players.end())
 		return false;
 	_players.insert(make_pair(object->objectInfo->object_id(), object));
+
 
 	return true;
 }

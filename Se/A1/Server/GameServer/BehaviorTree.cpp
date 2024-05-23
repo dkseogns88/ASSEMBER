@@ -10,14 +10,11 @@ BehaviorTree::BehaviorTree(Node* root)
 
 void BehaviorTree::execute()
 {
-    std::cout << "Executing Behavior Tree..." << std::endl;
     bool result = root->run();
     if (result) {
-        std::cout << "Behavior Tree executed successfully." << std::endl;
+        std::cout << "Behavior Tree executed successfully.\n\n\n";
     }
     else {
-        std::cout << "Behavior Tree execution failed." << std::endl;
+       std::cout << "Behavior Tree execution failed.\n\n\n";
     }
-
-    cout << endl << endl;
 }

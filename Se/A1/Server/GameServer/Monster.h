@@ -2,6 +2,7 @@
 #include "Creature.h"
 
 class BehaviorTree;
+class Player;
 
 class Monster : public Creature
 {
@@ -9,10 +10,15 @@ public:
 	Monster();
 	virtual ~Monster();
 
-
 	void executeBehavior();
-	void UpdateMonsterRandomPosition();
 
+	void ChasePlayer();
+	void MoveToRandom();
+
+public:
 	BehaviorTree* _behaviorTree;
+
+	weak_ptr<Player> _target;
+
 };
 

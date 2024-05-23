@@ -13,6 +13,7 @@
 #include "CorePch.h"
 
 
+#include "FVector.h"
 #include "Enum.pb.h"
 #include "ClientPacketHandler.h"
 #include "Utils.h"

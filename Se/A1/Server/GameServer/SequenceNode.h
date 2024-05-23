@@ -18,6 +18,11 @@ public:
         }
         return true;
     }
+
+    void addChild(Node* child) {
+        children.push_back(child);
+    }
+
 private:
     std::vector<Node*> children;
 
