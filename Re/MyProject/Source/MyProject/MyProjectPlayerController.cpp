@@ -58,6 +58,12 @@ AMyProjectPlayerController::AMyProjectPlayerController()
         UE_LOG(LogTemp, Error, TEXT("Failed to find BP_EnemyInfoWidget"));
     }
 
+    static ConstructorHelpers::FClassFinder<UUserWidget> LevelUpWidgetBPClass(TEXT("/Game/MyBP/UI/LevelUpWidget.LevelUpWidget_C"));
+    if (LevelUpWidgetBPClass.Succeeded())
+    {
+        LevelUpWidgetClass = LevelUpWidgetBPClass.Class;
+    }
+
     SkillManager = CreateDefaultSubobject<USkillManager>(TEXT("SkillManager"));
 
     //스킬 추가
@@ -74,7 +80,7 @@ void AMyProjectPlayerController::BeginPlay()
 {
     Super::BeginPlay();
 
-  
+    InitializeStats(100.0f, 500.0f, 20.0f);
     
     // get the enhanced input subsystem
     if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
@@ -114,20 +120,129 @@ void AMyProjectPlayerController::BeginPlay()
             UE_LOG(LogTemp, Warning, TEXT("Failed to create Ammo widget."));
         }
         
+        //Create LevelUpWidget
+         LevelUpWidgetInstance = CreateWidget<ULevelUpWidget>(this, LevelUpWidgetClass);
+         
       
         
     }
 
+    SetHealth(PlayerHealth);
     
 }
+
+// Implement InitializeStats
+void AMyProjectPlayerController::InitializeStats(float InitialHealth, float InitialMovementSpeed, float InitialAttackPower)
+{
+    PlayerHealth = InitialHealth;
+    MovementSpeed = InitialMovementSpeed;
+    AttackPower = InitialAttackPower;
+    UE_LOG(LogTemp, Log, TEXT("Stats Initialized: Health = %f, Movement Speed = %f, Attack Power = %f"), PlayerHealth, MovementSpeed, AttackPower);
+
+    // 동기화: 플레이어 캐릭터의 이동 속도를 업데이트
+    if (APawn* ControlledPawn = GetPawn())
+    {
+        if (AMyProjectPlayer* Players = Cast<AMyProjectPlayer>(ControlledPawn))
+        {
+            Players->SetMovementSpeed(MovementSpeed);
+        }
+    }
+}
+
+// Implement UpdateStats
+void AMyProjectPlayerController::UpdateStats(float NewHealth, float NewMovementSpeed, float NewAttackPower)
+{
+    PlayerHealth = NewHealth;
+    MovementSpeed = NewMovementSpeed;
+    AttackPower = NewAttackPower;
+    UE_LOG(LogTemp, Log, TEXT("Stats Updated: Health = %f, Movement Speed = %f, Attack Power = %f"), PlayerHealth, MovementSpeed, AttackPower);
+
+    // 동기화: 플레이어 캐릭터의 이동 속도를 업데이트
+    if (APawn* ControlledPawn = GetPawn())
+    {
+        if (AMyProjectPlayer* Players = Cast<AMyProjectPlayer>(ControlledPawn))
+        {
+            Players->SetMovementSpeed(MovementSpeed);
+        }
+    }
+}
+
 
 void AMyProjectPlayerController::SetHealth(float NewHealth)
 {
     PlayerHealth = NewHealth;
     if (HealthBarWidgets)
     {
-        HealthBarWidgets->UpdateHealth(PlayerHealth / 100.0f);
+        HealthBarWidgets->UpdateHealth(PlayerHealth / 100.0f);  // Assuming Health is out of 100
     }
+    UE_LOG(LogTemp, Log, TEXT("Health set to %f"), PlayerHealth);
+}
+
+// Show the Level Up UI
+void AMyProjectPlayerController::ShowLevelUpUI()
+{
+    if (LevelUpWidgetInstance && !LevelUpWidgetInstance->IsInViewport())
+    {
+        LevelUpWidgetInstance->AddToViewport();
+        bShowMouseCursor = true;
+        SetInputMode(FInputModeGameAndUI());
+        UE_LOG(LogTemp, Log, TEXT("Level Up UI shown"));
+    }
+}
+
+// Handle the Level Up option selected by the player
+void AMyProjectPlayerController::HandleLevelUpOption(int OptionIndex)
+{
+    UpdateStatsBasedOnOption(OptionIndex);
+    if (LevelUpWidgetInstance && LevelUpWidgetInstance->IsInViewport())
+    {
+        LevelUpWidgetInstance->RemoveFromViewport();
+        bShowMouseCursor = false;
+        SetInputMode(FInputModeGameOnly());
+        UE_LOG(LogTemp, Log, TEXT("Level Up UI hidden"));
+    }
+}
+
+// Update stats based on the selected option
+void AMyProjectPlayerController::UpdateStatsBasedOnOption(int OptionIndex)
+{
+    float NewHealth = PlayerHealth;
+    float NewMovementSpeed = MovementSpeed;
+    float NewAttackPower = AttackPower;
+
+    switch (OptionIndex)
+    {
+    case 1:
+        NewAttackPower *= 1.20f; // Increase attack power by 20%
+        break;
+    case 2:
+        NewHealth *= 1.15f; // Increase health by 15%
+        break;
+    case 3:
+        NewHealth = 100.0f; // Restore health to 100%
+        break;
+    case 4:
+        NewMovementSpeed *= 1.10f; // Increase movement speed by 10%
+        break;
+    case 5:
+    {
+        int RandomStat = FMath::RandRange(1, 3);
+        if (RandomStat == 1)
+            NewAttackPower *= 1.25f; // Increase attack power by 25%
+        else if (RandomStat == 2)
+            NewHealth *= 1.25f; // Increase health by 25%
+        else
+            NewMovementSpeed *= 1.25f; // Increase movement speed by 25%
+        break;
+    }
+    default:
+        break;
+    }
+
+    // Update all stats and sync with character
+    UpdateStats(NewHealth, NewMovementSpeed, NewAttackPower);
+
+    UE_LOG(LogTemp, Log, TEXT("Stats updated: Health = %f, Movement Speed = %f, Attack Power = %f"), NewHealth, NewMovementSpeed, NewAttackPower);
 }
 
 
@@ -258,6 +373,8 @@ void AMyProjectPlayerController::SetupInputComponent()
     InputComponent->BindAction("Reload", IE_Pressed, this, &AMyProjectPlayerController::ReloadWeapon);
 
     InputComponent->BindAction("UseSkill", IE_Pressed, this, &AMyProjectPlayerController::UseSkill);
+
+    InputComponent->BindAction("LevelUpUI", IE_Pressed, this, &AMyProjectPlayerController::ShowLevelUpUI);
     
 }
 

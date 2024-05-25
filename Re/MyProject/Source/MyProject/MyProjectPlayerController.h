@@ -7,6 +7,7 @@
 #include "\Program Files\Epic Games\UE_5.3\Engine\Source\Runtime\Engine\Classes\Sound\SoundBase.h"
 #include "Blueprint/UserWidget.h"
 #include "HealthBarWidgets.h"
+#include "LevelUpWidget.h"
 #include "AmmoWidget.h"
 #include "NPC.h"
 #include "SkillManager.h"
@@ -37,8 +38,28 @@ class MYPROJECT_API AMyProjectPlayerController : public APlayerController
 
 public:
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
+	float PlayerHealth;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
+	float MovementSpeed;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
+	float AttackPower;
+
+	UFUNCTION(BlueprintCallable, Category = "Stats")
+	void SetHealth(float NewHealth);
+
+	// Function to initialize stats
+	UFUNCTION(BlueprintCallable, Category = "Stats")
+	void InitializeStats(float InitialHealth, float InitialMovementSpeed, float InitialAttackPower);
+
+	// Function to update stats
+	UFUNCTION(BlueprintCallable, Category = "Stats")
+	void UpdateStats(float NewHealth, float NewMovementSpeed, float NewAttackPower);
+
+	UFUNCTION(BlueprintCallable, Category = "Stats")
+	void ShowLevelUpUI();
 	
 	// ĳ���� ���� �Լ�
 	UFUNCTION(BlueprintCallable, Category = "Character")
@@ -74,10 +95,26 @@ public:
 	bool bIsUIActive = false;
 	void AttemptToFireWeapon();
 	void ToggleCharacterSelectUI();
+
+	
+	UFUNCTION(BlueprintCallable, Category = "LevelUp")
+	void HandleLevelUpOption(int OptionIndex);
+
+	
+
 private:
 	
 	void ShowEnemyInfo_Internal(FString EnemyName, float Health);
-	
+
+	// Level Up UI
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<UUserWidget> LevelUpWidgetClass;
+
+	UPROPERTY()
+	ULevelUpWidget* LevelUpWidgetInstance;
+
+	// Function to update stats based on selected option
+	void UpdateStatsBasedOnOption(int OptionIndex);
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
@@ -101,7 +138,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UUserWidget> CharacterSelectWidgetClass;
 
-	void SetHealth(float NewHealth);
+	
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sound")
@@ -123,7 +160,7 @@ protected:
 	// Health bar widget instance
 	UPROPERTY()
 	UHealthBarWidgets* HealthBarWidgets;
-	float PlayerHealth = 100.0f;
+	
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI")
 	TSubclassOf<UAmmoWidget> AmmoWidgetClass;

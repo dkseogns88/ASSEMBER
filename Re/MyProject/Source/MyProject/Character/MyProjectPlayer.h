@@ -16,6 +16,7 @@ class MYPROJECT_API AMyProjectPlayer : public ACharacter
 public:
     AMyProjectPlayer();
     virtual ~AMyProjectPlayer();
+   
 
 protected:
     virtual void BeginPlay() override;
@@ -30,6 +31,10 @@ public:
     void SetPlayerInfo(const Protocol::PosInfo& Info);
     void SetDestInfo(const Protocol::PosInfo& Info);
     Protocol::PosInfo* GetPlayerInfo() { return PlayerInfo; }
+
+    UFUNCTION(BlueprintCallable, Category = "Movement")
+    void SetMovementSpeed(float NewSpeed);
+    float Speed;
 
 protected:
     class Protocol::PosInfo* PlayerInfo;

@@ -14,6 +14,7 @@
 #include "MyProjectMyPlayer.h"
 #include "MyProjectGameInstance.h"
 #include "..\..\Source\MyProject\AnimInstanceCustom.h"
+#include "MyProjectPlayerController.h"
 
 
 AMyProjectPlayer::AMyProjectPlayer()
@@ -29,7 +30,9 @@ AMyProjectPlayer::AMyProjectPlayer()
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f); // ...at this rotation rate
 	GetCharacterMovement()->JumpZVelocity = 700.f;
 	GetCharacterMovement()->AirControl = 0.35f;
-	GetCharacterMovement()->MaxWalkSpeed = 500.f;
+
+	Speed = 500.f;
+	GetCharacterMovement()->MaxWalkSpeed = Speed;
 	GetCharacterMovement()->MinAnalogWalkSpeed = 20.f;
 	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
 
@@ -47,6 +50,12 @@ AMyProjectPlayer::~AMyProjectPlayer()
 	delete DestInfo;
 	PlayerInfo = nullptr;
 	DestInfo = nullptr;
+}
+
+void AMyProjectPlayer::SetMovementSpeed(float NewSpeed)
+{
+	Speed = NewSpeed;
+	GetCharacterMovement()->MaxWalkSpeed = Speed;
 }
 
 void AMyProjectPlayer::BeginPlay()
@@ -121,6 +130,8 @@ void AMyProjectPlayer::Tick(float DeltaSeconds)
 			AddMovementInput(ForwardDirection);
 		}
 	}
+	
+
 }
 
 bool AMyProjectPlayer::IsMyPlayer() 
