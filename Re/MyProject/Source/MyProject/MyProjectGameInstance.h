@@ -12,6 +12,8 @@
 
 class AMyProjectPlayer;
 
+class ANPC;
+
 UCLASS()
 class MYPROJECT_API UMyProjectGameInstance : public UGameInstance
 {
@@ -46,6 +48,7 @@ public:
 	void HandleMonsterSpawn(const Protocol::ObjectInfo& MonsterInfo);
 
 	void HandleHIT(const Protocol::S_HIT& pkt);
+	void HandleAttack(const Protocol::S_ATTACK& pkt);
 	
 	void HandleChange(const FString& CharacterName);
 	// 캐릭터 클래스 찾기 함수
@@ -65,6 +68,11 @@ private:
 	FTimerHandle SpawnTimerHandle;
 	void SpawnNPC();
 	
+private:
+private:
+	AMyProjectPlayer* ValidationPlayer(int ObjectId);
+	ANPC* ValidationMonster(int ObjectId);
+
 public:
 	class FSocket* Socket;
 	FString IpAddress = TEXT("127.0.0.1");
@@ -83,7 +91,7 @@ public:
 
 	// 스폰된 몬스터를 관리하기 위한 컨테이너
 	UPROPERTY()
-	TMap<uint64, ANPC*> monsters;
+	TMap<uint64, ANPC*> Monsters;
 
 	AMyProjectPlayer* MyPlayer;
 	TMap<uint64, AMyProjectPlayer*> Players;

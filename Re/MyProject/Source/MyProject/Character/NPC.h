@@ -62,6 +62,7 @@ protected:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
     UBoxComponent* BoxComponent;
 
+
 public:
     ANPC();
     virtual ~ANPC();
@@ -70,6 +71,15 @@ public:
     TArray<FVector> GetBoxCornerPoints() const;
     void CheckMeshSetup();
     void CheckAndTeleport();
+
+public:
+    Protocol::MoveState GetMoveState() { return MonsterInfo->state(); }
+    void SetMoveState(Protocol::MoveState State);
+
+    void SetMonsterInfo(const Protocol::PosInfo& Info);
+    void SetDestInfo(const Protocol::PosInfo& Info);
+    Protocol::PosInfo* GetMonsterInfo() { return MonsterInfo; }
+
 
     float TimeSinceLastAttack;
     const float AttackInterval = 3.0f;  // 3 seconds interval

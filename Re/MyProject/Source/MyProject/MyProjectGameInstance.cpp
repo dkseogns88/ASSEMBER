@@ -21,6 +21,7 @@
 #include "UObject/ConstructorHelpers.h"
 #include "Components/StaticMeshComponent.h"
 #include "Engine/StaticMeshActor.h"
+
 UMyProjectGameInstance::UMyProjectGameInstance()
 {
 	
@@ -163,25 +164,18 @@ void UMyProjectGameInstance::HandleDespawn(const Protocol::S_DESPAWN& DespawnPkt
 
 void UMyProjectGameInstance::HandleMove(const Protocol::S_MOVE& MovePkt)
 {
-	if (Socket == nullptr || GameServerSession == nullptr)
-		return;
-
-	auto* World = GetWorld();
-	if (World == nullptr)
-		return;
-
 	const uint64 ObjectId = MovePkt.info().object_id();
-	AMyProjectPlayer** FindActor = Players.Find(ObjectId);
-	if (FindActor == nullptr)
-		return;
 
-	AMyProjectPlayer* Player = (*FindActor);
-
-	if (Player->IsMyPlayer())
-		return;
-
-	const Protocol::PosInfo& Info = MovePkt.info();
-	Player->SetDestInfo(Info);
+	if (AMyProjectPlayer* Player = ValidationPlayer(ObjectId))
+	{
+		const Protocol::PosInfo& Info = MovePkt.info();
+		Player->SetDestInfo(Info);
+	}
+	else if (ANPC* monster = ValidationMonster(ObjectId))
+	{
+		const Protocol::PosInfo& Info = MovePkt.info();
+		monster->SetDestInfo(Info);
+	}
 }
 
 void UMyProjectGameInstance::HandleJump(const Protocol::S_JUMP& JumpPkt)
@@ -265,13 +259,16 @@ void UMyProjectGameInstance::HandleMonsterSpawn(const Protocol::ObjectInfo& Mons
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
 	// MonsterClass를 사용하여 몬스터 스폰
-	ANPC* SpawnedMonster = World->SpawnActor<ANPC>(MonsterClass, Location, Rotation, SpawnParams);
+	AEnemy1* SpawnedMonster = World->SpawnActor<AEnemy1>(MonsterClass, Location, Rotation, SpawnParams);
 	if (SpawnedMonster)
 	{
 		// 필요에 따라 MonsterInfo의 속성으로 설정
 		SpawnedMonster->SetActorEnableCollision(true);
 		// 스폰된 몬스터 정보를 monsters 맵에 추가
-		monsters.Add(MonsterInfo.object_id(), SpawnedMonster);
+
+		SpawnedMonster->SetMonsterInfo(MonsterInfo.pos_info());
+
+		Monsters.Add(MonsterInfo.object_id(), SpawnedMonster);
 		UE_LOG(LogTemp, Log, TEXT("Monster spawned successfully at %s"), *Location.ToString());
 	}
 	else
@@ -279,10 +276,9 @@ void UMyProjectGameInstance::HandleMonsterSpawn(const Protocol::ObjectInfo& Mons
 		UE_LOG(LogTemp, Error, TEXT("Failed to spawn monster at %s"), *Location.ToString());
 	}
 
-
-	if (MonsterInfo.monster_type() == Protocol::MONSTER_TYPE_TEST) {
+	/*if (MonsterInfo.monster_type() == Protocol::MONSTER_TYPE_TEST) {
 		SpawnMonsterAtLocation(MonsterInfo.pos_info());
-	}
+	}*/
 }
 // 이부분 서버처리 수정해야함
 
@@ -300,7 +296,7 @@ void UMyProjectGameInstance::HandleHIT(const Protocol::S_HIT& pkt)
 
 	if (OnHit)
 	{
-		ANPC** FindActor = monsters.Find(HitId);
+		ANPC** FindActor = Monsters.Find(HitId);
 		if (FindActor == nullptr) return;
 		
 		if (ANPC* Enemy = Cast<ANPC>(*FindActor))
@@ -315,6 +311,13 @@ void UMyProjectGameInstance::HandleHIT(const Protocol::S_HIT& pkt)
 		}
 	}
 
+}
+
+void UMyProjectGameInstance::HandleAttack(const Protocol::S_ATTACK& pkt)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 200, FColor::Green, FString::Printf(TEXT("Attack!!")));
+	
+	return ;
 }
 
 void UMyProjectGameInstance::SpawnMonsterAtLocation (const Protocol::PosInfo& Info)
@@ -355,7 +358,7 @@ void UMyProjectGameInstance::SpawnMonsterAtLocation (const Protocol::PosInfo& In
 		}
 
 		SpawnedMonster->SetActorEnableCollision(true);
-		monsters.Add(Info.object_id(), SpawnedMonster);
+		Monsters.Add(Info.object_id(), SpawnedMonster);
 
 		if (Info.object_id() != 0)
 		{
@@ -383,7 +386,7 @@ void UMyProjectGameInstance::Init()
 	Super::Init();
 
 	
-	MonsterClass = AEnemy1::StaticClass();
+	//MonsterClass = AEnemy1::StaticClass();
 	
 	
 	// 캐릭터 클래스 매핑 초기화
@@ -407,6 +410,44 @@ void UMyProjectGameInstance::SpawnNPC()
 	//FVector MonsterSpawnLocation2 = FVector(200.0f, 200.0f, 150.0f);
 	//SpawnMonsterAtLocation(MonsterClass2, MonsterSpawnLocation2);
 	//UE_LOG(LogTemp, Log, TEXT("AEnemy2 Spawned at %s"), *MonsterSpawnLocation2.ToString());
+
+}
+
+AMyProjectPlayer* UMyProjectGameInstance::ValidationPlayer(int ObjectId)
+{
+
+	if (Socket == nullptr || GameServerSession == nullptr)
+		return nullptr;
+
+	auto* World = GetWorld();
+	if (World == nullptr)
+		return nullptr;
+
+	AMyProjectPlayer** FindActor = Players.Find(ObjectId);
+	if (FindActor == nullptr)
+		return nullptr;
+
+	AMyProjectPlayer* Player = (*FindActor);
+	if (Player->IsMyPlayer())
+		return nullptr;
+
+	return Player;
+}
+
+ANPC* UMyProjectGameInstance::ValidationMonster(int ObjectId)
+{
+	if (Socket == nullptr || GameServerSession == nullptr)
+		return nullptr;
+
+	auto* World = GetWorld();
+	if (World == nullptr)
+		return nullptr;
+
+	ANPC** FindActor = Monsters.Find(ObjectId);
+	if (FindActor == nullptr)
+		return nullptr;
+
+	return *FindActor;
 
 }
 
@@ -442,6 +483,7 @@ TSubclassOf<APawn> UMyProjectGameInstance::FindCharacterClassByName(const FStrin
 
 	return nullptr;
 }
+
 void UMyProjectGameInstance::HandleChange(const FString& CharacterName)
 {
 

@@ -14,9 +14,25 @@ struct FVector
     FVector operator*(float scalar) const {
         return { x * scalar, y * scalar, z * scalar };
     }
+
+    bool operator==(const FVector& other)
+    {
+        return y == other.y && x == other.x && z == other.z;
+    }
+
+    bool operator!=(const FVector& other)
+    {
+        return !(*this == other);
+    }
+
     float length() const {
         return std::sqrt(x * x + y * y + z * z);
     }
+
+    float lengthXY() const {
+        return std::sqrt(x * x + y * y);
+    }
+
     FVector normalized() const {
         float len = length();
         if (len != 0) {

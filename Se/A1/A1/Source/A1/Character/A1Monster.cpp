@@ -26,13 +26,13 @@ void AA1Monster::Tick(float DeltaTime)
 			FVector NowLocation = GetActorLocation();
 			FVector NewLocation = FVector(DestInfo->x(), DestInfo->y(), DestInfo->z());
 			
-			float DistanceToDestination = FVector::Dist(NowLocation, NewLocation);
+			//float DistanceToDestination = FVector::Dist(NowLocation, NewLocation);
 
-			// 목적지에 도달했는지 확인
-			if (DistanceToDestination < 10.f)
-			{
-				return;
-			}
+			//// 목적지에 도달했는지 확인
+			//if (DistanceToDestination < 10.f)
+			//{
+			//	return;
+			//}
 			
 			FVector ForwardDirection = (NewLocation - NowLocation);
 			ForwardDirection.Normalize();

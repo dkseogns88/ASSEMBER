@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "NPC.h"
-#include "Network/Protocol.pb.h"
 #include "Enemy1.generated.h"
 
 
@@ -24,8 +23,5 @@ protected:
     virtual void BeginPlay() override;
     virtual void Tick(float DeltaTime) override;
 
-public:
-	class Protocol::PosInfo* MonsterInfo;
-	class Protocol::PosInfo* DestInfo;
 
 };

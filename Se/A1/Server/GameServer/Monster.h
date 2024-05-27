@@ -1,5 +1,6 @@
 #pragma once
 #include "Creature.h"
+#include "TimeManager.h"
 
 class BehaviorTree;
 class Player;
@@ -13,6 +14,7 @@ public:
 	void executeBehavior();
 
 	void ChasePlayer();
+	void Attack();
 	void MoveToRandom();
 
 public:
@@ -20,5 +22,9 @@ public:
 
 	weak_ptr<Player> _target;
 
+	TimeManager _time;
+	chrono::steady_clock::time_point _lastSendTime;
+
+	FVector _newLocation;
 };
 

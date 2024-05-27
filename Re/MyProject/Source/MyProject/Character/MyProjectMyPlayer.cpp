@@ -106,6 +106,8 @@ void AMyProjectMyPlayer::Tick(float DeltaTime)
 	StateTick();
 	SendTick(DeltaTime);
 
+	//GEngine->AddOnScreenDebugMessage(-1, 200, FColor::Green, FString::Printf(TEXT("Hello %s"), *GetActorLocation().ToString()));
+
 }
 
 void AMyProjectMyPlayer::StateTick()

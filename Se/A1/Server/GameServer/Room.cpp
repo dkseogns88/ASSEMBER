@@ -66,12 +66,13 @@ void Room::InitializationRoom()
 
 void Room::TestMonsterAI()
 {
-	this_thread::sleep_for(2s);
-	while (true) {
-		_testMonster->executeBehavior();
-	}
-
-	//DoTimer(3000, &Room::TestMonsterAI);
+	//this_thread::sleep_for(2s);
+	//while (true) {
+		//_testMonster->executeBehavior();
+	//}
+	
+	_testMonster->executeBehavior();
+	DoTimer(0, &Room::TestMonsterAI);
 
 }
 
@@ -160,8 +161,10 @@ bool Room::HandleEnterPlayer(PlayerRef player)
 
 
 	// 몬스터 AI 테스트
-	thread testThread(&Room::TestMonsterAI, this);
-	testThread.detach();
+	//thread testThread(&Room::TestMonsterAI, this);
+	//testThread.detach();
+
+	DoTimer(2000, &Room::TestMonsterAI);
 
 
 	return success;

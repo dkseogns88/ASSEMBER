@@ -495,7 +495,7 @@ void AMyProjectPlayerController::FireWeapon()
             
             if (auto* GameInstance = Cast<UMyProjectGameInstance>(GWorld->GetGameInstance()))
             {
-                if (GameInstance->monsters.Find(Enemy->MonsterInfo->object_id()))
+                if (GameInstance->Monsters.Find(Enemy->MonsterInfo->object_id()))
                 {
 
                     Protocol::C_HIT HitPkt;

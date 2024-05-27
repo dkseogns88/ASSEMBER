@@ -5,6 +5,9 @@
 
 Monster::Monster()
 {
+	_time.Init();
+	_lastSendTime = chrono::high_resolution_clock::now();
+	_newLocation = FVector(posInfo->x(), posInfo->y(), posInfo->z());
 
 }
 
@@ -15,126 +18,111 @@ Monster::~Monster()
 
 void Monster::executeBehavior()
 {
+	_time.Update();
 	_behaviorTree->execute();
 }
 
 void Monster::ChasePlayer()
 {
-	float speed = 0.01f;
+	float DeltaTime = _time.GetDeltaTime();
+	float speed = 1000.f;
 
-	while (true) {
-		FVector oldVector(posInfo->x(), posInfo->y(), posInfo->z());
-		FVector NewVector(_target.lock()->posInfo->x(), _target.lock()->posInfo->y(), _target.lock()->posInfo->z());
+	PlayerRef target = _target.lock();
 
-		FVector direction = NewVector - oldVector;
-		float distance = direction.length();
+	FVector nowLocation(posInfo->x(), posInfo->y(), posInfo->z());
+	_newLocation = FVector(target->posInfo->x(), target->posInfo->y(), target->posInfo->z());
 
-		if (distance < speed)
-		{
-			posInfo->set_x(NewVector.x);
-			posInfo->set_y(NewVector.y);
-			posInfo->set_z(NewVector.z);
+	FVector direction = _newLocation - nowLocation;
+
+	// 현재 위치와 캐릭터 위치 비교!
+	{
+		FVector playerLocation{ GRoom->_testPlayer->posInfo->x(), GRoom->_testPlayer->posInfo->y(),GRoom->_testPlayer->posInfo->z() };
+
+		if ((playerLocation - nowLocation).lengthXY() < 500.f) {
+			cout << "Attack!" << endl;
 			return;
-		}
-		else {
-			FVector move = direction.normalized() * speed;
-			oldVector = oldVector + move;
-			posInfo->set_x(oldVector.x);
-			posInfo->set_y(oldVector.y);
-			posInfo->set_z(oldVector.z);
-
-			
-			FVector playerLocation{ GRoom->_testPlayer->posInfo->x(), GRoom->_testPlayer->posInfo->y(),GRoom->_testPlayer->posInfo->z() };
-			FVector monsterLocation{ oldVector };
-
-			if ((playerLocation - monsterLocation).length() < 500.f) {
-				cout << "공격!" << endl;
-				break;
-			}
-		}
-
-		static std::chrono::steady_clock::time_point lastBroadcastTime = std::chrono::steady_clock::now();
-		std::chrono::steady_clock::time_point currentTime = std::chrono::steady_clock::now();
-		std::chrono::duration<double> elapsed = currentTime - lastBroadcastTime;
-
-		if (elapsed.count() >= 0.2f) {
-			{
-
-				Protocol::S_MOVE movePkt;
-				Protocol::PosInfo* info = movePkt.mutable_info();
-				info->CopyFrom(*posInfo);
-				info->set_state(Protocol::MOVE_STATE_RUN);
-				SendBufferRef sendBuffer = ClientPacketHandler::MakeSendBuffer(movePkt);
-				if (RoomRef _room = room.load().lock()) {
-					_room->Broadcast(sendBuffer);
-				}
-				lastBroadcastTime = currentTime;
-			}
 		}
 	}
 
-	this_thread::sleep_for(1s);
+
+	FVector move = direction.normalized() * DeltaTime * speed;
+	nowLocation = nowLocation + move;
+	posInfo->set_x(nowLocation.x);
+	posInfo->set_y(nowLocation.y);
+	posInfo->set_z(nowLocation.z);
+
+	chrono::steady_clock::time_point currentTime = std::chrono::steady_clock::now();
+	std::chrono::duration<double> elapsed = currentTime - _lastSendTime;
+
+
+	if (elapsed.count() >= 0.05) {
+		{
+			Protocol::S_MOVE movePkt;
+			Protocol::PosInfo* info = movePkt.mutable_info();
+			info->CopyFrom(*posInfo);
+			info->set_state(Protocol::MOVE_STATE_RUN);
+			SendBufferRef sendBuffer = ClientPacketHandler::MakeSendBuffer(movePkt);
+			if (RoomRef _room = room.load().lock()) {
+				_room->Broadcast(sendBuffer);
+			}
+			_lastSendTime = currentTime;
+		}
+	}
+}
+
+void Monster::Attack()
+{
+
 }
 
 void Monster::MoveToRandom()
 {
+	float DeltaTime = _time.GetDeltaTime();
+	float speed = 1000.f;
 
-	FVector oldVector(posInfo->x(), posInfo->y(), posInfo->z());
-	FVector NewVector(Utils::GetRandom(0.f, 2000.f), Utils::GetRandom(0.f, 2000.f), Utils::GetRandom(100.f, 100.f));
+	FVector nowLocation(posInfo->x(), posInfo->y(), posInfo->z());
+	FVector direction = _newLocation - nowLocation;
 
-	float speed = 1.f;
+	if (nowLocation == _newLocation || direction.length() < speed * DeltaTime) {
+		_newLocation = FVector(Utils::GetRandom(0.f, 2000.f), Utils::GetRandom(0.f, 2000.f), posInfo->z());
+	}
 
-	while (true) {
-		FVector direction = NewVector - oldVector;
-		float distance = direction.length();
+	// 현재 위치와 캐릭터 위치 비교!
+	{
+		FVector playerLocation{ GRoom->_testPlayer->posInfo->x(), GRoom->_testPlayer->posInfo->y(),GRoom->_testPlayer->posInfo->z() };
 
-		if (distance < speed)
-		{
-			posInfo->set_x(NewVector.x);
-			posInfo->set_y(NewVector.y);
-			posInfo->set_z(NewVector.z);
-			break;
-		}
-		else {
-			FVector move = direction.normalized() * speed;
-			oldVector = oldVector + move;
-			posInfo->set_x(oldVector.x);
-			posInfo->set_y(oldVector.y);
-			posInfo->set_z(oldVector.z);
-
-			// 여기서 캐릭터가 거리내에 있는 지 확인!
-			FVector playerLocation{ GRoom->_testPlayer->posInfo->x(), GRoom->_testPlayer->posInfo->y(),GRoom->_testPlayer->posInfo->z() };
-			FVector monsterLocation{ oldVector };
-
-			if ((playerLocation - monsterLocation).length() < 500.f) {
-				cout << "Target!" << endl;
-				_target = GRoom->_testPlayer;
-				return;
-			}
-			else {
-			}
-
-		}
-		
-		static std::chrono::steady_clock::time_point lastBroadcastTime = std::chrono::steady_clock::now();
-		std::chrono::steady_clock::time_point currentTime = std::chrono::steady_clock::now();
-		std::chrono::duration<double> elapsed = currentTime - lastBroadcastTime;
-		
-		if (elapsed.count() >= 0.05) {
-			{
-
-				Protocol::S_MOVE movePkt;
-				Protocol::PosInfo* info = movePkt.mutable_info();
-				info->CopyFrom(*posInfo);
-				info->set_state(Protocol::MOVE_STATE_RUN);
-				SendBufferRef sendBuffer = ClientPacketHandler::MakeSendBuffer(movePkt);
-				if (RoomRef _room = room.load().lock()) {
-					_room->Broadcast(sendBuffer);
-				}
-				lastBroadcastTime = currentTime;
-			}
+		if ((playerLocation - nowLocation).lengthXY() < 1000.f) {
+			cout << "Target!" << endl;
+			_target = GRoom->_testPlayer;
+			return;
 		}
 	}
 
-	this_thread::sleep_for(3s);
+	FVector move = direction.normalized() * DeltaTime * speed;
+
+	//cout << "이전 위치: " << nowLocation.x << ", " << nowLocation.y << ", " << nowLocation.z << endl;
+
+	nowLocation = nowLocation + move;
+	posInfo->set_x(nowLocation.x);
+	posInfo->set_y(nowLocation.y);
+	posInfo->set_z(nowLocation.z);
+	
+	//cout << "새로운 위치: " << nowLocation.x << ", " << nowLocation.y << ", " << nowLocation.z << endl;
+
+	chrono::steady_clock::time_point currentTime = std::chrono::steady_clock::now();
+	std::chrono::duration<double> elapsed = currentTime - _lastSendTime;
+	
+	if (elapsed.count() >= 0.05) {
+		{
+			Protocol::S_MOVE movePkt;
+			Protocol::PosInfo* info = movePkt.mutable_info();
+			info->CopyFrom(*posInfo);
+			info->set_state(Protocol::MOVE_STATE_RUN);
+			SendBufferRef sendBuffer = ClientPacketHandler::MakeSendBuffer(movePkt);
+			if (RoomRef _room = room.load().lock()) {
+				_room->Broadcast(sendBuffer);
+			}
+			_lastSendTime = currentTime;
+		}
+	}
 }

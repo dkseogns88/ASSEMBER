@@ -6,6 +6,8 @@
 #include "UObject/ConstructorHelpers.h"
 #include "Animation/AnimInstance.h"
 #include "TimerManager.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 
 // Sets default values
@@ -57,22 +59,19 @@ AEnemy1::AEnemy1()
     if (AnimBP.Succeeded())
     {
         SkeletalMesh->SetAnimInstanceClass(AnimBP.Object);
+        GetCharacterMovement()->bRunPhysicsWithNoController = true;
+
     }
     else
     {
         UE_LOG(LogTemp, Error, TEXT("Failed to load animation blueprint class."));
     }
 
-    MonsterInfo = new Protocol::PosInfo();
-    DestInfo = new Protocol::PosInfo();
 }
 
 AEnemy1::~AEnemy1()
 {
-    delete MonsterInfo;
-    delete DestInfo;
-    MonsterInfo = nullptr;
-    DestInfo = nullptr;
+
 }
 
 void AEnemy1::BeginPlay()
@@ -86,5 +85,35 @@ void AEnemy1::BeginPlay()
 void AEnemy1::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
-    CheckAndTeleport();
+    //CheckAndTeleport();
+
+    {
+        const Protocol::MoveState State = DestInfo->state();
+
+        if (State == Protocol::MOVE_STATE_RUN)
+        {
+            FVector NowLocation = GetActorLocation();
+            FVector NewLocation = FVector(DestInfo->x(), DestInfo->y(), DestInfo->z());
+
+            //float DistanceToDestination = FVector::Dist(NowLocation, NewLocation);
+
+            //// 목적지에 도달했는지 확인
+            //if (DistanceToDestination < 10.f)
+            //{
+            //    return;
+            //}
+
+            FVector ForwardDirection = (NewLocation - NowLocation);
+            ForwardDirection.Normalize();
+
+            FRotator Rotator = UKismetMathLibrary::FindLookAtRotation(NowLocation, NowLocation + ForwardDirection);
+
+            FRotator NowRotation = GetActorRotation();
+            FRotator TargetRotation = FRotator(0, Rotator.Yaw, 0);
+            FRotator NewRotation = FMath::RInterpTo(NowRotation, TargetRotation, DeltaTime, 5.f); // 보간 속도는 5.0f로 설정
+            SetActorRotation(NewRotation);
+
+            AddMovementInput(ForwardDirection);
+        }
+    }
 }

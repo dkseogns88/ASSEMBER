@@ -34,7 +34,7 @@ void DoWorkerJob(ServerServiceRef& service)
 
 int main()
 {
-	GRoom->Init();
+	GRoom->InitializationRoom();
 
 	ClientPacketHandler::Init();
 
@@ -53,6 +53,7 @@ int main()
 				DoWorkerJob(service);
 			});
 	}
+
 
 	// Main Thread
 	DoWorkerJob(service);

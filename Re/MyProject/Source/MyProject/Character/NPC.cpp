@@ -6,6 +6,10 @@
 #include "UObject/ConstructorHelpers.h"
 #include "Animation/AnimInstance.h"
 #include "TimerManager.h"
+#include "Character/Enemy1.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 ANPC::ANPC()
@@ -176,4 +180,37 @@ void ANPC::CheckAndTeleport()
         FVector NewLocation(0.0f, 0.0f, 300.0f);
         SetActorLocation(NewLocation);
     }
+}
+
+void ANPC::SetMoveState(Protocol::MoveState State)
+{
+    if (MonsterInfo->state() == State)
+        return;
+
+    MonsterInfo->set_state(State);
+}
+
+void ANPC::SetMonsterInfo(const Protocol::PosInfo& Info)
+{
+    if (MonsterInfo->object_id() != 0)
+    {
+        assert(MonsterInfo->object_id() == Info.object_id());
+    }
+
+    MonsterInfo->CopyFrom(Info);
+
+    FVector Location(Info.x(), Info.y(), Info.z());
+    SetActorLocation(Location);
+
+}
+
+void ANPC::SetDestInfo(const Protocol::PosInfo& Info)
+{
+    if (MonsterInfo->object_id() != 0)
+    {
+        assert(MonsterInfo->object_id() == Info.object_id());
+    }
+
+    DestInfo->CopyFrom(Info);
+    SetMoveState(Info.state());
 }

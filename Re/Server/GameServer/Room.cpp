@@ -3,112 +3,18 @@
 #include "Player.h"
 #include "GameSession.h"
 #include "Monster.h"
-#include "Physics.h"
 #include "ObjectUtils.h"
-#include <cmath>
+#include "SequenceNode.h"
+#include "ActionNode.h"
+#include "SelectorNode.h"
+#include "BehaviorTree.h"
+#include "FindTargetNode.h"
+#include "ConditionNode.h"
 
 RoomRef GRoom = make_shared<Room>();
 
 Room::Room()
 {
-	/*{
-		MonsterRef monster = ObjectUtils::CreateMonster();
-		if (AddMonster(monster) == false)
-			return;
-
-		monster->posInfo->set_x(1510.f);
-		monster->posInfo->set_y(2880.f);
-		monster->posInfo->set_z(100.f);
-		monster->posInfo->set_yaw(Utils::GetRandom(0.f, 500.f));
-	}
-
-	{
-		MonsterRef monster = ObjectUtils::CreateMonster();
-		if (AddMonster(monster) == false)
-			return;
-
-		monster->posInfo->set_x(1200.f);
-		monster->posInfo->set_y(2880.f);
-		monster->posInfo->set_z(100.f);
-		monster->posInfo->set_yaw(Utils::GetRandom(0.f, 500.f));
-	}
-
-	{
-		MonsterRef monster = ObjectUtils::CreateMonster();
-		if (AddMonster(monster) == false)
-			return;
-
-		monster->posInfo->set_x(-2200.f);
-		monster->posInfo->set_y(1210.f);
-		monster->posInfo->set_z(140.f);
-		monster->posInfo->set_yaw(Utils::GetRandom(0.f, 500.f));
-	}
-
-	{
-		MonsterRef monster = ObjectUtils::CreateMonster();
-		if (AddMonster(monster) == false)
-			return;
-
-		monster->posInfo->set_x(-2460.f);
-		monster->posInfo->set_y(1210.f);
-		monster->posInfo->set_z(-140.f);
-		monster->posInfo->set_yaw(Utils::GetRandom(0.f, 500.f));
-	}
-
-	{
-		MonsterRef monster = ObjectUtils::CreateMonster();
-		if (AddMonster(monster) == false)
-			return;
-
-		monster->posInfo->set_x(-2740.f);
-		monster->posInfo->set_y(1210.f);
-		monster->posInfo->set_z(-140.f);
-		monster->posInfo->set_yaw(Utils::GetRandom(0.f, 500.f));
-	}
-
-	{
-		MonsterRef monster = ObjectUtils::CreateMonster();
-		if (AddMonster(monster) == false)
-			return;
-
-		monster->posInfo->set_x(-4480.f);
-		monster->posInfo->set_y(430.f);
-		monster->posInfo->set_z(-140.f);
-		monster->posInfo->set_yaw(Utils::GetRandom(0.f, 500.f));
-	}
-
-	{
-		MonsterRef monster = ObjectUtils::CreateMonster();
-		if (AddMonster(monster) == false)
-			return;
-
-		monster->posInfo->set_x(-4480.f);
-		monster->posInfo->set_y(-790.f);
-		monster->posInfo->set_z(-140.f);
-		monster->posInfo->set_yaw(Utils::GetRandom(0.f, 500.f));
-	}
-
-	{
-		MonsterRef monster = ObjectUtils::CreateMonster();
-		if (AddMonster(monster) == false)
-			return;
-
-		monster->posInfo->set_x(-1570.f);
-		monster->posInfo->set_y(-1020.f);
-		monster->posInfo->set_z(120.f);
-		monster->posInfo->set_yaw(Utils::GetRandom(0.f, 500.f));
-	}
-
-	{
-		MonsterRef monster = ObjectUtils::CreateMonster();
-		if (AddMonster(monster) == false)
-			return;
-
-		monster->posInfo->set_x(-230.f);
-		monster->posInfo->set_y(-730.f);
-		monster->posInfo->set_z(-120.f);
-		monster->posInfo->set_yaw(Utils::GetRandom(0.f, 500.f));
-	};*/
 }
 
 Room::~Room()
@@ -116,107 +22,60 @@ Room::~Room()
 
 }
 
-void Room::Init()
+void Room::InitializationRoom()
 {
-	{
-		MonsterRef monster = ObjectUtils::CreateMonster();
-		if (AddMonster(monster) == false)
-			return;
+	MonsterRef monster = ObjectUtils::CreateMonster();
+	monster->posInfo->set_x(Utils::GetRandom(-3000.f, -2500.f));
+	monster->posInfo->set_y(Utils::GetRandom(0.f, 500.f));
+	monster->posInfo->set_z(Utils::GetRandom(200.f, 200.f));
 
-		monster->posInfo->set_x(1510.f);
-		monster->posInfo->set_y(2880.f);
-		monster->posInfo->set_z(160.f);
-		monster->posInfo->set_yaw(Utils::GetRandom(0.f, 500.f));
+	if (AddMonster(monster)) {
+
+
+		// 행동 노드: 랜덤 이동
+		ActionNode* wander = new ActionNode([monster]() {
+			monster->MoveToRandom();
+			return true;
+			});
+
+		// 행동 노드: 플레이어 추적
+		ActionNode* chasePlayer = new ActionNode([monster]() {
+			monster->ChasePlayer();
+			return true;
+			});
+
+		// 시퀀스 노드: 조건을 확인하고 플레이어를 추적
+		SequenceNode* chaseSequence = new SequenceNode({ chasePlayer });
+
+		// 타겟이 있을 때 행동하는 선택자 노드
+		SelectorNode* targetSelector = new SelectorNode({ chaseSequence });
+
+		// 타겟이 없을 때 행동하는 시퀀스 노드
+		SequenceNode* noTargetSequence = new SequenceNode({ wander });
+
+
+		FindTargetNode* behaviorTreeRoot = new FindTargetNode(
+			monster, targetSelector, noTargetSequence
+		);
+		BehaviorTree* behaviorTree = new BehaviorTree(behaviorTreeRoot);
+		monster->_behaviorTree = behaviorTree;
 	}
 
-	{
-		MonsterRef monster = ObjectUtils::CreateMonster();
-		if (AddMonster(monster) == false)
-			return;
-
-		monster->posInfo->set_x(1200.f);
-		monster->posInfo->set_y(2880.f);
-		monster->posInfo->set_z(160.f);
-		monster->posInfo->set_yaw(Utils::GetRandom(0.f, 500.f));
-	}
-
-	{
-		MonsterRef monster = ObjectUtils::CreateMonster();
-		if (AddMonster(monster) == false)
-			return;
-
-		monster->posInfo->set_x(-2200.f);
-		monster->posInfo->set_y(1210.f);
-		monster->posInfo->set_z(-100.f);
-		monster->posInfo->set_yaw(Utils::GetRandom(0.f, 500.f));
-	}
-
-	{
-		MonsterRef monster = ObjectUtils::CreateMonster();
-		if (AddMonster(monster) == false)
-			return;
-
-		monster->posInfo->set_x(-2460.f);
-		monster->posInfo->set_y(1210.f);
-		monster->posInfo->set_z(-100.f);
-		monster->posInfo->set_yaw(Utils::GetRandom(0.f, 500.f));
-	}
-
-	{
-		MonsterRef monster = ObjectUtils::CreateMonster();
-		if (AddMonster(monster) == false)
-			return;
-
-		monster->posInfo->set_x(-2740.f);
-		monster->posInfo->set_y(1210.f);
-		monster->posInfo->set_z(-100.f);
-		monster->posInfo->set_yaw(Utils::GetRandom(0.f, 500.f));
-	}
-
-	{
-		MonsterRef monster = ObjectUtils::CreateMonster();
-		if (AddMonster(monster) == false)
-			return;
-
-		monster->posInfo->set_x(-4480.f);
-		monster->posInfo->set_y(430.f);
-		monster->posInfo->set_z(-100.f);
-		monster->posInfo->set_yaw(Utils::GetRandom(0.f, 500.f));
-	}
-
-	{
-		MonsterRef monster = ObjectUtils::CreateMonster();
-		if (AddMonster(monster) == false)
-			return;
-
-		monster->posInfo->set_x(-4480.f);
-		monster->posInfo->set_y(-790.f);
-		monster->posInfo->set_z(-100.f);
-		monster->posInfo->set_yaw(Utils::GetRandom(0.f, 500.f));
-	}
-
-	{
-		MonsterRef monster = ObjectUtils::CreateMonster();
-		if (AddMonster(monster) == false)
-			return;
-
-		monster->posInfo->set_x(-1570.f);
-		monster->posInfo->set_y(-1020.f);
-		monster->posInfo->set_z(160.f);
-		monster->posInfo->set_yaw(Utils::GetRandom(0.f, 500.f));
-	}
-
-	{
-		MonsterRef monster = ObjectUtils::CreateMonster();
-		if (AddMonster(monster) == false)
-			return;
-
-		monster->posInfo->set_x(-230.f);
-		monster->posInfo->set_y(-730.f);
-		monster->posInfo->set_z(-120.f);
-		monster->posInfo->set_yaw(Utils::GetRandom(0.f, 500.f));
-	};
+	cout << "InitializationRoom\n";
 }
+
+void Room::UpdateMonsterAI()
+{
+	for (auto it = _monsters.begin(); it != _monsters.end(); ++it) {
+		if (MonsterRef monster = dynamic_pointer_cast<Monster>((it->second))) {
+			monster->executeBehavior();
+		}
+	}
+
+	DoTimer(0, &Room::UpdateMonsterAI);
+}
+
+
 
 bool Room::HandleEnterPlayer(PlayerRef player)
 {
@@ -226,16 +85,11 @@ bool Room::HandleEnterPlayer(PlayerRef player)
 	{
 		_player1 = player;
 
-		player->posInfo->set_x(1210.f);
+		player->posInfo->set_x(-1410.f);
 		player->posInfo->set_y(100.f);
 		player->posInfo->set_z(140.f);
 		player->posInfo->set_yaw(Utils::GetRandom(0.f, 500.f));
 
-		// 랜덤 위치
-		/*player->posInfo->set_x(Utils::GetRandom(0.f, 300.f));
-		player->posInfo->set_y(Utils::GetRandom(0.f, 400.f));
-		player->posInfo->set_z(Utils::GetRandom(100.f, 100.f));
-		player->posInfo->set_yaw(Utils::GetRandom(0.f, 500.f));*/
 	}
 	else if (_player2 == nullptr)
 	{
@@ -244,12 +98,6 @@ bool Room::HandleEnterPlayer(PlayerRef player)
 		player->posInfo->set_y(100.f);
 		player->posInfo->set_z(140.f);
 		player->posInfo->set_yaw(Utils::GetRandom(0.f, 500.f));
-
-		// 랜덤 위치
-		//player->posInfo->set_x(Utils::GetRandom(0.f, 300.f));
-		//player->posInfo->set_y(Utils::GetRandom(0.f, 400.f));
-		//player->posInfo->set_z(Utils::GetRandom(100.f, 100.f));
-		//player->posInfo->set_yaw(Utils::GetRandom(0.f, 500.f));
 	}
 	
 	// 입장 사실을 들어온 플레이어에게 알린다.
@@ -311,6 +159,8 @@ bool Room::HandleEnterPlayer(PlayerRef player)
 		if (auto session = player->session.lock())
 			session->Send(sendBuffer);
 	}
+
+	DoTimer(2000, &Room::UpdateMonsterAI);
 
 	return success;
 }

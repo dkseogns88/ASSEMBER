@@ -133,3 +133,13 @@ bool Handle_S_HIT(PacketSessionRef& session, Protocol::S_HIT& pkt)
 
 	return true;
 }
+
+bool Handle_S_ATTACK(PacketSessionRef& session, Protocol::S_ATTACK& pkt)
+{
+	if (auto* GameInstance = Cast<UMyProjectGameInstance>(GWorld->GetGameInstance()))
+	{
+		GameInstance->HandleAttack(pkt);
+	}
+
+	return true;
+}
