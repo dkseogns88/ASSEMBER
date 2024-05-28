@@ -69,7 +69,6 @@ private:
 	void SpawnNPC();
 	
 private:
-private:
 	AMyProjectPlayer* ValidationPlayer(int ObjectId);
 	ANPC* ValidationMonster(int ObjectId);
 
@@ -86,6 +85,10 @@ public:
 	// 몬스터 클래스 참조
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<ANPC> MonsterClass;
+
+	//IP주소 저장하는 문자열 ServerIPAddress
+	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category = "Network")
+	FString ServerIPAddress;
 
 
 

@@ -11,6 +11,7 @@
 #include "AmmoWidget.h"
 #include "NPC.h"
 #include "SkillManager.h"
+#include "IPAddressWidget.h"
 #include "MyProjectPlayerController.generated.h"
 
 class UInputMappingContext;
@@ -100,7 +101,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "LevelUp")
 	void HandleLevelUpOption(int OptionIndex);
 
-	
+	void ToggleIPAddressWidget();
 
 private:
 	
@@ -116,6 +117,15 @@ private:
 	// Function to update stats based on selected option
 	void UpdateStatsBasedOnOption(int OptionIndex);
 
+	//IPAdress Widget
+	UPROPERTY()
+	UIPAddressWidget* IPAddressWidget;
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UIPAddressWidget> IPAddressWidgetClass;
+
+	bool bIsIPWidgetVisible;
+	
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputMappingContext* InputMappingContext;

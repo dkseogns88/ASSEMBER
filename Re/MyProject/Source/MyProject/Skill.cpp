@@ -65,6 +65,8 @@ void USkill::ExecuteSkill(AActor* Instigator)
             {
                 UGameplayStatics::ApplyDamage(OverlappedActor, SkillDamage, Instigator->GetInstigatorController(), Instigator, UDamageType::StaticClass()); // 데미지를 가함
                 UE_LOG(LogTemp, Log, TEXT("Hit enemy: %s"), *OverlappedActor->GetName());
+
+               
             }
         }
     }

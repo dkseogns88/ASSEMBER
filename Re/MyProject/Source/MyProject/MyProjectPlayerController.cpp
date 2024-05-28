@@ -11,10 +11,12 @@
 #include "MyProjectMyPlayerSida.h"
 #include "DrawDebugHelpers.h"
 #include "EnemyInfoWidget.h"
+#include "IPAddressWidget.h"
 #include "Components/InputComponent.h"
 #include "MyProject.h"
 #include "Protocol.pb.h"
 #include "GameFramework/PlayerState.h"
+
 
 
 AMyProjectPlayerController::AMyProjectPlayerController()
@@ -71,7 +73,18 @@ AMyProjectPlayerController::AMyProjectPlayerController()
     Hellgun->Initialize("Hellgun", 300.0f, 50.0f);
     SkillManager->AddSkill(Hellgun);
     
+    static ConstructorHelpers::FClassFinder<UIPAddressWidget> IPAddressWidgetBPClass(TEXT("/Game/MyBP/UI/IPAddressWidget.IPAddressWidget_C"));
+    if (IPAddressWidgetBPClass.Succeeded())
+    {
+        IPAddressWidgetClass = IPAddressWidgetBPClass.Class;
+        UE_LOG(LogTemp, Warning, TEXT("Successfully found BP_IPAddressWidget"));
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("Failed to find BP_IPAddressWidget"));
+    }
 
+    bIsIPWidgetVisible = false;
 }
 
 
@@ -201,6 +214,50 @@ void AMyProjectPlayerController::HandleLevelUpOption(int OptionIndex)
         SetInputMode(FInputModeGameOnly());
         UE_LOG(LogTemp, Log, TEXT("Level Up UI hidden"));
     }
+}
+
+//Toggle IPAddress
+void AMyProjectPlayerController::ToggleIPAddressWidget()
+{
+    UE_LOG(LogTemp, Warning, TEXT("ToggleIPAddressWidget called"));
+
+    if (!IPAddressWidgetClass)
+    {
+        UE_LOG(LogTemp, Error, TEXT("IPAddressWidgetClass is null in ToggleIPAddressWidget"));
+        return;
+    }
+
+    if (!IPAddressWidget)
+    {
+        IPAddressWidget = CreateWidget<UIPAddressWidget>(this, IPAddressWidgetClass);
+        if (IPAddressWidget)
+        {
+            UE_LOG(LogTemp, Warning, TEXT("IPAddressWidget created successfully"));
+            IPAddressWidget->AddToViewport();
+            IPAddressWidget->SetVisibility(ESlateVisibility::Collapsed);
+        }
+        else
+        {
+            UE_LOG(LogTemp, Error, TEXT("IPAddressWidget creation failed"));
+        }
+    }
+
+    if (bIsIPWidgetVisible)
+    {
+        IPAddressWidget->SetVisibility(ESlateVisibility::Collapsed);
+        bShowMouseCursor = false;
+        SetInputMode(FInputModeGameOnly());
+        UE_LOG(LogTemp, Warning, TEXT("UI hidden, switched to game mode"));
+    }
+    else
+    {
+        IPAddressWidget->SetVisibility(ESlateVisibility::Visible);
+        bShowMouseCursor = true;
+        SetInputMode(FInputModeUIOnly());
+        UE_LOG(LogTemp, Warning, TEXT("UI visible, switched to UI mode"));
+    }
+
+    bIsIPWidgetVisible = !bIsIPWidgetVisible;
 }
 
 // Update stats based on the selected option
@@ -375,6 +432,8 @@ void AMyProjectPlayerController::SetupInputComponent()
     InputComponent->BindAction("UseSkill", IE_Pressed, this, &AMyProjectPlayerController::UseSkill);
 
     InputComponent->BindAction("LevelUpUI", IE_Pressed, this, &AMyProjectPlayerController::ShowLevelUpUI);
+
+    InputComponent->BindAction("ToggleIPAddressWidget", IE_Pressed, this, &AMyProjectPlayerController::ToggleIPAddressWidget);
     
 }
 

@@ -301,6 +301,7 @@ void UMyProjectGameInstance::HandleHIT(const Protocol::S_HIT& pkt)
 		
 		if (ANPC* Enemy = Cast<ANPC>(*FindActor))
 		{
+			
 			// Handle AEnemy1-specific logic
 			Enemy->TakeDamage();
 			Enemy->Health -= 20;

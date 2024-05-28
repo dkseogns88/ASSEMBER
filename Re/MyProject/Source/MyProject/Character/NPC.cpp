@@ -57,9 +57,7 @@ void ANPC::Attack()
     // 공격 로직
     if (!bIsAttacking)
     {
-
         bIsAttacking = true;
-
         UE_LOG(LogTemp, Log, TEXT("%s Attack triggered"), *NPCName);
         // Reset attack after 1 second (duration of the attack animation)
         GetWorld()->GetTimerManager().SetTimer(AttackResetTimerHandle, this, &ANPC::ResetAttack, 1.0f, false);
@@ -72,7 +70,6 @@ void ANPC::TakeDamage()
     if (!bIsDamaged)
     {
         bIsDamaged = true;
-
         UE_LOG(LogTemp, Log, TEXT("%s Damage taken"), *NPCName);
         // Reset damage after 0.5 seconds (duration of the damage animation)
         GetWorld()->GetTimerManager().SetTimer(DamageResetTimerHandle, this, &ANPC::ResetDamage, 0.5f, false);
