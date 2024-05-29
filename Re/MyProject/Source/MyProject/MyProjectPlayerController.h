@@ -12,6 +12,7 @@
 #include "NPC.h"
 #include "SkillManager.h"
 #include "IPAddressWidget.h"
+#include "Character/CharacterStatue.h"
 #include "MyProjectPlayerController.generated.h"
 
 class UInputMappingContext;
@@ -65,7 +66,7 @@ public:
 	// ĳ���� ���� �Լ�
 	UFUNCTION(BlueprintCallable, Category = "Character")
 	
-	void RequestServerForCharacterChange(FString CharacterName);
+
 
 	void RequestServerForAimingChange(bool bIsAiming);
 
@@ -95,7 +96,7 @@ public:
 
 	bool bIsUIActive = false;
 	void AttemptToFireWeapon();
-	void ToggleCharacterSelectUI();
+	
 
 	
 	UFUNCTION(BlueprintCallable, Category = "LevelUp")
@@ -103,6 +104,8 @@ public:
 
 	void ToggleIPAddressWidget();
 
+	void SetNearbyStatue(ACharacterStatue* Statue);
+	void ChangeCharacter(const FString& CharacterName);
 private:
 	
 	void ShowEnemyInfo_Internal(FString EnemyName, float Health);
@@ -125,6 +128,9 @@ private:
 	TSubclassOf<UIPAddressWidget> IPAddressWidgetClass;
 
 	bool bIsIPWidgetVisible;
+
+	void Interact();
+	ACharacterStatue* NearbyStatue;
 	
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
@@ -197,5 +203,7 @@ private:
 
 		void LogSkillUsage(FName SkillName);
 
-	// End Actor interface
+
+		
+	
 };

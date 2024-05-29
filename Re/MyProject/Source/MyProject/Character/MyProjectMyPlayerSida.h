@@ -17,6 +17,8 @@ class MYPROJECT_API AMyProjectMyPlayerSida : public AMyProjectPlayer
 
 public:
 	AMyProjectMyPlayerSida();
+	bool IsAiming() const { return bIsAiming; }
+	void SetAiming(bool bNewAiming);
 
 protected:
 	/** Camera boom positioning the camera behind the character */
@@ -26,6 +28,14 @@ protected:
 	/** Follow camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FollowCamera;
+
+	/** First person camera */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	class UCameraComponent* FirstPersonCameraComponent;
+
+	/** First person mesh (arms only) */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Mesh, meta = (AllowPrivateAccess = "true"))
+	class USkeletalMeshComponent* FirstPersonMesh;
 
 	/** MappingContext */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
@@ -43,23 +53,28 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* LookAction;
 
-
 protected:
 
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 
-	void Jump();
-	void StopJumping();
+	void Input_Jump(const FInputActionValue& Value);
 
 
 protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 	// To add mapping context
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
+
+	void StateTick();
+	void SendTick(float DeltaTime);
+	void Send_Idle_Move();
+	void Send_Jump();
 
 
 public:
@@ -80,6 +95,18 @@ protected:
 	// Dirty Flag Test
 	FVector2D LastDesiredInput;
 
-	// Jump
-	bool IsJump = false;
+	// Jump Cache
+	bool IsJumping = false;
+	bool bLastInputJump = false;
+
+	// Turn Cache
+	bool bIsTurn = false;
+
+	// 캐릭터의 조준 상태
+	UPROPERTY(ReplicatedUsing = OnRep_Aimingchanged)
+	bool bIsAiming = false;
+
+	// 조준 상태가 변경될 때 호출될 함수
+	UFUNCTION()
+	void OnRep_Aimingchanged();
 };

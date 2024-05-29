@@ -50,16 +50,18 @@ public:
 	void HandleHIT(const Protocol::S_HIT& pkt);
 	void HandleAttack(const Protocol::S_ATTACK& pkt);
 	
-	void HandleChange(const FString& CharacterName);
-	// 캐릭터 클래스 찾기 함수
+	
 
-	TSubclassOf<APawn> FindCharacterClassByName(const FString& CharacterName);
+
+	
 
 
 	// 초기화 함수
 	virtual void Init() override;
 	UMyProjectGameInstance();
 	void SpawnMonsterAtLocation(const Protocol::PosInfo& Info);
+
+	UClass* GetCharacterClass(const FString& CharacterName) const;
 
 private:
 	// 캐릭터 이름과 클래스를 매핑하는 맵
