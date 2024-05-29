@@ -3,6 +3,7 @@
 
 #include "MyProjectGameInstance.h"
 #include "Sockets.h"
+#include "Engine/World.h"
 #include "Enemy1.h"
 #include "Common/TcpSocketBuilder.h"
 #include "Serialization/ArrayWriter.h"
@@ -20,6 +21,7 @@
 #include "AnimInstanceCustom.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Components/StaticMeshComponent.h"
+#include "UObject/UObjectGlobals.h"
 #include "Engine/StaticMeshActor.h"
 
 UMyProjectGameInstance::UMyProjectGameInstance()
@@ -437,6 +439,21 @@ UClass* UMyProjectGameInstance::GetCharacterClass(const FString& CharacterName) 
 		UE_LOG(LogTemp, Error, TEXT("No path found for character name: %s"), *CharacterName);
 	}
 	return nullptr;
+}
+
+
+void UMyProjectGameInstance::LogCharacterChange(int32 PlayerIndex, const FString& NewCharacterName)
+{
+	FPlayerCharacterChangeInfo ChangeInfo(PlayerIndex, NewCharacterName);
+	PlayerCharacterChangeLog.Add(PlayerIndex, NewCharacterName);
+
+
+	//캐릭터 변경에대한 정보를 로그로 출력
+	UE_LOG(LogTemp, Log, TEXT("Player %d changed to character: %s"), PlayerIndex, *NewCharacterName);
+	for (const TPair<int32, FString>& Info : PlayerCharacterChangeLog)
+	{
+		UE_LOG(LogTemp, Log, TEXT("Log - Player %d: %s"), Info.Key, *Info.Value);
+	}
 }
 
 AMyProjectPlayer* UMyProjectGameInstance::ValidationPlayer(int ObjectId)

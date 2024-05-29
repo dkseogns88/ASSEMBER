@@ -685,6 +685,10 @@ void AMyProjectPlayerController::ChangeCharacter(const FString& CharacterName)
                 Possess(NewCharacter);
                 UE_LOG(LogTemp, Log, TEXT("Successfully Change and Possess NewCharacter"));
                 CurrentPawn->Destroy();
+                // 플레이어 변경 로그 기록
+                APlayerState* CurrentPlayerState = GetPlayerState<APlayerState>();
+                int32 PlayerIndex = CurrentPlayerState ? CurrentPlayerState->GetPlayerId() : -1;
+                GameInstance->LogCharacterChange(PlayerIndex, CharacterName);
             }
             else
             {

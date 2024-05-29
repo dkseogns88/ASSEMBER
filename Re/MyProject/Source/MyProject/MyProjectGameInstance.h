@@ -10,6 +10,22 @@
 #include "MyProjectGameInstance.generated.h"
 
 
+USTRUCT(BlueprintType)
+struct FPlayerCharacterChangeInfo
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly)
+	int32 PlayerIndex;
+
+	UPROPERTY(BlueprintReadOnly)
+	FString NewCharacterName;
+
+	FPlayerCharacterChangeInfo() : PlayerIndex(-1), NewCharacterName(TEXT("")) {}
+	FPlayerCharacterChangeInfo(int32 InPlayerIndex, const FString& InNewCharacterName)
+		: PlayerIndex(InPlayerIndex), NewCharacterName(InNewCharacterName) {}
+};
+
 class AMyProjectPlayer;
 
 class ANPC;
@@ -62,10 +78,12 @@ public:
 	void SpawnMonsterAtLocation(const Protocol::PosInfo& Info);
 
 	UClass* GetCharacterClass(const FString& CharacterName) const;
-
+	void LogCharacterChange(int32 PlayerIndex, const FString& NewCharacterName);
 private:
 	// 캐릭터 이름과 클래스를 매핑하는 맵
 	TMap<FString, FString> CharacterBlueprintPaths;
+	TMap<int32, FString> PlayerCharacterChangeLog;
+	
 
 	FTimerHandle SpawnTimerHandle;
 	void SpawnNPC();
