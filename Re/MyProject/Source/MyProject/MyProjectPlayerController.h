@@ -106,6 +106,10 @@ public:
 
 	void SetNearbyStatue(ACharacterStatue* Statue);
 	void ChangeCharacter(const FString& CharacterName);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+	TSubclassOf<class UIPAddressWidget> IPAddressWidgetClass;
+
 private:
 	
 	void ShowEnemyInfo_Internal(FString EnemyName, float Health);
@@ -123,9 +127,6 @@ private:
 	//IPAdress Widget
 	UPROPERTY()
 	UIPAddressWidget* IPAddressWidget;
-
-	UPROPERTY(EditDefaultsOnly, Category = "UI")
-	TSubclassOf<UIPAddressWidget> IPAddressWidgetClass;
 
 	bool bIsIPWidgetVisible;
 

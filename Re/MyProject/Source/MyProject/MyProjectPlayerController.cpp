@@ -84,7 +84,6 @@ AMyProjectPlayerController::AMyProjectPlayerController()
         UE_LOG(LogTemp, Error, TEXT("Failed to find BP_IPAddressWidget"));
     }
 
-    bIsIPWidgetVisible = false;
     NearbyStatue = nullptr;
 }
 
@@ -93,6 +92,19 @@ AMyProjectPlayerController::AMyProjectPlayerController()
 void AMyProjectPlayerController::BeginPlay()
 {
     Super::BeginPlay();
+
+
+    //Create IPWidget when game start
+    if (IPAddressWidgetClass)
+    {
+        IPAddressWidget = CreateWidget<UIPAddressWidget>(this, IPAddressWidgetClass);
+        if (IPAddressWidget)
+        {
+            IPAddressWidget->AddToViewport();
+            bShowMouseCursor = true;
+            SetInputMode(FInputModeUIOnly());
+        }
+    }
 
     InitializeStats(100.0f, 500.0f, 20.0f);
     
@@ -136,6 +148,7 @@ void AMyProjectPlayerController::BeginPlay()
         
         //Create LevelUpWidget
          LevelUpWidgetInstance = CreateWidget<ULevelUpWidget>(this, LevelUpWidgetClass);
+         
          
       
         
