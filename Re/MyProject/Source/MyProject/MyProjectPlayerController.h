@@ -28,9 +28,7 @@ struct FCharacterChangeInfo
 	UClass* CharacterClass; // ĳ������ Ŭ���� ����
     UClass* CharacterParentClass;
 };
-/**
- *
- */
+
 UCLASS()
 class MYPROJECT_API AMyProjectPlayerController : public APlayerController
 {
@@ -105,7 +103,7 @@ public:
 	void ToggleIPAddressWidget();
 
 	void SetNearbyStatue(ACharacterStatue* Statue);
-	void ChangeCharacter(const FString& CharacterName);
+	void ChangeCharacter(const Protocol::PlayerType PlayerType);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
 	TSubclassOf<class UIPAddressWidget> IPAddressWidgetClass;

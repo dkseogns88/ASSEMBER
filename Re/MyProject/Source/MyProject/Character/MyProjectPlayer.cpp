@@ -114,7 +114,6 @@ void AMyProjectPlayer::Tick(float DeltaSeconds)
 			FVector ForwardDirection = FVector(DestInfo->d_x(), DestInfo->d_y(), DestInfo->d_z());
 			AddMovementInput(ForwardDirection);
 
-			//AddMovementInput(GetActorForwardVector());
 		}
 		else if (State == Protocol::MOVE_STATE_JUMP)
 		{

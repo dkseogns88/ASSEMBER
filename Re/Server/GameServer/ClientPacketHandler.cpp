@@ -24,9 +24,9 @@ bool Handle_C_LOGIN(PacketSessionRef& session, Protocol::C_LOGIN& pkt)
 		Protocol::ObjectInfo* player = loginPkt.add_players();
 		Protocol::PosInfo* posInfo = player->mutable_pos_info();
 
-		posInfo->set_x(Utils::GetRandom(0.f, 100.f));
-		posInfo->set_y(Utils::GetRandom(0.f, 100.f));
-		posInfo->set_z(Utils::GetRandom(0.f, 100.f));
+		posInfo->set_x(6320.f);
+		posInfo->set_y(1410.f);
+		posInfo->set_z(92.f);
 		posInfo->set_yaw(Utils::GetRandom(0.f, 100.f));
 	}
 
@@ -163,4 +163,22 @@ bool Handle_C_HIT(PacketSessionRef& session, Protocol::C_HIT& pkt)
 		room->DoAsync(&Room::HandleHit, pkt);
 
 	return true;
+}
+
+bool Handle_C_TELEPORT(PacketSessionRef& session, Protocol::C_TELEPORT& pkt)
+{
+	auto gameSession = static_pointer_cast<GameSession>(session);
+
+	PlayerRef player = gameSession->player.load();
+	if (player == nullptr)
+		return false;
+
+	RoomRef room = player->room.load().lock();
+	if (room == nullptr)
+		return false;
+
+	room->DoAsync(&Room::HandleTelePort, pkt);
+
+
+	return false;
 }

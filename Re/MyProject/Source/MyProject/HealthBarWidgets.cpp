@@ -5,7 +5,6 @@
 
 void UHealthBarWidgets::UpdateHealth(float HealthPercentage)
 {
-
     if (HealthProgressBar)
     {
         HealthProgressBar->SetPercent(HealthPercentage);

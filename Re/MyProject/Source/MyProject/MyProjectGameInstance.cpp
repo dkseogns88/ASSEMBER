@@ -26,15 +26,13 @@
 
 UMyProjectGameInstance::UMyProjectGameInstance()
 {
-	
-
+	Socket = ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->CreateSocket(TEXT("Stream"), TEXT("Client Socket"));
 
 }
 
 
-void UMyProjectGameInstance::ConnectToGameServer()
+bool UMyProjectGameInstance::ConnectToGameServer()
 {
-	Socket = ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->CreateSocket(TEXT("Stream"), TEXT("Client Socket"));
 
 	FIPv4Address Ip;
 	FIPv4Address::Parse(IpAddress, Ip);
@@ -45,7 +43,7 @@ void UMyProjectGameInstance::ConnectToGameServer()
 
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Connecting To Server...")));
 
-	bool Connected = Socket->Connect(*InternetAddr);
+	Connected = Socket->Connect(*InternetAddr);
 
 	if (Connected)
 	{
@@ -57,12 +55,14 @@ void UMyProjectGameInstance::ConnectToGameServer()
 		Protocol::C_LOGIN Pkt;
 		SendBufferRef SendBuffer = ServerPacketHandler::MakeSendBuffer(Pkt);
 		SendPacket(SendBuffer);
-
 	}
+	
 	else
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Connection Failed")));
+		
 	}
+	return Connected;
 }
 
 void UMyProjectGameInstance::DisconnectToGameServer()
@@ -120,7 +120,7 @@ void UMyProjectGameInstance::HandleSpawn(const Protocol::ObjectInfo& objectInfo,
 	}
 	else
 	{
-		AMyProjectPlayer* Player = Cast<AMyProjectPlayer>(World->SpawnActor(OtherPlayerClass, &SpawnLocation));
+		AMyProjectPlayer* Player = Cast<AMyProjectPlayer>(World->SpawnActor(OtherPlayerClassRinty, &SpawnLocation));
 		Player->SetPlayerInfo(objectInfo.pos_info());
 		Players.Add(objectInfo.object_id(), Player);
 	}
@@ -162,6 +162,117 @@ void UMyProjectGameInstance::HandleDespawn(const Protocol::S_DESPAWN& DespawnPkt
 	{
 		HandleDespawn(ObjectId);
 	}
+}
+
+void UMyProjectGameInstance::HandleSelectType(const Protocol::S_SELECT& SelectPkt)
+{
+	if (SelectPkt.success() == true) {
+		const uint64 ObjectId = SelectPkt.info().object_id();
+
+		AMyProjectPlayer** FindActor = Players.Find(ObjectId);
+		if (FindActor == nullptr)
+			return ;
+
+		AMyProjectPlayer* Player = (*FindActor);		
+		
+		// 내 플레이어
+		if (Player->IsMyPlayer())
+		{
+			
+			APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+			if (PlayerController)
+			{
+				AMyProjectPlayer* CurrentPawn = Cast<AMyProjectPlayer>(PlayerController->GetPawn());
+				FVector Location = FVector(SelectPkt.info().x(), SelectPkt.info().y(), SelectPkt.info().z());
+				FRotator Rotation = FRotator(0.f, SelectPkt.info().yaw(), 0.f);
+	
+				if (SelectPkt.player_type() == Protocol::PLAYER_TYPE_RINTY) {
+
+					AMyProjectMyPlayer* NewCharacter = GetWorld()->SpawnActor<AMyProjectMyPlayer>(BPClassRinty, Location, Rotation);
+					if (NewCharacter) {
+						PlayerController->Possess(NewCharacter);
+						CurrentPawn->Destroy();
+						Players.Remove(SelectPkt.info().object_id());
+						
+						NewCharacter->SetPlayerInfo(SelectPkt.info());
+						Players.Add(SelectPkt.info().object_id(), NewCharacter);
+
+					}
+				}
+				else if (SelectPkt.player_type() == Protocol::PLAYER_TYPE_SIDA) {
+
+					AMyProjectMyPlayer* NewCharacter = GetWorld()->SpawnActor<AMyProjectMyPlayer>(BPClassSida, Location, Rotation);
+					if (NewCharacter) {
+						PlayerController->Possess(NewCharacter);
+						CurrentPawn->Destroy();
+						Players.Remove(SelectPkt.info().object_id());
+						
+						NewCharacter->SetPlayerInfo(SelectPkt.info());
+						Players.Add(SelectPkt.info().object_id(), NewCharacter);
+					}
+				}
+			}
+			return;
+		}
+
+		if(!Player->IsMyPlayer()){
+			
+			AMyProjectPlayer* CurrentPawn = Player;
+			FVector Location = FVector(SelectPkt.info().x(), SelectPkt.info().y(), SelectPkt.info().z());
+			FRotator Rotation = FRotator(0.f, SelectPkt.info().yaw(), 0.f);
+
+			if (SelectPkt.player_type() == Protocol::PLAYER_TYPE_RINTY) {
+
+				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("RINTY")));
+				AMyProjectPlayer* NewCharacter = GetWorld()->SpawnActor<AMyProjectPlayer>(OtherPlayerClassRinty, Location, Rotation);
+				if (NewCharacter) {
+					CurrentPawn->Destroy();
+					Players.Remove(SelectPkt.info().object_id());
+					
+					NewCharacter->SetPlayerInfo(SelectPkt.info());
+					Players.Add(SelectPkt.info().object_id(), NewCharacter);
+				}
+			}
+
+			else if (SelectPkt.player_type() == Protocol::PLAYER_TYPE_SIDA) {
+				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("SIDA")));
+
+				AMyProjectPlayer* NewCharacter = GetWorld()->SpawnActor<AMyProjectPlayer>(OtherPlayerClassSida, Location, Rotation);
+				if (NewCharacter) {
+					CurrentPawn->Destroy();
+					Players.Remove(SelectPkt.info().object_id());
+
+					NewCharacter->SetPlayerInfo(SelectPkt.info());
+					Players.Add(SelectPkt.info().object_id(), NewCharacter);
+				}
+			}
+		}
+	}
+}
+
+void UMyProjectGameInstance::HandleTelePort(const Protocol::S_TELEPORT& TelePortPkt)
+{
+	if (Socket == nullptr || GameServerSession == nullptr)
+		return;
+
+	auto* World = GetWorld();
+	if (World == nullptr)
+		return;
+
+	const uint64 ObjectId = TelePortPkt.info().object_id();
+	AMyProjectPlayer** FindActor = Players.Find(ObjectId);
+	if (FindActor == nullptr)
+		return;
+
+	AMyProjectPlayer* Player = (*FindActor);
+
+	const Protocol::PosInfo& Info = TelePortPkt.info();
+	Player->SetDestInfo(Info);
+	Player->SetActorLocation(
+		FVector(TelePortPkt.info().x(), TelePortPkt.info().y(), TelePortPkt.info().z())
+	);
+	
+	
 }
 
 void UMyProjectGameInstance::HandleMove(const Protocol::S_MOVE& MovePkt)
@@ -440,7 +551,6 @@ UClass* UMyProjectGameInstance::GetCharacterClass(const FString& CharacterName) 
 	}
 	return nullptr;
 }
-
 
 void UMyProjectGameInstance::LogCharacterChange(int32 PlayerIndex, const FString& NewCharacterName)
 {

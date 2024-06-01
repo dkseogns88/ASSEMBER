@@ -7,6 +7,9 @@
 #include "GameFramework/Actor.h"
 #include "GameFramework/Character.h"
 #include "Character/MyProjectPlayer.h"
+#include "Kismet/GameplayStatics.h"
+#include "MyProject.h"
+
 
 // Sets default values
 APortal::APortal()
@@ -45,12 +48,16 @@ void APortal::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AA
 {
     if (OtherActor && (OtherActor != this) && OtherComp)
     {
-        // Check if the overlapping actor is a player character
-        AMyProjectPlayer* Character = Cast<AMyProjectPlayer>(OtherActor); //플레이어 일때만 텔레포트가능
-        if (Character)
-        {
-            // Teleport the player to the specified destination
-            Character->SetActorLocation(TeleportDestination);
-        }
+        GEngine->AddOnScreenDebugMessage(-1, 200, FColor::Green, FString::Printf(TEXT("OnOverlapBegin!!")));
+
+        auto* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+        AMyProjectPlayer* Player = Cast<AMyProjectPlayer>(PC->GetPawn());
+
+        Protocol::C_TELEPORT TelePortPkt;
+
+        Protocol::PosInfo* Info = TelePortPkt.mutable_info();
+        Info->CopyFrom(*Player->GetPlayerInfo());
+        
+        SEND_PACKET(TelePortPkt);
     }
 }

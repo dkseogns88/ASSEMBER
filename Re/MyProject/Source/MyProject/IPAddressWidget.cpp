@@ -14,8 +14,9 @@ void UIPAddressWidget::OnIPAddressChanged(const FText& Text)
 	FString IPAddress = Text.ToString();
 	if (UMyProjectGameInstance* GameInstance = Cast<UMyProjectGameInstance>(GetGameInstance()))
 	{
-		GameInstance->ServerIPAddress = IPAddress;
+		GameInstance->IpAddress = IPAddress;
 		IPAddressDisplay->SetText(FText::FromString(IPAddress));
+		
 	}
 }
 
@@ -33,7 +34,7 @@ void UIPAddressWidget::NativeConstruct()
 
 	if (UMyProjectGameInstance* GameInstance = Cast<UMyProjectGameInstance>(GetGameInstance()))
 	{
-		IPAddressDisplay->SetText(FText::FromString(GameInstance->ServerIPAddress));
+		IPAddressDisplay->SetText(FText::FromString(GameInstance->IpAddress));
 	}
 	if (IPAddressInput)
 	{
@@ -54,12 +55,13 @@ void UIPAddressWidget::OnSubmitButtonClicked()
 {
 	if (UMyProjectGameInstance* GameInstance = Cast<UMyProjectGameInstance>(GetGameInstance()))
 	{
-		FString EnteredIP = IPAddressInput->GetText().ToString();
+		Connected = GameInstance->ConnectToGameServer();
 
-		if (EnteredIP.Equals(GameInstance->IpAddress))
+		if (Connected)
 		{
 			// IP 주소가 일치하는 경우, 위젯 닫기
 			RemoveFromParent();
+
 			// 게임 모드로 전환
 			APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 			if (PlayerController)

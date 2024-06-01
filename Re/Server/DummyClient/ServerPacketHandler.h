@@ -32,6 +32,8 @@ enum : uint16
 	PKT_C_HIT = 1019,
 	PKT_S_HIT = 1020,
 	PKT_S_ATTACK = 1021,
+	PKT_C_TELEPORT = 1022,
+	PKT_S_TELEPORT = 1023,
 };
 
 // Custom Handlers
@@ -49,6 +51,7 @@ bool Handle_S_ZOOM(PacketSessionRef& session, Protocol::S_ZOOM& pkt);
 bool Handle_S_SPAWN_MONSTER(PacketSessionRef& session, Protocol::S_SPAWN_MONSTER& pkt);
 bool Handle_S_HIT(PacketSessionRef& session, Protocol::S_HIT& pkt);
 bool Handle_S_ATTACK(PacketSessionRef& session, Protocol::S_ATTACK& pkt);
+bool Handle_S_TELEPORT(PacketSessionRef& session, Protocol::S_TELEPORT& pkt);
 
 class ServerPacketHandler
 {
@@ -70,6 +73,7 @@ public:
 		GPacketHandler[PKT_S_SPAWN_MONSTER] = [](PacketSessionRef& session, BYTE* buffer, int32 len) { return HandlePacket<Protocol::S_SPAWN_MONSTER>(Handle_S_SPAWN_MONSTER, session, buffer, len); };
 		GPacketHandler[PKT_S_HIT] = [](PacketSessionRef& session, BYTE* buffer, int32 len) { return HandlePacket<Protocol::S_HIT>(Handle_S_HIT, session, buffer, len); };
 		GPacketHandler[PKT_S_ATTACK] = [](PacketSessionRef& session, BYTE* buffer, int32 len) { return HandlePacket<Protocol::S_ATTACK>(Handle_S_ATTACK, session, buffer, len); };
+		GPacketHandler[PKT_S_TELEPORT] = [](PacketSessionRef& session, BYTE* buffer, int32 len) { return HandlePacket<Protocol::S_TELEPORT>(Handle_S_TELEPORT, session, buffer, len); };
 	}
 
 	static bool HandlePacket(PacketSessionRef& session, BYTE* buffer, int32 len)
@@ -86,6 +90,7 @@ public:
 	static SendBufferRef MakeSendBuffer(Protocol::C_CHAT& pkt) { return MakeSendBuffer(pkt, PKT_C_CHAT); }
 	static SendBufferRef MakeSendBuffer(Protocol::C_ZOOM& pkt) { return MakeSendBuffer(pkt, PKT_C_ZOOM); }
 	static SendBufferRef MakeSendBuffer(Protocol::C_HIT& pkt) { return MakeSendBuffer(pkt, PKT_C_HIT); }
+	static SendBufferRef MakeSendBuffer(Protocol::C_TELEPORT& pkt) { return MakeSendBuffer(pkt, PKT_C_TELEPORT); }
 
 private:
 	template<typename PacketType, typename ProcessFunc>

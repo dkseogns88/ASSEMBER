@@ -4,6 +4,8 @@
 #include "Character/CharacterStatue.h"
 #include "Components/BoxComponent.h"
 #include "MyProjectPlayerController.h"
+#include "Character/MyProjectPlayer.h"
+#include "MyProject.h"
 
 // Sets default values
 ACharacterStatue::ACharacterStatue()
@@ -72,11 +74,18 @@ void ACharacterStatue::OnInteract(APlayerController* PlayerController)
 {
     if (PlayerController)
     {
-        AMyProjectPlayerController* MyController = Cast<AMyProjectPlayerController>(PlayerController);
-        if (MyController)
-        {
-            UE_LOG(LogTemp, Log, TEXT("try to CharacterChange"));
-            MyController->ChangeCharacter(CharacterName);
-        }
+        //MyController->ChangeCharacter(CharacterName);
+        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Statue")));
+        Protocol::C_SELECT SelectPkt;
+
+        AMyProjectPlayer* CurrentPawn = Cast<AMyProjectPlayer>(PlayerController->GetPawn());
+        SelectPkt.set_object_id(CurrentPawn->GetPlayerInfo()->object_id());
+
+        if(CharacterName == TEXT("Rinty"))
+            SelectPkt.set_player_type(Protocol::PlayerType::PLAYER_TYPE_RINTY);
+        else if(CharacterName == TEXT("Sida"))
+            SelectPkt.set_player_type(Protocol::PlayerType::PLAYER_TYPE_SIDA);
+        
+        SEND_PACKET(SelectPkt);
     }
 }

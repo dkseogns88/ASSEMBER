@@ -28,6 +28,7 @@ struct FPlayerCharacterChangeInfo
 };
 
 class AMyProjectPlayer;
+class AMyProjectMyPlayer;
 
 class ANPC;
 
@@ -39,7 +40,7 @@ class MYPROJECT_API UMyProjectGameInstance : public UGameInstance
 	
 public:
 	UFUNCTION(BlueprintCallable)
-	void ConnectToGameServer();
+	bool ConnectToGameServer();
 
 	UFUNCTION(BlueprintCallable)
 	void DisconnectToGameServer();
@@ -57,6 +58,9 @@ public:
 	void HandleDespawn(uint64 ObjectId);
 	void HandleDespawn(const Protocol::S_DESPAWN& DespawnPkt);
 
+	void HandleSelectType(const Protocol::S_SELECT& SelectPkt);
+	void HandleTelePort(const Protocol::S_TELEPORT& TelePortPkt);
+
 	void HandleMove(const Protocol::S_MOVE& MovePkt);
 	void HandleJump(const Protocol::S_JUMP& JumpPkt);
 	void HandleZoom(const Protocol::S_ZOOM& ZommPkt);
@@ -66,15 +70,10 @@ public:
 
 	void HandleHIT(const Protocol::S_HIT& pkt);
 	void HandleAttack(const Protocol::S_ATTACK& pkt);
-	
-	
-
-
-	
-
 
 	// 초기화 함수
 	virtual void Init() override;
+
 	UMyProjectGameInstance();
 	void SpawnMonsterAtLocation(const Protocol::PosInfo& Info);
 
@@ -95,22 +94,32 @@ private:
 
 public:
 	class FSocket* Socket;
-	FString IpAddress = TEXT("127.0.0.1");
+	FString IpAddress;
 	int16 Port = 7777;
+	
 	TSharedPtr<class PacketSession> GameServerSession;
+
+	UPROPERTY(BlueprintReadOnly)
+	bool Connected = false;
 
 public:
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<AMyProjectPlayer> OtherPlayerClass;
+	TSubclassOf<AMyProjectPlayer> OtherPlayerClassRinty;
+
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<AMyProjectPlayer> OtherPlayerClassSida;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<AMyProjectMyPlayer> BPClassRinty;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<AMyProjectMyPlayer> BPClassSida;
+
 
 	// 몬스터 클래스 참조
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<ANPC> MonsterClass;
-
-	//IP주소 저장하는 문자열 ServerIPAddress
-	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category = "Network")
-	FString ServerIPAddress;
-
 
 
 	// 스폰된 몬스터를 관리하기 위한 컨테이너
@@ -119,5 +128,6 @@ public:
 
 	AMyProjectPlayer* MyPlayer;
 	TMap<uint64, AMyProjectPlayer*> Players;
+
 
 };

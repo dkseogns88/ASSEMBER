@@ -85,18 +85,19 @@ bool Room::HandleEnterPlayer(PlayerRef player)
 	{
 		_player1 = player;
 
-		player->posInfo->set_x(-1410.f);
-		player->posInfo->set_y(100.f);
-		player->posInfo->set_z(140.f);
+		_player1->posInfo->set_x(6320.f);
+		_player1->posInfo->set_y(1410.f);
+		_player1->posInfo->set_z(92.f);
 		player->posInfo->set_yaw(Utils::GetRandom(0.f, 500.f));
 
 	}
 	else if (_player2 == nullptr)
 	{
 		_player2 = player;
-		player->posInfo->set_x(1480.f);
-		player->posInfo->set_y(100.f);
-		player->posInfo->set_z(140.f);
+
+		_player2->posInfo->set_x(6320.f);
+		_player2->posInfo->set_y(1410.f);
+		_player2->posInfo->set_z(92.f);
 		player->posInfo->set_yaw(Utils::GetRandom(0.f, 500.f));
 	}
 	
@@ -144,7 +145,7 @@ bool Room::HandleEnterPlayer(PlayerRef player)
 	}
 
 	// 입장한 플레이어 모두에게 기존 몬스터들을 알리자.
-	{
+	/*{
 		Protocol::S_SPAWN_MONSTER spawnPkt;
 
 		for (auto& item : _monsters)
@@ -158,9 +159,9 @@ bool Room::HandleEnterPlayer(PlayerRef player)
 		SendBufferRef sendBuffer = ClientPacketHandler::MakeSendBuffer(spawnPkt);
 		if (auto session = player->session.lock())
 			session->Send(sendBuffer);
-	}
+	}*/
 
-	DoTimer(2000, &Room::UpdateMonsterAI);
+	//DoTimer(2000, &Room::UpdateMonsterAI);
 
 	return success;
 }
@@ -264,7 +265,6 @@ void Room::HandleZoom(Protocol::C_ZOOM pkt)
 
 void Room::HandleHit(Protocol::C_HIT pkt)
 {
-	
 	const uint64 objectId = pkt.object_id(); // 몬스터 id
 	if (_monsters.find(objectId) == _monsters.end())
 		return;
@@ -281,17 +281,48 @@ void Room::HandleHit(Protocol::C_HIT pkt)
 
 }
 
-
 void Room::HandleSelect(Protocol::C_SELECT pkt)
 {
-	auto& msg_pkt = pkt.msg();
-	if (msg_pkt == "Rindty" || msg_pkt == "Sida")
+	const uint64 objectId = pkt.object_id();
+	if (_objects.find(objectId) == _objects.end())
+		return;
+
+	PlayerRef player = dynamic_pointer_cast<Player>(_objects[objectId]);
+	player->objectInfo->set_player_type(pkt.player_type());
 	{
 		Protocol::S_SELECT selectPkt;
-		selectPkt.set_success(true);
-		selectPkt.set_msg(msg_pkt);
+		{
+			Protocol::PosInfo* info = selectPkt.mutable_info();
+			selectPkt.set_success(true);
+			info->CopyFrom(*player->posInfo);
+			selectPkt.set_player_type(pkt.player_type());
+		}
+
 
 		SendBufferRef sendBuffer = ClientPacketHandler::MakeSendBuffer(selectPkt);
+		Broadcast(sendBuffer);
+	}
+
+}
+
+void Room::HandleTelePort(Protocol::C_TELEPORT pkt)
+{
+	const uint64 objectId = pkt.info().object_id();
+	if (_objects.find(objectId) == _objects.end())
+		return;
+
+	PlayerRef player = dynamic_pointer_cast<Player>(_objects[objectId]);
+	player->posInfo->set_x(1360.f);
+	player->posInfo->set_y(-70.f);
+	player->posInfo->set_z(40.f);
+	{
+		Protocol::S_TELEPORT teleportPkt;
+		{
+			Protocol::PosInfo* info = teleportPkt.mutable_info();
+			info->CopyFrom(*player->posInfo);
+		}
+
+		SendBufferRef sendBuffer = ClientPacketHandler::MakeSendBuffer(teleportPkt);
 		Broadcast(sendBuffer);
 	}
 

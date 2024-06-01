@@ -16,7 +16,6 @@ class MYPROJECT_API AMyProjectPlayer : public ACharacter
 public:
     AMyProjectPlayer();
     virtual ~AMyProjectPlayer();
-   
 
 protected:
     virtual void BeginPlay() override;

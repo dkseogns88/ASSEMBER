@@ -11,7 +11,6 @@
 UCLASS()
 class MYPROJECT_API AEnemy1 : public ANPC
 {
-
 	GENERATED_BODY()
 
 
