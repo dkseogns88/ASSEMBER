@@ -85,15 +85,9 @@ bool Handle_S_JUMP(PacketSessionRef& session, Protocol::S_JUMP& pkt)
 
 bool Handle_S_SELECT(PacketSessionRef& session, Protocol::S_SELECT& pkt)
 {
-	if (pkt.success())
+	if (auto* GameInstance = Cast<UMyProjectGameInstance>(GWorld->GetGameInstance()))
 	{
-		std::string SeletName = pkt.msg();
-		FString CharacterName = ANSI_TO_TCHAR(SeletName.c_str());// 패킷에서 캐릭터 이름정보 가져오기 
-		if (auto* GameInstance = Cast<UMyProjectGameInstance>(GWorld->GetGameInstance()))
-		{
-			
-			
-		}
+		GameInstance->HandleSelectType(pkt);
 	}
 
 	return true;
@@ -142,4 +136,14 @@ bool Handle_S_ATTACK(PacketSessionRef& session, Protocol::S_ATTACK& pkt)
 	}
 
 	return true;
+}
+
+bool Handle_S_TELEPORT(PacketSessionRef& session, Protocol::S_TELEPORT& pkt)
+{
+	if (auto* GameInstance = Cast<UMyProjectGameInstance>(GWorld->GetGameInstance()))
+	{
+		GameInstance->HandleTelePort(pkt);
+	}
+
+	return false;
 }

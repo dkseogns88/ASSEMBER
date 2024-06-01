@@ -39,4 +39,7 @@ public:
 private:
     UFUNCTION()
     void OnSubmitButtonClicked();  
+
+
+    bool Connected = false;
 };

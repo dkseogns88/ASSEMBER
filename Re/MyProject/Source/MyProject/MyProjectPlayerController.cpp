@@ -93,8 +93,6 @@ void AMyProjectPlayerController::BeginPlay()
 {
     Super::BeginPlay();
 
-
-    //Create IPWidget when game start
     if (IPAddressWidgetClass)
     {
         IPAddressWidget = CreateWidget<UIPAddressWidget>(this, IPAddressWidgetClass);
@@ -114,8 +112,6 @@ void AMyProjectPlayerController::BeginPlay()
         Subsystem->AddMappingContext(InputMappingContext, 0);
 
         UE_LOG(LogTemp, Warning, TEXT("BeginPlay"));
-
-
     }
 
 
@@ -148,9 +144,6 @@ void AMyProjectPlayerController::BeginPlay()
         
         //Create LevelUpWidget
          LevelUpWidgetInstance = CreateWidget<ULevelUpWidget>(this, LevelUpWidgetClass);
-         
-         
-      
         
     }
 
@@ -360,27 +353,6 @@ void AMyProjectPlayerController::RequestServerForAimingChange(bool bIsAiming)
     UE_LOG(LogTemp, Log, TEXT("Requested server for aiming change: %s"), bIsAiming ? TEXT("True") : TEXT("False"));
 }
 
-void AMyProjectPlayerController::RequestServerForRollingChange(bool bIsRolling)
-{
-
-    AMyProjectMyPlayer* MyCharacter = Cast<AMyProjectMyPlayer>(GetPawn());
-    if (MyCharacter)
-    {
-        MyCharacter->SetRolling(bIsRolling);
-        UE_LOG(LogTemp, Log, TEXT("Rolling set"));
-
-
-
-        
-
-
-    
-
-    }
-
-    UE_LOG(LogTemp, Log, TEXT("Requested server for Rolling change: %s"), bIsRolling ? TEXT("True") : TEXT("False"));
-}
-
 void AMyProjectPlayerController::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
@@ -443,9 +415,6 @@ void AMyProjectPlayerController::SetupInputComponent()
    
     InputComponent->BindAction("Aim", IE_Pressed, this, &AMyProjectPlayerController::OnAimPressed);
     InputComponent->BindAction("Aim", IE_Released, this, &AMyProjectPlayerController::OnAimReleased);
-
-    InputComponent->BindAction("Roll", IE_Pressed, this, &AMyProjectPlayerController::OnRollPressed);
-    
 
     InputComponent->BindAction("Fire", IE_Pressed, this, &AMyProjectPlayerController::AttemptToFireWeapon);
 
@@ -520,12 +489,6 @@ void AMyProjectPlayerController::OnAimPressed()
 void AMyProjectPlayerController::OnAimReleased()
 {
     RequestServerForAimingChange(false);
-}
-
-
-void AMyProjectPlayerController::OnRollPressed()
-{
-    RequestServerForRollingChange(true);
 }
 
 
@@ -701,7 +664,6 @@ void AMyProjectPlayerController::ReloadWeapon()
     }
 }
 
-
 void AMyProjectPlayerController::Interact()
 {
     if (NearbyStatue)
@@ -710,42 +672,50 @@ void AMyProjectPlayerController::Interact()
     }
 }
 
-void AMyProjectPlayerController::ChangeCharacter(const FString& CharacterName)
+void AMyProjectPlayerController::ChangeCharacter(const Protocol::PlayerType PlayerType)
 {
+
+
+
+    return;
+
     UMyProjectGameInstance* GameInstance = GetGameInstance<UMyProjectGameInstance>();
     if (GameInstance)
     {
-        UE_LOG(LogTemp, Log, TEXT("Successfully load ChangeCharacter , GameInstance"));
-        UClass* NewCharacterClass = GameInstance->GetCharacterClass(CharacterName); 
-        if (NewCharacterClass)
-        {
-            APawn* CurrentPawn = GetPawn();
-            //기존 캐릭터의 위치 저장
-            FVector Location = CurrentPawn->GetActorLocation();
-            FRotator Rotation = CurrentPawn->GetActorRotation();
-            //새캐릭터를 월드의 이전플레이어 위치에 스폰
-            //린티 시다구분검사,스폰관리
-            AMyProjectPlayer* NewCharacter = GetWorld()->SpawnActor<AMyProjectPlayer>(NewCharacterClass, Location, Rotation);
-            if (NewCharacter)
-            {
-                Possess(NewCharacter); //소유권 이전
-                UE_LOG(LogTemp, Log, TEXT("Successfully Change and Possess NewCharacter"));
-                CurrentPawn->Destroy();
+        
+        //UE_LOG(LogTemp, Log, TEXT("Successfully load ChangeCharacter , GameInstance"));
+        //UClass* NewCharacterClass = GameInstance->GetCharacterClass(CharacterName);
+        //if (NewCharacterClass)
+        //{
+        //    APawn* CurrentPawn = GetPawn();
+        //    //기존 캐릭터의 위치 저장
+        //    FVector Location = CurrentPawn->GetActorLocation();
+        //    FRotator Rotation = CurrentPawn->GetActorRotation();
 
-                // 플레이어 변경 로그 기록 , 서버에보내는 용도는아니다.
-                APlayerState* CurrentPlayerState = GetPlayerState<APlayerState>();
-                int32 PlayerIndex = CurrentPlayerState ? CurrentPlayerState->GetPlayerId() : -1; //플레이어정보
-                GameInstance->LogCharacterChange(PlayerIndex, CharacterName); //플레이어,캐릭터정보를 로그로출력하는 함수
-            }
-            else
-            {
-                UE_LOG(LogTemp, Error, TEXT("Failed to spawn new character of class: %s"), *NewCharacterClass->GetName());
-            }
-        }
-        else
-        {
-            UE_LOG(LogTemp, Error, TEXT("Failed to get new character class for: %s"), *CharacterName);
-        }
+        //    //새캐릭터를 월드의 이전플레이어 위치에 스폰
+        //    
+        //    AMyProjectPlayer* NewCharacter = GetWorld()->SpawnActor<AMyProjectPlayer>(NewCharacterClass, Location, Rotation);
+        //    if (NewCharacter)
+        //    {
+        //        Possess(NewCharacter); //소유권 이전
+        //        UE_LOG(LogTemp, Log, TEXT("Successfully Change and Possess NewCharacter"));
+        //        CurrentPawn->Destroy();
+
+        //        // 플레이어 변경 로그 기록
+        //        APlayerState* CurrentPlayerState = GetPlayerState<APlayerState>();
+        //        int32 PlayerIndex = CurrentPlayerState ? CurrentPlayerState->GetPlayerId() : -1; //플레이어정보
+        //        GameInstance->LogCharacterChange(PlayerIndex, CharacterName); //플레이어,캐릭터정보를 로그로출력하는 함수
+        //    }
+        //    else
+        //    {
+        //        UE_LOG(LogTemp, Error, TEXT("Failed to spawn new character of class: %s"), *NewCharacterClass->GetName());
+        //    }
+        //}
+        //else
+        //{
+        //    UE_LOG(LogTemp, Error, TEXT("Failed to get new character class for: %s"), *CharacterName);
+        //}
+
     }
     else
     {

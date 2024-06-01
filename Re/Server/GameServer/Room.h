@@ -22,6 +22,7 @@ public:
 	void HandleHit(Protocol::C_HIT pkt);
 
 	void HandleSelect(Protocol::C_SELECT pkt);
+	void HandleTelePort(Protocol::C_TELEPORT pkt);
 
 	// 몬스터 관련
 	void MonserSpawn();

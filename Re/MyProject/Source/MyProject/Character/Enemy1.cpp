@@ -60,7 +60,6 @@ AEnemy1::AEnemy1()
     {
         SkeletalMesh->SetAnimInstanceClass(AnimBP.Object);
         GetCharacterMovement()->bRunPhysicsWithNoController = true;
-
     }
     else
     {
