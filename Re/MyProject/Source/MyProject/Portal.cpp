@@ -52,5 +52,9 @@ void APortal::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AA
             // Teleport the player to the specified destination
             Character->SetActorLocation(TeleportDestination);
         }
+        //위부분 지우고 패킷 받으면 인스턴스에서 포탈사용 처리 (좌표인자로받아서)
+        //포탈이용시 플레이어 캐릭터 구분
+        
     }
 }
+

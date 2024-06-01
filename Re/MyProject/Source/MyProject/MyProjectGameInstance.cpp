@@ -27,14 +27,15 @@
 UMyProjectGameInstance::UMyProjectGameInstance()
 {
 	
-
+	Socket = ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->CreateSocket(TEXT("Stream"), TEXT("Client Socket"));
 
 }
 
 
-void UMyProjectGameInstance::ConnectToGameServer()
+bool UMyProjectGameInstance::ConnectToGameServer()
 {
-	Socket = ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->CreateSocket(TEXT("Stream"), TEXT("Client Socket"));
+	//IP위젯 주소 입력이 끝난후 제출하고 이부분 실행, 이부분 실행했을때 IP주소 불일치시 초기화
+	
 
 	FIPv4Address Ip;
 	FIPv4Address::Parse(IpAddress, Ip);
@@ -46,6 +47,7 @@ void UMyProjectGameInstance::ConnectToGameServer()
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Connecting To Server...")));
 
 	bool Connected = Socket->Connect(*InternetAddr);
+	return Connected;
 
 	if (Connected)
 	{
@@ -61,7 +63,10 @@ void UMyProjectGameInstance::ConnectToGameServer()
 	}
 	else
 	{
+
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Connection Failed")));
+		//여기서 ip위젯 주소재입력함수
+
 	}
 }
 
@@ -105,8 +110,8 @@ void UMyProjectGameInstance::HandleSpawn(const Protocol::ObjectInfo& objectInfo,
 	if (Players.Find(ObjectId) != nullptr)
 		return;
 
-	FVector SpawnLocation(objectInfo.pos_info().x(), objectInfo.pos_info().y(), objectInfo.pos_info().z());
-
+	FVector SpawnLocation(objectInfo.pos_info().x(), objectInfo.pos_info().y(), objectInfo.pos_info().z()); 
+	//대기방좌표전달
 	if (IsMine)
 	{
 		auto* PC = UGameplayStatics::GetPlayerController(this, 0);

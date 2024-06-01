@@ -69,6 +69,7 @@ public:
 
 
 	void RequestServerForAimingChange(bool bIsAiming);
+	void RequestServerForRollingChange(bool bIsRolling);
 
 	void Tick(float DeltaTime);
 
@@ -144,6 +145,10 @@ protected:
 	void OnAimPressed();
 
 	void OnAimReleased();	
+
+	void OnRollPressed();
+
+	
 	
 	//UI ���� �ν��Ͻ��� ����
 	UPROPERTY()

@@ -14,8 +14,10 @@ void UIPAddressWidget::OnIPAddressChanged(const FText& Text)
 	FString IPAddress = Text.ToString();
 	if (UMyProjectGameInstance* GameInstance = Cast<UMyProjectGameInstance>(GetGameInstance()))
 	{
-		GameInstance->ServerIPAddress = IPAddress;
+		//IPAddress에직접입력 변경
+		GameInstance->IpAddress = IPAddress;
 		IPAddressDisplay->SetText(FText::FromString(IPAddress));
+		GameInstance->ConnectToGameServer();
 	}
 }
 
@@ -71,6 +73,7 @@ void UIPAddressWidget::OnSubmitButtonClicked()
 		else
 		{
 			// IP 주소가 일치하지 않는 경우, 팝업 메시지 표시
+			
 			FText ErrorMessage = FText::FromString("IP address does not match. Please try again.");
 			IPAddressDisplay->SetText(ErrorMessage);
 			IPAddressInput->SetText(FText::GetEmpty());

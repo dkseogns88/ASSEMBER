@@ -20,6 +20,18 @@ public:
 	bool IsAiming() const { return bIsAiming; }
 	void SetAiming(bool bNewAiming);
 
+	
+	bool IsRolling() const { return bIsRolling; }
+	void SetRolling(bool bNewRolling);
+
+	void StartRoll();
+	void EndRoll();
+
+	FTimerHandle TimerHandle_Roll;
+
+	FVector RollDirection; // 구르기 방향 저장
+	float RollDuration;
+
 protected:
 	/** Camera boom positioning the camera behind the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
@@ -112,5 +124,9 @@ protected:
 	UFUNCTION()
 	void OnRep_Aimingchanged();
 
-	
+	UPROPERTY(ReplicatedUsing = OnRep_RollingChanged)
+	bool bIsRolling = false;
+
+	UFUNCTION()
+	void OnRep_RollingChanged();
 };

@@ -14,6 +14,11 @@ public:
     bool bIsAiming;
 
     void SetAiming(bool bAiming);
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+    bool bIsRolling;
+    
+    void SetRolling(bool bRolling);
 };
 
 

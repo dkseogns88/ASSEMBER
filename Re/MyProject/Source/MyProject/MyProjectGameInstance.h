@@ -39,7 +39,7 @@ class MYPROJECT_API UMyProjectGameInstance : public UGameInstance
 	
 public:
 	UFUNCTION(BlueprintCallable)
-	void ConnectToGameServer();
+	bool ConnectToGameServer();
 
 	UFUNCTION(BlueprintCallable)
 	void DisconnectToGameServer();
@@ -95,7 +95,7 @@ private:
 
 public:
 	class FSocket* Socket;
-	FString IpAddress = TEXT("127.0.0.1");
+	FString IpAddress; //위젯에서 입력받은값으로  
 	int16 Port = 7777;
 	TSharedPtr<class PacketSession> GameServerSession;
 
