@@ -690,18 +690,20 @@ void AMyProjectPlayerController::ChangeCharacter(const FString& CharacterName)
         if (NewCharacterClass)
         {
             APawn* CurrentPawn = GetPawn();
+            //기존 캐릭터의 위치 저장
             FVector Location = CurrentPawn->GetActorLocation();
             FRotator Rotation = CurrentPawn->GetActorRotation();
+            //새캐릭터를 월드의 이전플레이어 위치에 스폰
             AMyProjectPlayer* NewCharacter = GetWorld()->SpawnActor<AMyProjectPlayer>(NewCharacterClass, Location, Rotation);
             if (NewCharacter)
             {
-                Possess(NewCharacter);
+                Possess(NewCharacter); //소유권 이전
                 UE_LOG(LogTemp, Log, TEXT("Successfully Change and Possess NewCharacter"));
                 CurrentPawn->Destroy();
                 // 플레이어 변경 로그 기록
                 APlayerState* CurrentPlayerState = GetPlayerState<APlayerState>();
-                int32 PlayerIndex = CurrentPlayerState ? CurrentPlayerState->GetPlayerId() : -1;
-                GameInstance->LogCharacterChange(PlayerIndex, CharacterName);
+                int32 PlayerIndex = CurrentPlayerState ? CurrentPlayerState->GetPlayerId() : -1; //플레이어정보
+                GameInstance->LogCharacterChange(PlayerIndex, CharacterName); //플레이어,캐릭터정보를 로그로출력하는 함수
             }
             else
             {

@@ -10,6 +10,7 @@
 #include "MyProjectGameInstance.generated.h"
 
 
+//캐릭터 변경정보 저장하는 구조체 플레이어번호, 캐릭터이름으로 저장함
 USTRUCT(BlueprintType)
 struct FPlayerCharacterChangeInfo
 {

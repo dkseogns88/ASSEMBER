@@ -30,6 +30,7 @@ void ACharacterStatue::Tick(float DeltaTime)
 
 }
 
+//캐릭터와 동상이 오버랩되었을때
 void ACharacterStatue::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
     UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
@@ -47,6 +48,7 @@ void ACharacterStatue::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActo
     }
 }
 
+//캐릭터와 동상이 떨어졌을때
 void ACharacterStatue::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
     UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
@@ -65,6 +67,7 @@ void ACharacterStatue::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor*
 }
 
 
+//캐릭터와 동상이 상호작용시 캐릭터 변경요청  컨트롤러의 ChangeCharacter함수로
 void ACharacterStatue::OnInteract(APlayerController* PlayerController)
 {
     if (PlayerController)

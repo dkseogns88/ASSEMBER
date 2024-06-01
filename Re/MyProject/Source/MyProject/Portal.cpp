@@ -6,6 +6,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "GameFramework/Actor.h"
 #include "GameFramework/Character.h"
+#include "Character/MyProjectPlayer.h"
 
 // Sets default values
 APortal::APortal()
@@ -45,7 +46,7 @@ void APortal::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AA
     if (OtherActor && (OtherActor != this) && OtherComp)
     {
         // Check if the overlapping actor is a player character
-        ACharacter* Character = Cast<ACharacter>(OtherActor);
+        AMyProjectPlayer* Character = Cast<AMyProjectPlayer>(OtherActor); //플레이어 일때만 텔레포트가능
         if (Character)
         {
             // Teleport the player to the specified destination
