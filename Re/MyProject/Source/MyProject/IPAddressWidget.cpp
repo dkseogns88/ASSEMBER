@@ -43,5 +43,37 @@ void UIPAddressWidget::NativeConstruct()
 	{
 		ToggleButton->OnClicked.AddDynamic(this, &UIPAddressWidget::OnToggleButtonClicked);
 	}
+	if (SubmitButton)
+	{
+		SubmitButton->OnClicked.AddDynamic(this, &UIPAddressWidget::OnSubmitButtonClicked);
+	}
 
+}
+
+void UIPAddressWidget::OnSubmitButtonClicked()
+{
+	if (UMyProjectGameInstance* GameInstance = Cast<UMyProjectGameInstance>(GetGameInstance()))
+	{
+		FString EnteredIP = IPAddressInput->GetText().ToString();
+
+		if (EnteredIP.Equals(GameInstance->IpAddress))
+		{
+			// IP 주소가 일치하는 경우, 위젯 닫기
+			RemoveFromParent();
+			// 게임 모드로 전환
+			APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+			if (PlayerController)
+			{
+				PlayerController->bShowMouseCursor = false;
+				PlayerController->SetInputMode(FInputModeGameOnly());
+			}
+		}
+		else
+		{
+			// IP 주소가 일치하지 않는 경우, 팝업 메시지 표시
+			FText ErrorMessage = FText::FromString("IP address does not match. Please try again.");
+			IPAddressDisplay->SetText(ErrorMessage);
+			IPAddressInput->SetText(FText::GetEmpty());
+		}
+	}
 }

@@ -25,6 +25,9 @@ public:
     UPROPERTY(meta = (BindWidget))
     class UButton* ToggleButton;
 
+    UPROPERTY(meta = (BindWidget))
+    class UButton* SubmitButton; 
+
     UFUNCTION()
     void OnIPAddressChanged(const FText& Text);
 
@@ -32,4 +35,8 @@ public:
     void OnToggleButtonClicked();
 
     virtual void NativeConstruct() override;
+
+private:
+    UFUNCTION()
+    void OnSubmitButtonClicked();  
 };
