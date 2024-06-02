@@ -146,7 +146,9 @@ protected:
 
 	void OnRollPressed();
 
-	
+	void MoveForward(float Value);
+	void MoveRight(float Value);
+
 	
 	//UI ���� �ν��Ͻ��� ����
 	UPROPERTY()
@@ -207,7 +209,8 @@ private:
 
 		void LogSkillUsage(FName SkillName);
 
-
+		float ForwardInput;
+		float RightInput;
 		
 	
 };

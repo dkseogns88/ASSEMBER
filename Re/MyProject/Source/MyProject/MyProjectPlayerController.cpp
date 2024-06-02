@@ -360,14 +360,13 @@ void AMyProjectPlayerController::RequestServerForRollingChange(bool bIsRolling)
     AMyProjectPlayer* MyCharacter = Cast<AMyProjectPlayer>(GetPawn());
     if (MyCharacter)
     {
-        MyCharacter->SetRolling(bIsRolling);
-        UE_LOG(LogTemp, Log, TEXT("Rolling set"));
+        MyCharacter->StartRoll(ForwardInput, RightInput);
+       
 
 
         //여기에 서버패킷부분 추가
 
-
-
+        
 
 
     }
@@ -452,8 +451,34 @@ void AMyProjectPlayerController::SetupInputComponent()
     InputComponent->BindAction("InteractStatue", IE_Pressed, this, &AMyProjectPlayerController::Interact);
 
     InputComponent->BindAction("Roll", IE_Pressed, this, &AMyProjectPlayerController::OnRollPressed);
+
+    InputComponent->BindAxis("MoveForward", this, &AMyProjectPlayerController::MoveForward);
+    InputComponent->BindAxis("MoveRight", this, &AMyProjectPlayerController::MoveRight);
     
 }
+
+void AMyProjectPlayerController::MoveForward(float Value)
+{
+    ForwardInput = Value;
+
+    AMyProjectPlayer* MyCharacter = Cast<AMyProjectPlayer>(GetPawn());
+    if (MyCharacter)
+    {
+        MyCharacter->MoveForward(Value);
+    }
+}
+void AMyProjectPlayerController::MoveRight(float Value)
+{
+    RightInput = Value;
+
+    AMyProjectPlayer* MyCharacter = Cast<AMyProjectPlayer>(GetPawn());
+    if (MyCharacter)
+    {
+        MyCharacter->MoveRight(Value);
+    }
+}
+
+
 
 void AMyProjectPlayerController::PerformSkill(FName SkillName)
 {

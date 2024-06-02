@@ -30,6 +30,8 @@ protected:
     
 public:
     bool IsMyPlayer();
+    void MoveForward(float Value);
+    void MoveRight(float Value);
     void SetMovementSpeed(float NewSpeed);
     Protocol::MoveState GetMoveState() { return PlayerInfo->state(); }
     void SetMoveState(Protocol::MoveState State);
@@ -49,9 +51,12 @@ public:
     bool IsRolling() const { return bIsRolling; }
     void SetRolling(bool bNewRolling);
 
-    void StartRoll();
+    void StartRoll(float ForwardInput, float RightInput);
     void EndRoll();
   
+   
+    float StoredForwardInput;
+    float StoredRightInput;
   
 
 protected:

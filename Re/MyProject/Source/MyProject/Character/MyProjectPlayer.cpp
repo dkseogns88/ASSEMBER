@@ -51,6 +51,9 @@ AMyProjectPlayer::AMyProjectPlayer()
 
 	PlayerInfo = new Protocol::PosInfo();
 	DestInfo = new Protocol::PosInfo();
+
+	StoredForwardInput = 0.0f;
+	StoredRightInput = 0.0f;
 }
 
 AMyProjectPlayer::~AMyProjectPlayer() 
@@ -76,28 +79,79 @@ void AMyProjectPlayer::SetRolling(bool bNewRolling)
 	}
 }
 
-void AMyProjectPlayer::StartRoll()
+void AMyProjectPlayer::StartRoll(float ForwardInput, float RightInput)
 {
-	if (!bIsRolling)
+	if (bIsRolling)
 	{
 		return;
 	}
-
+	bIsRolling = true;
 	GetCharacterMovement()->MaxWalkSpeed = 1200.0f;
 
-	FRotator CameraRotation = GetControlRotation();
-	RollDirection = FRotationMatrix(CameraRotation).GetUnitAxis(EAxis::X);
+	FVector ForwardVector = GetActorForwardVector();
+	FVector RightVector = GetActorRightVector();
+
+	if (ForwardInput > 0.1f)
+	{
+		if (RightInput > 0.1f)
+		{
+			RollDirection = (ForwardVector + RightVector).GetSafeNormal(); // 앞-오른쪽
+		}
+		else if (RightInput < -0.1f)
+		{
+			RollDirection = (ForwardVector - RightVector).GetSafeNormal(); // 앞-왼쪽
+		}
+		else
+		{
+			RollDirection = ForwardVector; // 앞
+		}
+	}
+	else if (ForwardInput < -0.1f)
+	{
+		if (RightInput > 0.1f)
+		{
+			RollDirection = (-ForwardVector + RightVector).GetSafeNormal(); // 뒤-오른쪽
+		}
+		else if (RightInput < -0.1f)
+		{
+			RollDirection = (-ForwardVector - RightVector).GetSafeNormal(); // 뒤-왼쪽
+		}
+		else
+		{
+			RollDirection = -ForwardVector; // 뒤
+		}
+	}
+	else
+	{
+		if (RightInput > 0.1f)
+		{
+			RollDirection = RightVector; // 오른쪽
+		}
+		else if (RightInput < -0.1f)
+		{
+			RollDirection = -RightVector; // 왼쪽
+		}
+		else
+		{
+			RollDirection = ForwardVector; // 기본 앞 방향
+		}
+	}
+	UAnimInstanceCustom* AnimInstance = Cast<UAnimInstanceCustom>(GetMesh()->GetAnimInstance());
+	if (AnimInstance)
+	{
+		AnimInstance->bIsRolling = true;
+	}
+
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle_Roll, this, &AMyProjectPlayer::EndRoll, RollDuration, false);
 }
 
 void AMyProjectPlayer::EndRoll()
 {
 	GetCharacterMovement()->MaxWalkSpeed = 600.0f;
-
 	GetWorld()->GetTimerManager().ClearTimer(TimerHandle_Roll);
 
 	GetCharacterMovement()->StopMovementImmediately();
-	SetRolling(false);
+	bIsRolling = false;
 
 	UAnimInstanceCustom* AnimInstance = Cast<UAnimInstanceCustom>(GetMesh()->GetAnimInstance());
 	if (AnimInstance)
@@ -211,7 +265,7 @@ void AMyProjectPlayer::OnRep_RollingChanged()
 
 	if (bIsRolling)
 	{
-		StartRoll();
+		StartRoll(StoredForwardInput, StoredRightInput);
 	}
 	else
 	{
@@ -229,6 +283,17 @@ bool AMyProjectPlayer::IsMyPlayer()
 	return false;
 }
 
+void AMyProjectPlayer::MoveForward(float Value)
+{
+	StoredForwardInput = Value;
+	AddMovementInput(GetActorForwardVector() * Value);
+}
+
+void AMyProjectPlayer::MoveRight(float Value)
+{
+	StoredRightInput = Value;
+	AddMovementInput(GetActorRightVector() * Value);
+}
 
 void AMyProjectPlayer::SetMoveState(Protocol::MoveState State)
 {
