@@ -12,13 +12,22 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 #include "MyProjectMyPlayer.h"
+#include "Net/UnrealNetwork.h"
 #include "MyProjectGameInstance.h"
+#include "AnimInstanceCustom.h"
 #include "..\..\Source\MyProject\AnimInstanceCustom.h"
 #include "MyProjectPlayerController.h"
 
 
 AMyProjectPlayer::AMyProjectPlayer()
 {
+	PrimaryActorTick.bCanEverTick = true;
+
+
+	bIsRolling = false;
+	bReplicates = true;
+	RollDuration = 0.75f; 
+
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 
 	bUseControllerRotationPitch = false;
@@ -58,6 +67,45 @@ void AMyProjectPlayer::SetMovementSpeed(float NewSpeed)
 	GetCharacterMovement()->MaxWalkSpeed = Speed;
 }
 
+void AMyProjectPlayer::SetRolling(bool bNewRolling)
+{
+	if (bIsRolling != bNewRolling)
+	{
+		bIsRolling = bNewRolling;
+		OnRep_RollingChanged();
+	}
+}
+
+void AMyProjectPlayer::StartRoll()
+{
+	if (!bIsRolling)
+	{
+		return;
+	}
+
+	GetCharacterMovement()->MaxWalkSpeed = 1200.0f;
+
+	FRotator CameraRotation = GetControlRotation();
+	RollDirection = FRotationMatrix(CameraRotation).GetUnitAxis(EAxis::X);
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle_Roll, this, &AMyProjectPlayer::EndRoll, RollDuration, false);
+}
+
+void AMyProjectPlayer::EndRoll()
+{
+	GetCharacterMovement()->MaxWalkSpeed = 600.0f;
+
+	GetWorld()->GetTimerManager().ClearTimer(TimerHandle_Roll);
+
+	GetCharacterMovement()->StopMovementImmediately();
+	SetRolling(false);
+
+	UAnimInstanceCustom* AnimInstance = Cast<UAnimInstanceCustom>(GetMesh()->GetAnimInstance());
+	if (AnimInstance)
+	{
+		AnimInstance->bIsRolling = false;
+	}
+}
+
 void AMyProjectPlayer::BeginPlay()
 {
 	Super::BeginPlay();
@@ -90,6 +138,10 @@ void AMyProjectPlayer::Tick(float DeltaSeconds)
 		PlayerInfo->set_y(Location.Y);
 		PlayerInfo->set_z(Location.Z);
 		PlayerInfo->set_yaw(GetControlRotation().Yaw);
+	}
+	if (bIsRolling)
+	{
+		AddMovementInput(RollDirection, 1.0f);
 	}
 
 	bool MyPlayer;
@@ -138,7 +190,37 @@ void AMyProjectPlayer::Tick(float DeltaSeconds)
 
 }
 
-bool AMyProjectPlayer::IsMyPlayer() 
+void AMyProjectPlayer::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AMyProjectPlayer, bIsRolling);
+}
+
+void AMyProjectPlayer::OnRep_RollingChanged()
+{
+	UAnimInstanceCustom* AnimInstance = Cast<UAnimInstanceCustom>(GetMesh()->GetAnimInstance());
+	if (AnimInstance)
+	{
+		AnimInstance->bIsRolling = bIsRolling;
+		UE_LOG(LogTemp, Log, TEXT("Rolling state updated in animation blueprint to: %s"), bIsRolling ? TEXT("True") : TEXT("False"));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("Failed to cast to UAnimInstanceCustom"));
+	}
+
+	if (bIsRolling)
+	{
+		StartRoll();
+	}
+	else
+	{
+		EndRoll();
+	}
+
+}
+
+bool AMyProjectPlayer::IsMyPlayer()
 {
 	if (Cast<AMyProjectMyPlayer>(this) != nullptr)
 		return true;

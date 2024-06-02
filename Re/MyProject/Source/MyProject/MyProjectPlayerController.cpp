@@ -9,6 +9,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "MyProjectMyPlayer.h"
 #include "MyProjectMyPlayerSida.h"
+#include "MyProjectPlayer.h"
 #include "DrawDebugHelpers.h"
 #include "EnemyInfoWidget.h"
 #include "IPAddressWidget.h"
@@ -356,7 +357,7 @@ void AMyProjectPlayerController::RequestServerForAimingChange(bool bIsAiming)
 void AMyProjectPlayerController::RequestServerForRollingChange(bool bIsRolling)
 {
 
-    AMyProjectMyPlayer* MyCharacter = Cast<AMyProjectMyPlayer>(GetPawn());
+    AMyProjectPlayer* MyCharacter = Cast<AMyProjectPlayer>(GetPawn());
     if (MyCharacter)
     {
         MyCharacter->SetRolling(bIsRolling);
