@@ -21,16 +21,11 @@ public:
 	void SetAiming(bool bNewAiming);
 
 	
-	bool IsRolling() const { return bIsRolling; }
-	void SetRolling(bool bNewRolling);
 
-	void StartRoll();
-	void EndRoll();
 
 	FTimerHandle TimerHandle_Roll;
 
-	FVector RollDirection; // 구르기 방향 저장
-	float RollDuration;
+
 
 protected:
 	/** Camera boom positioning the camera behind the character */
@@ -124,9 +119,5 @@ protected:
 	UFUNCTION()
 	void OnRep_Aimingchanged();
 
-	UPROPERTY(ReplicatedUsing = OnRep_RollingChanged)
-	bool bIsRolling = false;
-
-	UFUNCTION()
-	void OnRep_RollingChanged();
+	
 };

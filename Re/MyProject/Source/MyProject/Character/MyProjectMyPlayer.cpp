@@ -82,6 +82,7 @@ void AMyProjectMyPlayer::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AMyProjectMyPlayer, bIsRolling);
+	DOREPLIFETIME(AMyProjectMyPlayer, bIsAiming);
 	
 	
 }
@@ -118,12 +119,12 @@ void AMyProjectMyPlayer::Tick(float DeltaTime)
 	{
 		AddMovementInput(RollDirection, 1.0f);
 	}
-	//GEngine->AddOnScreenDebugMessage(-1, 200, FColor::Green, FString::Printf(TEXT("Hello %s"), *GetActorLocation().ToString()));
-
 }
 
 void AMyProjectMyPlayer::StateTick()
 {
+	if (bIsRolling == true)
+		return;
 
 	if (GetCharacterMovement()->IsFalling())
 	{
@@ -293,70 +294,4 @@ void AMyProjectMyPlayer::SetAiming(bool bNewAiming)
 void AMyProjectMyPlayer::OnRep_Aimingchanged()
 {
 	SetAiming(bIsAiming);
-}
-
-
-
-
-void AMyProjectMyPlayer::SetRolling(bool bNewRolling)
-{
-	if (bIsRolling != bNewRolling)
-	{
-		bIsRolling = bNewRolling;
-		OnRep_RollingChanged();
-	}
-}
-
-void AMyProjectMyPlayer::StartRoll()
-{
-	if (!bIsRolling)
-	{
-		return;
-	}
-
-	GetCharacterMovement()->MaxWalkSpeed = 1200.0f;
-
-	FRotator CameraRotation = GetControlRotation();
-	RollDirection = FRotationMatrix(CameraRotation).GetUnitAxis(EAxis::X);
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle_Roll, this, &AMyProjectMyPlayer::EndRoll, RollDuration, false);
-}
-
-void AMyProjectMyPlayer::EndRoll()
-{
-	
-	GetCharacterMovement()->MaxWalkSpeed = 600.0f;
-	
-	GetWorld()->GetTimerManager().ClearTimer(TimerHandle_Roll);
-
-	GetCharacterMovement()->StopMovementImmediately();
-	SetRolling(false);
-
-	UAnimInstanceCustom* AnimInstance = Cast<UAnimInstanceCustom>(GetMesh()->GetAnimInstance());
-	if (AnimInstance)
-	{
-		AnimInstance->bIsRolling = false;
-	}
-}
-
-void AMyProjectMyPlayer::OnRep_RollingChanged()
-{
-	UAnimInstanceCustom* AnimInstance = Cast<UAnimInstanceCustom>(GetMesh()->GetAnimInstance());
-	if (AnimInstance)
-	{
-		AnimInstance->bIsRolling = bIsRolling;
-		UE_LOG(LogTemp, Log, TEXT("Rolling state updated in animation blueprint to: %s"), bIsRolling ? TEXT("True") : TEXT("False"));
-	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("Failed to cast to UAnimInstanceCustom"));
-	}
-
-	if (bIsRolling)
-	{
-		StartRoll();
-	}
-	else
-	{
-		EndRoll();
-	}
 }

@@ -21,6 +21,7 @@
 #include "AnimInstanceCustom.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Components/StaticMeshComponent.h"
+#include "GameFramework/DamageType.h"
 #include "UObject/UObjectGlobals.h"
 #include "Engine/StaticMeshActor.h"
 
@@ -72,6 +73,8 @@ void UMyProjectGameInstance::DisconnectToGameServer()
 		return;
 
 	Protocol::C_LEAVE_GAME LeavePkt;
+	Protocol::PosInfo* Info = LeavePkt.mutable_info();
+	Info->CopyFrom(*MyPlayer->GetPlayerInfo());
 	SEND_PACKET(LeavePkt);
 
 }
@@ -154,6 +157,7 @@ void UMyProjectGameInstance::HandleDespawn(uint64 ObjectId)
 		return;
 
 	World->DestroyActor(*FindActor);
+	Players.Remove(ObjectId);
 }
 
 void UMyProjectGameInstance::HandleDespawn(const Protocol::S_DESPAWN& DespawnPkt)
@@ -162,6 +166,13 @@ void UMyProjectGameInstance::HandleDespawn(const Protocol::S_DESPAWN& DespawnPkt
 	{
 		HandleDespawn(ObjectId);
 	}
+}
+
+void UMyProjectGameInstance::HandleLeave(const Protocol::S_LEAVE_GAME& LeavePkt)
+{
+	// 
+
+
 }
 
 void UMyProjectGameInstance::HandleSelectType(const Protocol::S_SELECT& SelectPkt)
@@ -348,19 +359,35 @@ void UMyProjectGameInstance::HandleZoom(const Protocol::S_ZOOM& ZoomPkt)
 	}
 }
 
-//구르기 관리함수
-void UMyProjectGameInstance::HandleRoll()
-{
-	/*
-	UAnimInstanceCustom* AnimInstance = Cast<UAnimInstanceCustom>(Player->GetMesh()->GetAnimInstance());
-	 if(AnimInstance)
-	{
-	bool bIsRolling;
-	AnimInstance->SetRolling(bIsRolling);
-    }
-	*/
+void UMyProjectGameInstance::HandleRoll(const Protocol::S_ROLL& RollPkt)
+{	
 
+	if (Socket == nullptr || GameServerSession == nullptr)
+		return;
+
+	auto* World = GetWorld();
+	if (World == nullptr)
+		return;
+
+	const uint64 ObjectId = RollPkt.info().object_id();
+	AMyProjectPlayer** FindActor = Players.Find(ObjectId);
+	if (FindActor == nullptr)
+		return;
+
+	AMyProjectPlayer* Player = (*FindActor);
+	if (Player->IsMyPlayer())
+		return;
+
+	UAnimInstanceCustom* AnimInstance = Cast<UAnimInstanceCustom>(Player->GetMesh()->GetAnimInstance());
+	if(AnimInstance)
+	{
+		if (Protocol::MoveState::MOVE_STATE_ROOL == RollPkt.info().state()) {
+			Player->StartRoll(RollPkt.forwardinput(), RollPkt.rightinput());
+		}
+	}
+	
 }
+
 
 void UMyProjectGameInstance::HandleMonsterSpawn(const Protocol::S_SPAWN_MONSTER& SpawnPkt)
 {
@@ -402,35 +429,27 @@ void UMyProjectGameInstance::HandleMonsterSpawn(const Protocol::ObjectInfo& Mons
 	{
 		UE_LOG(LogTemp, Error, TEXT("Failed to spawn monster at %s"), *Location.ToString());
 	}
-
-	/*if (MonsterInfo.monster_type() == Protocol::MONSTER_TYPE_TEST) {
-		SpawnMonsterAtLocation(MonsterInfo.pos_info());
-	}*/
 }
-// 이부분 서버처리 수정해야함
 
 void UMyProjectGameInstance::HandleHIT(const Protocol::S_HIT& pkt)
 {
 	if (Socket == nullptr || GameServerSession == nullptr)
 		return;
-
 	auto* World = GetWorld();
 	if (World == nullptr)
 		return;
-
 	bool OnHit = pkt.on_hit();
 	int HitId = pkt.object_id();
-
 	if (OnHit)
 	{
 		ANPC** FindActor = Monsters.Find(HitId);
 		if (FindActor == nullptr) return;
-		
+
 		if (ANPC* Enemy = Cast<ANPC>(*FindActor))
 		{
-			
+
 			// Handle AEnemy1-specific logic
-			Enemy->TakeDamage();
+			Enemy->TakeDamaged();
 			Enemy->Health -= 20;
 			if (Enemy->Health <= 0)
 			{
@@ -443,7 +462,6 @@ void UMyProjectGameInstance::HandleHIT(const Protocol::S_HIT& pkt)
 
 void UMyProjectGameInstance::HandleAttack(const Protocol::S_ATTACK& pkt)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 200, FColor::Green, FString::Printf(TEXT("Attack!!")));
 	
 	return ;
 }

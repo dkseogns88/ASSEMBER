@@ -27,7 +27,7 @@ protected:
 
     // 데미지 기능
     UFUNCTION(BlueprintCallable, Category = "Damage")
-    virtual void TakeDamage();
+    virtual void TakeDamaged();
 
     // 죽음 기능
     UFUNCTION(BlueprintCallable, Category = "Death")

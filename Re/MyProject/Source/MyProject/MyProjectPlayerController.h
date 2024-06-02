@@ -104,7 +104,6 @@ public:
 	void ToggleIPAddressWidget();
 
 	void SetNearbyStatue(ACharacterStatue* Statue);
-	void ChangeCharacter(const Protocol::PlayerType PlayerType);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
 	TSubclassOf<class UIPAddressWidget> IPAddressWidgetClass;
@@ -146,7 +145,9 @@ protected:
 
 	void OnRollPressed();
 
-	
+	void MoveForward(float Value);
+	void MoveRight(float Value);
+
 	
 	//UI ���� �ν��Ͻ��� ����
 	UPROPERTY()
@@ -207,7 +208,8 @@ private:
 
 		void LogSkillUsage(FName SkillName);
 
-
+		float ForwardInput;
+		float RightInput;
 		
 	
 };

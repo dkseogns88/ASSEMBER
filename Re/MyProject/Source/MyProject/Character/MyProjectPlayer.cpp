@@ -12,13 +12,22 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 #include "MyProjectMyPlayer.h"
+#include "Net/UnrealNetwork.h"
 #include "MyProjectGameInstance.h"
+#include "AnimInstanceCustom.h"
 #include "..\..\Source\MyProject\AnimInstanceCustom.h"
 #include "MyProjectPlayerController.h"
 
 
 AMyProjectPlayer::AMyProjectPlayer()
 {
+	PrimaryActorTick.bCanEverTick = true;
+
+
+	bIsRolling = false;
+	bReplicates = true;
+	RollDuration = 0.75f; 
+
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 
 	bUseControllerRotationPitch = false;
@@ -42,6 +51,9 @@ AMyProjectPlayer::AMyProjectPlayer()
 
 	PlayerInfo = new Protocol::PosInfo();
 	DestInfo = new Protocol::PosInfo();
+
+	StoredForwardInput = 0.0f;
+	StoredRightInput = 0.0f;
 }
 
 AMyProjectPlayer::~AMyProjectPlayer() 
@@ -56,6 +68,96 @@ void AMyProjectPlayer::SetMovementSpeed(float NewSpeed)
 {
 	Speed = NewSpeed;
 	GetCharacterMovement()->MaxWalkSpeed = Speed;
+}
+
+void AMyProjectPlayer::SetRolling(bool bNewRolling)
+{
+	if (bIsRolling != bNewRolling)
+	{
+		bIsRolling = bNewRolling;
+		OnRep_RollingChanged();
+	}
+}
+
+void AMyProjectPlayer::StartRoll(float ForwardInput, float RightInput)
+{
+	if (bIsRolling)
+	{
+		return;
+	}
+	bIsRolling = true;
+	GetCharacterMovement()->MaxWalkSpeed = 1200.0f;
+
+	FVector ForwardVector = GetActorForwardVector();
+	FVector RightVector = GetActorRightVector();
+
+	if (ForwardInput > 0.1f)
+	{
+		if (RightInput > 0.1f)
+		{
+			RollDirection = (ForwardVector + RightVector).GetSafeNormal(); // 앞-오른쪽
+		}
+		else if (RightInput < -0.1f)
+		{
+			RollDirection = (ForwardVector - RightVector).GetSafeNormal(); // 앞-왼쪽
+		}
+		else
+		{
+			RollDirection = ForwardVector; // 앞
+		}
+	}
+	else if (ForwardInput < -0.1f)
+	{
+		if (RightInput > 0.1f)
+		{
+			RollDirection = (-ForwardVector + RightVector).GetSafeNormal(); // 뒤-오른쪽
+		}
+		else if (RightInput < -0.1f)
+		{
+			RollDirection = (-ForwardVector - RightVector).GetSafeNormal(); // 뒤-왼쪽
+		}
+		else
+		{
+			RollDirection = -ForwardVector; // 뒤
+		}
+	}
+	else
+	{
+		if (RightInput > 0.1f)
+		{
+			RollDirection = RightVector; // 오른쪽
+		}
+		else if (RightInput < -0.1f)
+		{
+			RollDirection = -RightVector; // 왼쪽
+		}
+		else
+		{
+			RollDirection = ForwardVector; // 기본 앞 방향
+		}
+	}
+	UAnimInstanceCustom* AnimInstance = Cast<UAnimInstanceCustom>(GetMesh()->GetAnimInstance());
+	if (AnimInstance)
+	{
+		AnimInstance->bIsRolling = true;
+	}
+
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle_Roll, this, &AMyProjectPlayer::EndRoll, RollDuration, false);
+}
+
+void AMyProjectPlayer::EndRoll()
+{
+	GetCharacterMovement()->MaxWalkSpeed = 600.0f;
+	GetWorld()->GetTimerManager().ClearTimer(TimerHandle_Roll);
+
+	GetCharacterMovement()->StopMovementImmediately();
+	bIsRolling = false;
+
+	UAnimInstanceCustom* AnimInstance = Cast<UAnimInstanceCustom>(GetMesh()->GetAnimInstance());
+	if (AnimInstance)
+	{
+		AnimInstance->bIsRolling = false;
+	}
 }
 
 void AMyProjectPlayer::BeginPlay()
@@ -91,6 +193,10 @@ void AMyProjectPlayer::Tick(float DeltaSeconds)
 		PlayerInfo->set_z(Location.Z);
 		PlayerInfo->set_yaw(GetControlRotation().Yaw);
 	}
+	if (bIsRolling)
+	{
+		AddMovementInput(RollDirection, 1.0f);
+	}
 
 	bool MyPlayer;
 	auto* GameInstance = Cast<UMyProjectGameInstance>(GWorld->GetGameInstance());
@@ -103,39 +209,72 @@ void AMyProjectPlayer::Tick(float DeltaSeconds)
 	{
 		const Protocol::MoveState State = PlayerInfo->state();
 
-		if (State == Protocol::MOVE_STATE_RUN || State == Protocol::MOVE_STATE_JUMP)
+		if (State == Protocol::MOVE_STATE_RUN)
 		{
-			//회전 보간
 			FRotator NowRotation = GetActorRotation();
 			FRotator TargetRotation = FRotator(0, DestInfo->yaw(), 0);
+
 			FRotator NewRotation = FMath::RInterpTo(NowRotation, TargetRotation, DeltaSeconds, 5.0f); // 보간 속도는 5.0f로 설정
 			SetActorRotation(NewRotation);
 
-			// 위치 보간
-			FVector NowLocation = GetActorLocation();
-			FVector TargetLocation = FVector(DestInfo->x(), DestInfo->y(), DestInfo->z());
-			FVector NewLocation = FMath::VInterpTo(NowLocation, TargetLocation, DeltaSeconds, 5.0f);
-			SetActorLocation(NewLocation);
-
-			//이동방향 처리
 			FVector ForwardDirection = FVector(DestInfo->d_x(), DestInfo->d_y(), DestInfo->d_z());
 			AddMovementInput(ForwardDirection);
-
-			// 점프 상태 처리
-			if (State == Protocol::MOVE_STATE_JUMP && PreviousState != Protocol::MOVE_STATE_JUMP)
+		}
+		else if (State == Protocol::MOVE_STATE_JUMP)
+		{
+			// 이전 상태가 점프가 아닌 경우에만 점프를 실행합니다.
+			if (PreviousState != Protocol::MOVE_STATE_JUMP)
 			{
 				Jump();
 			}
 
+			FRotator NowRotation = GetActorRotation();
+			FRotator TargetRotation = FRotator(0, DestInfo->yaw(), 0);
+
+			FRotator NewRotation = FMath::RInterpTo(NowRotation, TargetRotation, DeltaSeconds, 5.0f); // 보간 속도는 5.0f로 설정
+			SetActorRotation(NewRotation);
+
+			FVector ForwardDirection = FVector(DestInfo->d_x(), DestInfo->d_y(), DestInfo->d_z());
+			AddMovementInput(ForwardDirection);
 		}
-		
+
+		// 현재 상태를 이전 상태로 업데이트합니다.
 		PreviousState = State;
 	}
-	
 
 }
 
-bool AMyProjectPlayer::IsMyPlayer() 
+void AMyProjectPlayer::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AMyProjectPlayer, bIsRolling);
+}
+
+void AMyProjectPlayer::OnRep_RollingChanged()
+{
+	UAnimInstanceCustom* AnimInstance = Cast<UAnimInstanceCustom>(GetMesh()->GetAnimInstance());
+	if (AnimInstance)
+	{
+		AnimInstance->bIsRolling = bIsRolling;
+		UE_LOG(LogTemp, Log, TEXT("Rolling state updated in animation blueprint to: %s"), bIsRolling ? TEXT("True") : TEXT("False"));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("Failed to cast to UAnimInstanceCustom"));
+	}
+
+	if (bIsRolling)
+	{
+		StartRoll(StoredForwardInput, StoredRightInput);
+	}
+	else
+	{
+		EndRoll();
+	}
+
+}
+
+bool AMyProjectPlayer::IsMyPlayer()
 {
 	if (Cast<AMyProjectMyPlayer>(this) != nullptr)
 		return true;
@@ -144,6 +283,17 @@ bool AMyProjectPlayer::IsMyPlayer()
 	return false;
 }
 
+void AMyProjectPlayer::MoveForward(float Value)
+{
+	StoredForwardInput = Value;
+	AddMovementInput(GetActorForwardVector() * Value);
+}
+
+void AMyProjectPlayer::MoveRight(float Value)
+{
+	StoredRightInput = Value;
+	AddMovementInput(GetActorRightVector() * Value);
+}
 
 void AMyProjectPlayer::SetMoveState(Protocol::MoveState State)
 {

@@ -18,6 +18,7 @@ public:
 	void HandleJump(Protocol::C_JUMP pkt);
 
 	void HandleZoom(Protocol::C_ZOOM pkt);
+	void HandleRoll(Protocol::C_ROLL pkt);
 	
 	void HandleHit(Protocol::C_HIT pkt);
 

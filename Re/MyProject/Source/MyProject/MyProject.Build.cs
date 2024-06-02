@@ -12,6 +12,8 @@ public class MyProject : ModuleRules
 
         PrivateDependencyModuleNames.AddRange(new string[] { "ProtobufCore" });
 
+        bEnableExceptions = true;
+
         PrivateIncludePaths.AddRange(new string[]
         {
             "MyProject/",

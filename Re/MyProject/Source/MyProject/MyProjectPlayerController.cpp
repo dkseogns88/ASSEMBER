@@ -9,6 +9,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "MyProjectMyPlayer.h"
 #include "MyProjectMyPlayerSida.h"
+#include "MyProjectPlayer.h"
 #include "DrawDebugHelpers.h"
 #include "EnemyInfoWidget.h"
 #include "IPAddressWidget.h"
@@ -216,7 +217,7 @@ void AMyProjectPlayerController::HandleLevelUpOption(int OptionIndex)
     UpdateStatsBasedOnOption(OptionIndex);
     if (LevelUpWidgetInstance && LevelUpWidgetInstance->IsInViewport())
     {
-        LevelUpWidgetInstance->RemoveFromViewport();
+        LevelUpWidgetInstance->RemoveFromParent();
         bShowMouseCursor = false;
         SetInputMode(FInputModeGameOnly());
         UE_LOG(LogTemp, Log, TEXT("Level Up UI hidden"));
@@ -336,7 +337,7 @@ void AMyProjectPlayerController::RequestServerForAimingChange(bool bIsAiming)
         {
             if (AimUIInstance && AimUIInstance->IsInViewport())
             {
-                AimUIInstance->RemoveFromViewport();
+                AimUIInstance->RemoveFromParent();
             }
         }
 
@@ -356,19 +357,19 @@ void AMyProjectPlayerController::RequestServerForAimingChange(bool bIsAiming)
 void AMyProjectPlayerController::RequestServerForRollingChange(bool bIsRolling)
 {
 
-    AMyProjectMyPlayer* MyCharacter = Cast<AMyProjectMyPlayer>(GetPawn());
+    AMyProjectPlayer* MyCharacter = Cast<AMyProjectPlayer>(GetPawn());
     if (MyCharacter)
     {
-        MyCharacter->SetRolling(bIsRolling);
-        UE_LOG(LogTemp, Log, TEXT("Rolling set"));
-
+        MyCharacter->StartRoll(ForwardInput, RightInput);
 
         //여기에 서버패킷부분 추가
-
-
-
-
-
+        Protocol::C_ROLL RoolPkt;
+        Protocol::PosInfo* Info = RoolPkt.mutable_info();
+        MyCharacter->SetMoveState(Protocol::MOVE_STATE_ROOL);
+        Info->CopyFrom(*MyCharacter->GetPlayerInfo());
+        RoolPkt.set_forwardinput(ForwardInput);
+        RoolPkt.set_rightinput(RightInput);
+        SEND_PACKET(RoolPkt);
     }
 
     UE_LOG(LogTemp, Log, TEXT("Requested server for Rolling change: %s"), bIsRolling ? TEXT("True") : TEXT("False"));
@@ -424,7 +425,7 @@ void AMyProjectPlayerController::RemoveEnemyInfo()
     // 현재 화면에 표시된 위젯 제거
     if (CurrentEnemyInfoWidget)
     {
-        CurrentEnemyInfoWidget->RemoveFromViewport();
+        CurrentEnemyInfoWidget->RemoveFromParent();
         CurrentEnemyInfoWidget = nullptr;
     }
 }
@@ -451,8 +452,34 @@ void AMyProjectPlayerController::SetupInputComponent()
     InputComponent->BindAction("InteractStatue", IE_Pressed, this, &AMyProjectPlayerController::Interact);
 
     InputComponent->BindAction("Roll", IE_Pressed, this, &AMyProjectPlayerController::OnRollPressed);
+
+    InputComponent->BindAxis("MoveForward", this, &AMyProjectPlayerController::MoveForward);
+    InputComponent->BindAxis("MoveRight", this, &AMyProjectPlayerController::MoveRight);
     
 }
+
+void AMyProjectPlayerController::MoveForward(float Value)
+{
+    ForwardInput = Value;
+
+    AMyProjectPlayer* MyCharacter = Cast<AMyProjectPlayer>(GetPawn());
+    if (MyCharacter)
+    {
+        MyCharacter->MoveForward(Value);
+    }
+}
+void AMyProjectPlayerController::MoveRight(float Value)
+{
+    RightInput = Value;
+
+    AMyProjectPlayer* MyCharacter = Cast<AMyProjectPlayer>(GetPawn());
+    if (MyCharacter)
+    {
+        MyCharacter->MoveRight(Value);
+    }
+}
+
+
 
 void AMyProjectPlayerController::PerformSkill(FName SkillName)
 {
@@ -534,29 +561,12 @@ void AMyProjectPlayerController::FireWeapon()
 
     FVector End = CameraLoc + CameraRot.Vector() * 10000; // 히트스캔 거리 설정
 
-    /*
-    Protocol::C_FIRE FirePkt;
-    Protocol::FireInfo* fireInfo = FirePkt.mutable_info();
-
-    AMyProjectMyPlayer* MyCharacter = Cast<AMyProjectMyPlayer>(GetPawn());
-    fireInfo->set_object_id(MyCharacter->GetPlayerInfo()->object_id());
-    fireInfo->set_s_x(Start.X);
-    fireInfo->set_s_y(Start.Y);
-    fireInfo->set_s_z(Start.Z);
-
-    fireInfo->set_e_x(End.X);
-    fireInfo->set_e_y(End.Y);
-    fireInfo->set_e_z(End.Z);
-    SEND_PACKET(FirePkt);
-    */
-
     // 디버깅용 라인 그리기 (에디터에서만 보임)
     DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 1.0f, 0, 1.0f);
 
 
     if (FireSound)
     {
-
         UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetPawn()->GetActorLocation());
     }
 
@@ -588,9 +598,7 @@ void AMyProjectPlayerController::FireWeapon()
                 }
                 
             }
-
         }
-       
     }
     // 디버깅용 라인 그리기 (에디터에서만 보임)
     DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 1.0f, 0, 1.0f);
@@ -699,57 +707,6 @@ void AMyProjectPlayerController::Interact()
     if (NearbyStatue)
     {
         NearbyStatue->OnInteract(this);
-    }
-}
-
-void AMyProjectPlayerController::ChangeCharacter(const Protocol::PlayerType PlayerType)
-{
-
-
-
-    return;
-
-    UMyProjectGameInstance* GameInstance = GetGameInstance<UMyProjectGameInstance>();
-    if (GameInstance)
-    {
-        
-        //UE_LOG(LogTemp, Log, TEXT("Successfully load ChangeCharacter , GameInstance"));
-        //UClass* NewCharacterClass = GameInstance->GetCharacterClass(CharacterName);
-        //if (NewCharacterClass)
-        //{
-        //    APawn* CurrentPawn = GetPawn();
-        //    //기존 캐릭터의 위치 저장
-        //    FVector Location = CurrentPawn->GetActorLocation();
-        //    FRotator Rotation = CurrentPawn->GetActorRotation();
-
-        //    //새캐릭터를 월드의 이전플레이어 위치에 스폰
-        //    
-        //    AMyProjectPlayer* NewCharacter = GetWorld()->SpawnActor<AMyProjectPlayer>(NewCharacterClass, Location, Rotation);
-        //    if (NewCharacter)
-        //    {
-        //        Possess(NewCharacter); //소유권 이전
-        //        UE_LOG(LogTemp, Log, TEXT("Successfully Change and Possess NewCharacter"));
-        //        CurrentPawn->Destroy();
-
-        //        // 플레이어 변경 로그 기록
-        //        APlayerState* CurrentPlayerState = GetPlayerState<APlayerState>();
-        //        int32 PlayerIndex = CurrentPlayerState ? CurrentPlayerState->GetPlayerId() : -1; //플레이어정보
-        //        GameInstance->LogCharacterChange(PlayerIndex, CharacterName); //플레이어,캐릭터정보를 로그로출력하는 함수
-        //    }
-        //    else
-        //    {
-        //        UE_LOG(LogTemp, Error, TEXT("Failed to spawn new character of class: %s"), *NewCharacterClass->GetName());
-        //    }
-        //}
-        //else
-        //{
-        //    UE_LOG(LogTemp, Error, TEXT("Failed to get new character class for: %s"), *CharacterName);
-        //}
-
-    }
-    else
-    {
-        UE_LOG(LogTemp, Error, TEXT("Failed to load game instance"));
     }
 }
 

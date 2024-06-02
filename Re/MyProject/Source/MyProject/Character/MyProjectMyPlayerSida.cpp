@@ -14,6 +14,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "MyProject.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Net/UnrealNetwork.h"
 #include "MyProjectCharacter.h"
 #include "Animation/AnimInstance.h"
 #include "AnimInstanceCustom.h"
@@ -68,7 +69,7 @@ inline void AMyProjectMyPlayerSida::SetupPlayerInputComponent(UInputComponent* P
 void AMyProjectMyPlayerSida::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
+	DOREPLIFETIME(AMyProjectMyPlayerSida, bIsAiming);
 
 }
 

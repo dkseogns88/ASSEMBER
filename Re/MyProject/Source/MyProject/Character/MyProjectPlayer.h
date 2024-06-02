@@ -20,10 +20,19 @@ public:
 protected:
     virtual void BeginPlay() override;
     virtual void Tick(float DeltaSeconds) override;
+    virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+    UPROPERTY(ReplicatedUsing = OnRep_RollingChanged)
+    bool bIsRolling = false;
+
+    UFUNCTION()
+    void OnRep_RollingChanged();
+    
 public:
     bool IsMyPlayer();
-
+    void MoveForward(float Value);
+    void MoveRight(float Value);
+    void SetMovementSpeed(float NewSpeed);
     Protocol::MoveState GetMoveState() { return PlayerInfo->state(); }
     void SetMoveState(Protocol::MoveState State);
 
@@ -31,9 +40,24 @@ public:
     void SetDestInfo(const Protocol::PosInfo& Info);
     Protocol::PosInfo* GetPlayerInfo() { return PlayerInfo; }
 
-    UFUNCTION(BlueprintCallable, Category = "Movement")
-    void SetMovementSpeed(float NewSpeed);
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement", meta = (AllowPrivateAccess = "true"))
     float Speed;
+
+
+    FVector RollDirection;
+    float RollDuration;
+    FTimerHandle TimerHandle_Roll;
+
+    bool IsRolling() const { return bIsRolling; }
+    void SetRolling(bool bNewRolling);
+
+    void StartRoll(float ForwardInput, float RightInput);
+    void EndRoll();
+  
+   
+    float StoredForwardInput;
+    float StoredRightInput;
+  
 
 protected:
     class Protocol::PosInfo* PlayerInfo;
