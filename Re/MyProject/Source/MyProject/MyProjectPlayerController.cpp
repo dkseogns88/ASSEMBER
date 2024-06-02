@@ -216,7 +216,7 @@ void AMyProjectPlayerController::HandleLevelUpOption(int OptionIndex)
     UpdateStatsBasedOnOption(OptionIndex);
     if (LevelUpWidgetInstance && LevelUpWidgetInstance->IsInViewport())
     {
-        LevelUpWidgetInstance->RemoveFromViewport();
+        LevelUpWidgetInstance->RemoveFromParent();
         bShowMouseCursor = false;
         SetInputMode(FInputModeGameOnly());
         UE_LOG(LogTemp, Log, TEXT("Level Up UI hidden"));
@@ -336,7 +336,7 @@ void AMyProjectPlayerController::RequestServerForAimingChange(bool bIsAiming)
         {
             if (AimUIInstance && AimUIInstance->IsInViewport())
             {
-                AimUIInstance->RemoveFromViewport();
+                AimUIInstance->RemoveFromParent();
             }
         }
 
@@ -424,7 +424,7 @@ void AMyProjectPlayerController::RemoveEnemyInfo()
     // 현재 화면에 표시된 위젯 제거
     if (CurrentEnemyInfoWidget)
     {
-        CurrentEnemyInfoWidget->RemoveFromViewport();
+        CurrentEnemyInfoWidget->RemoveFromParent();
         CurrentEnemyInfoWidget = nullptr;
     }
 }

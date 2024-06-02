@@ -21,6 +21,7 @@
 #include "AnimInstanceCustom.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Components/StaticMeshComponent.h"
+#include "GameFramework/DamageType.h"
 #include "UObject/UObjectGlobals.h"
 #include "Engine/StaticMeshActor.h"
 
@@ -413,24 +414,21 @@ void UMyProjectGameInstance::HandleHIT(const Protocol::S_HIT& pkt)
 {
 	if (Socket == nullptr || GameServerSession == nullptr)
 		return;
-
 	auto* World = GetWorld();
 	if (World == nullptr)
 		return;
-
 	bool OnHit = pkt.on_hit();
 	int HitId = pkt.object_id();
-
 	if (OnHit)
 	{
 		ANPC** FindActor = Monsters.Find(HitId);
 		if (FindActor == nullptr) return;
-		
+
 		if (ANPC* Enemy = Cast<ANPC>(*FindActor))
 		{
-			
+
 			// Handle AEnemy1-specific logic
-			Enemy->TakeDamage();
+			Enemy->TakeDamaged();
 			Enemy->Health -= 20;
 			if (Enemy->Health <= 0)
 			{

@@ -82,6 +82,7 @@ void AMyProjectMyPlayer::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AMyProjectMyPlayer, bIsRolling);
+	DOREPLIFETIME(AMyProjectMyPlayer, bIsAiming);
 	
 	
 }

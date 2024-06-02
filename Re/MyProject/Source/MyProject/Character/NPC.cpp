@@ -64,8 +64,9 @@ void ANPC::Attack()
     }
 }
 
-void ANPC::TakeDamage()
+void ANPC::TakeDamaged()
 {
+    
     // 데미지 로직
     if (!bIsDamaged)
     {
@@ -74,6 +75,7 @@ void ANPC::TakeDamage()
         // Reset damage after 0.5 seconds (duration of the damage animation)
         GetWorld()->GetTimerManager().SetTimer(DamageResetTimerHandle, this, &ANPC::ResetDamage, 0.5f, false);
     }
+    
 }
 
 void ANPC::Die()
@@ -142,7 +144,8 @@ void ANPC::CheckMeshSetup()
         return;
     }
 
-    USkeletalMesh* SkeletalMesh = SkeletalMeshComponent->SkeletalMesh;
+    // GetSkinnedAsset()을 사용하여 SkeletalMesh 가져오기
+    USkeletalMesh* SkeletalMesh = Cast<USkeletalMesh>(SkeletalMeshComponent->GetSkinnedAsset());
     if (!SkeletalMesh)
     {
         UE_LOG(LogTemp, Warning, TEXT("No skeletal mesh is set for %s"), *GetName());
