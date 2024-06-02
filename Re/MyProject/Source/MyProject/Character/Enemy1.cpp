@@ -37,7 +37,7 @@ AEnemy1::AEnemy1()
         UE_LOG(LogTemp, Error, TEXT("Failed to load skeletal mesh."));
     }
 
-    SkeletalMesh->SetRelativeLocation(FVector(0.0f, 0.0f, -160.0f));
+    SkeletalMesh->SetRelativeLocation(FVector(0.0f, 0.0f, -100.0f));
     SkeletalMesh->SetRelativeScale3D(FVector(0.5f, 0.5f, 0.5f));
     SkeletalMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
     SkeletalMesh->SetCollisionObjectType(ECollisionChannel::ECC_Pawn);
