@@ -58,13 +58,15 @@ public:
 	void HandleDespawn(uint64 ObjectId);
 	void HandleDespawn(const Protocol::S_DESPAWN& DespawnPkt);
 
+	void HandleLeave(const Protocol::S_LEAVE_GAME& LeavePkt);
+
 	void HandleSelectType(const Protocol::S_SELECT& SelectPkt);
 	void HandleTelePort(const Protocol::S_TELEPORT& TelePortPkt);
 
 	void HandleMove(const Protocol::S_MOVE& MovePkt);
 	void HandleJump(const Protocol::S_JUMP& JumpPkt);
 	void HandleZoom(const Protocol::S_ZOOM& ZommPkt);
-	void HandleRoll();//구르기함수
+	void HandleRoll(const Protocol::S_ROLL& RollPkt);
 
 	void HandleMonsterSpawn(const Protocol::S_SPAWN_MONSTER& SpawnPkt);
 	void HandleMonsterSpawn(const Protocol::ObjectInfo& MonsterInfo);
@@ -95,7 +97,7 @@ private:
 
 public:
 	class FSocket* Socket;
-	FString IpAddress;
+	FString IpAddress = TEXT("127.0.0.1");
 	int16 Port = 7777;
 	
 	TSharedPtr<class PacketSession> GameServerSession;

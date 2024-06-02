@@ -29,6 +29,7 @@ enum MoveState
 	MOVE_STATE_JUMP	= 3;
 
 	MOVE_STATE_ATTACK = 4;
+	MOVE_STATE_ROOL = 5;
 }
 
 enum MonsterType

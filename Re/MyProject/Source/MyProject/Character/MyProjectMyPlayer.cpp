@@ -119,12 +119,12 @@ void AMyProjectMyPlayer::Tick(float DeltaTime)
 	{
 		AddMovementInput(RollDirection, 1.0f);
 	}
-	//GEngine->AddOnScreenDebugMessage(-1, 200, FColor::Green, FString::Printf(TEXT("Hello %s"), *GetActorLocation().ToString()));
-
 }
 
 void AMyProjectMyPlayer::StateTick()
 {
+	if (bIsRolling == true)
+		return;
 
 	if (GetCharacterMovement()->IsFalling())
 	{
@@ -295,9 +295,3 @@ void AMyProjectMyPlayer::OnRep_Aimingchanged()
 {
 	SetAiming(bIsAiming);
 }
-
-
-
-
-
-

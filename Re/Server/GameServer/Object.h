@@ -18,6 +18,7 @@ public:
 
 public:
 	atomic<weak_ptr<Room>> room;
+	uint32 _hp = 100;
 
 protected:
 	bool _isPlayer = false;

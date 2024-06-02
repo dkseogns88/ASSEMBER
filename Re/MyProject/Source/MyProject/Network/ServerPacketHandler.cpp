@@ -39,7 +39,7 @@ bool Handle_S_LEAVE_GAME(PacketSessionRef& session, Protocol::S_LEAVE_GAME& pkt)
 {
 	if (auto* GameInstance = Cast<UMyProjectGameInstance>(GWorld->GetGameInstance()))
 	{
-		// TODO : 게임 종료? 로비로?
+		GameInstance->HandleLeave(pkt);
 	}
 
 	return true;
@@ -80,6 +80,15 @@ bool Handle_S_JUMP(PacketSessionRef& session, Protocol::S_JUMP& pkt)
 		GameInstance->HandleJump(pkt);
 	}
 
+	return true;
+}
+
+bool Handle_S_ROLL(PacketSessionRef& session, Protocol::S_ROLL& pkt)
+{
+	if (auto* GameInstance = Cast<UMyProjectGameInstance>(GWorld->GetGameInstance()))
+	{
+		GameInstance->HandleRoll(pkt);
+	}
 	return true;
 }
 
