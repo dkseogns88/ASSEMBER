@@ -171,14 +171,12 @@ bool Room::HandleLeavePlayer(PlayerRef player)
 	if (player == nullptr)
 		return false;
 
-
 	const uint64 objectId = player->objectInfo->object_id();
 	bool success = RemovePlayer(objectId);
 
 	// 퇴장 사실을 퇴장하는 플레이어에게 알린다.
 	{
 		Protocol::S_LEAVE_GAME leaveGamePkt;
-
 		SendBufferRef sendBuffer = ClientPacketHandler::MakeSendBuffer(leaveGamePkt);
 		if (auto session = player->session.lock())
 			session->Send(sendBuffer);
@@ -194,6 +192,13 @@ bool Room::HandleLeavePlayer(PlayerRef player)
 
 		if (auto session = player->session.lock())
 			session->Send(sendBuffer);
+	}
+
+	if (_player1 == player) {
+		_player1 = nullptr;
+	}
+	else if (_player2 == player) {
+		_player2 = nullptr;
 	}
 
 	return true;
@@ -261,6 +266,26 @@ void Room::HandleZoom(Protocol::C_ZOOM pkt)
 		Broadcast(sendBuffer);
 	}
 
+}
+
+void Room::HandleRoll(Protocol::C_ROLL pkt)
+{
+	const uint64 objectId = pkt.info().object_id();
+	if (_objects.find(objectId) == _objects.end())
+		return;
+
+	PlayerRef player = dynamic_pointer_cast<Player>(_objects[objectId]);
+	player->posInfo->CopyFrom(pkt.info());
+	{
+		Protocol::S_ROLL roolPkt;
+		{
+			Protocol::PosInfo* info = roolPkt.mutable_info();
+			info->CopyFrom(pkt.info());
+		}
+
+		SendBufferRef sendBuffer = ClientPacketHandler::MakeSendBuffer(roolPkt);
+		Broadcast(sendBuffer);
+	}
 }
 
 void Room::HandleHit(Protocol::C_HIT pkt)

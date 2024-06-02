@@ -31,12 +31,13 @@ message S_ENTER_GAME
 
 message C_LEAVE_GAME
 {
-
+	PosInfo info = 1;
 }
 
 message S_LEAVE_GAME
 {
-
+	uint64 object_id = 1;
+	
 }
 
 message S_SPAWN
@@ -68,6 +69,17 @@ message S_JUMP
 {
 	PosInfo info = 1;
 }
+
+message C_ROLL
+{
+	PosInfo info = 1;
+}
+
+message S_ROLL
+{
+	PosInfo info = 1;
+}
+
 
 message C_SELECT
 {

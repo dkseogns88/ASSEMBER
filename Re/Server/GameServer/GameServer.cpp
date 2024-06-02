@@ -9,6 +9,7 @@
 #include <tchar.h>
 #include "Room.h"
 #include "Protocol.pb.h"
+#include "fstream"
 
 enum
 {
@@ -36,10 +37,23 @@ int main()
 {
 	GRoom->InitializationRoom();
 
+	wifstream in{ "Data/Data.txt" };
+	if (!in) {
+		cout << "No Data" << endl;
+		return 0;
+	}
+
+	wstring ip;
+	int port;
+	
+	in >> ip;
+	in >> port;
+	
 	ClientPacketHandler::Init();
 
+
 	ServerServiceRef service = MakeShared<ServerService>(
-		NetAddress(L"127.0.0.1", 7777),
+		NetAddress(ip, port),
 		MakeShared<IocpCore>(),
 		MakeShared<GameSession>, // TODO : SessionManager 등
 		100);

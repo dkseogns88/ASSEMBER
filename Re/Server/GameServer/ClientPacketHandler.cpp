@@ -60,9 +60,7 @@ bool Handle_C_LEAVE_GAME(PacketSessionRef& session, Protocol::C_LEAVE_GAME& pkt)
 	if (room == nullptr)
 		return false;
 
-	GRoom->DoAsync(&Room::HandleLeavePlayer, player); // JobQueue ¹æ½Ä
-	//room->HandleLeavePlayer(player);
-
+	GRoom->DoAsync(&Room::HandleLeavePlayer, player);
 	return true;
 }
 
@@ -98,10 +96,22 @@ bool Handle_C_JUMP(PacketSessionRef& session, Protocol::C_JUMP& pkt)
 		return false;
 
 	room->DoAsync(&Room::HandleJump, pkt);
-	//room->HandleMove(pkt);
 	return true;
+}
 
+bool Handle_C_ROLL(PacketSessionRef& session, Protocol::C_ROLL& pkt)
+{
+	auto gameSession = static_pointer_cast<GameSession>(session);
 
+	PlayerRef player = gameSession->player.load();
+	if (player == nullptr)
+		return false;
+
+	RoomRef room = player->room.load().lock();
+	if (room == nullptr)
+		return false;
+
+	room->DoAsync(&Room::HandleRoll, pkt);
 	return true;
 }
 
