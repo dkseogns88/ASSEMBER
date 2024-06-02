@@ -103,35 +103,38 @@ void AMyProjectPlayer::Tick(float DeltaSeconds)
 	{
 		const Protocol::MoveState State = PlayerInfo->state();
 
-		if (State == Protocol::MOVE_STATE_RUN || State == Protocol::MOVE_STATE_JUMP)
+		if (State == Protocol::MOVE_STATE_RUN)
 		{
-			//회전 보간
 			FRotator NowRotation = GetActorRotation();
 			FRotator TargetRotation = FRotator(0, DestInfo->yaw(), 0);
+
 			FRotator NewRotation = FMath::RInterpTo(NowRotation, TargetRotation, DeltaSeconds, 5.0f); // 보간 속도는 5.0f로 설정
 			SetActorRotation(NewRotation);
 
-			// 위치 보간
-			FVector NowLocation = GetActorLocation();
-			FVector TargetLocation = FVector(DestInfo->x(), DestInfo->y(), DestInfo->z());
-			FVector NewLocation = FMath::VInterpTo(NowLocation, TargetLocation, DeltaSeconds, 5.0f);
-			SetActorLocation(NewLocation);
-
-			//이동방향 처리
 			FVector ForwardDirection = FVector(DestInfo->d_x(), DestInfo->d_y(), DestInfo->d_z());
 			AddMovementInput(ForwardDirection);
-
-			// 점프 상태 처리
-			if (State == Protocol::MOVE_STATE_JUMP && PreviousState != Protocol::MOVE_STATE_JUMP)
+		}
+		else if (State == Protocol::MOVE_STATE_JUMP)
+		{
+			// 이전 상태가 점프가 아닌 경우에만 점프를 실행합니다.
+			if (PreviousState != Protocol::MOVE_STATE_JUMP)
 			{
 				Jump();
 			}
 
+			FRotator NowRotation = GetActorRotation();
+			FRotator TargetRotation = FRotator(0, DestInfo->yaw(), 0);
+
+			FRotator NewRotation = FMath::RInterpTo(NowRotation, TargetRotation, DeltaSeconds, 5.0f); // 보간 속도는 5.0f로 설정
+			SetActorRotation(NewRotation);
+
+			FVector ForwardDirection = FVector(DestInfo->d_x(), DestInfo->d_y(), DestInfo->d_z());
+			AddMovementInput(ForwardDirection);
 		}
-		
+
+		// 현재 상태를 이전 상태로 업데이트합니다.
 		PreviousState = State;
 	}
-	
 
 }
 
