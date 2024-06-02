@@ -50,7 +50,7 @@ AMyProjectMyPlayer::AMyProjectMyPlayer()
 	FirstPersonMesh->CastShadow = false;
 
 	// Set up the character mesh (body) to be invisible in first-person
-	GetMesh()->SetOwnerNoSee(false);
+	GetMesh()->SetOwnerNoSee(true);
 	
 	PrimaryActorTick.bCanEverTick = true;
 

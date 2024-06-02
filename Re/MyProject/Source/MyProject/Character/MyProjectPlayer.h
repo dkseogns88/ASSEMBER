@@ -38,4 +38,7 @@ public:
 protected:
     class Protocol::PosInfo* PlayerInfo;
     class Protocol::PosInfo* DestInfo;
+
+private:
+    Protocol::MoveState PreviousState; //이전상태저장하여 점프중복방지
 };

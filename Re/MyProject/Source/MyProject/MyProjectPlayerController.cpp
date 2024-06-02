@@ -98,7 +98,7 @@ void AMyProjectPlayerController::BeginPlay()
         IPAddressWidget = CreateWidget<UIPAddressWidget>(this, IPAddressWidgetClass);
         if (IPAddressWidget)
         {
-            IPAddressWidget->AddToViewport();
+            IPAddressWidget->AddToViewport(100);
             bShowMouseCursor = true;
             SetInputMode(FInputModeUIOnly());
         }
@@ -122,7 +122,7 @@ void AMyProjectPlayerController::BeginPlay()
         if (HealthBarWidgets)
         {
             UE_LOG(LogTemp, Log, TEXT("Health bar widget created successfully."));
-            HealthBarWidgets->AddToViewport();
+            HealthBarWidgets->AddToViewport(1);
             HealthBarWidgets->NativeConstruct();
             HealthBarWidgets->UpdateHealth(PlayerHealth / 100.0f);
            
@@ -133,7 +133,7 @@ void AMyProjectPlayerController::BeginPlay()
         if (AmmoWidget)
         {
             UE_LOG(LogTemp, Log, TEXT("Ammo widget created successfully."));
-            AmmoWidget->AddToViewport();
+            AmmoWidget->AddToViewport(1);
             AmmoWidget->NativeConstruct(); 
             AmmoWidget->UpdateAmmoCount(CurrentAmmo, MaxAmmo);
         }
@@ -203,7 +203,7 @@ void AMyProjectPlayerController::ShowLevelUpUI()
 {
     if (LevelUpWidgetInstance && !LevelUpWidgetInstance->IsInViewport())
     {
-        LevelUpWidgetInstance->AddToViewport();
+        LevelUpWidgetInstance->AddToViewport(1);
         bShowMouseCursor = true;
         SetInputMode(FInputModeGameAndUI());
         UE_LOG(LogTemp, Log, TEXT("Level Up UI shown"));
@@ -240,7 +240,7 @@ void AMyProjectPlayerController::ToggleIPAddressWidget()
         if (IPAddressWidget)
         {
             UE_LOG(LogTemp, Warning, TEXT("IPAddressWidget created successfully"));
-            IPAddressWidget->AddToViewport();
+            IPAddressWidget->AddToViewport(100);
             IPAddressWidget->SetVisibility(ESlateVisibility::Collapsed);
         }
         else
@@ -329,7 +329,7 @@ void AMyProjectPlayerController::RequestServerForAimingChange(bool bIsAiming)
             }
             if (AimUIInstance && !AimUIInstance->IsInViewport())
             {
-                AimUIInstance->AddToViewport();
+                AimUIInstance->AddToViewport(1);
             }
         }
         else
@@ -352,6 +352,28 @@ void AMyProjectPlayerController::RequestServerForAimingChange(bool bIsAiming)
 
     UE_LOG(LogTemp, Log, TEXT("Requested server for aiming change: %s"), bIsAiming ? TEXT("True") : TEXT("False"));
 }
+
+void AMyProjectPlayerController::RequestServerForRollingChange(bool bIsRolling)
+{
+
+    AMyProjectMyPlayer* MyCharacter = Cast<AMyProjectMyPlayer>(GetPawn());
+    if (MyCharacter)
+    {
+        MyCharacter->SetRolling(bIsRolling);
+        UE_LOG(LogTemp, Log, TEXT("Rolling set"));
+
+
+
+
+
+
+
+
+    }
+
+    UE_LOG(LogTemp, Log, TEXT("Requested server for Rolling change: %s"), bIsRolling ? TEXT("True") : TEXT("False"));
+}
+
 
 void AMyProjectPlayerController::Tick(float DeltaTime)
 {
@@ -427,6 +449,8 @@ void AMyProjectPlayerController::SetupInputComponent()
     InputComponent->BindAction("ToggleIPAddressWidget", IE_Pressed, this, &AMyProjectPlayerController::ToggleIPAddressWidget);
 
     InputComponent->BindAction("InteractStatue", IE_Pressed, this, &AMyProjectPlayerController::Interact);
+
+    InputComponent->BindAction("Roll", IE_Pressed, this, &AMyProjectPlayerController::OnRollPressed);
     
 }
 
@@ -489,6 +513,12 @@ void AMyProjectPlayerController::OnAimPressed()
 void AMyProjectPlayerController::OnAimReleased()
 {
     RequestServerForAimingChange(false);
+}
+
+
+void AMyProjectPlayerController::OnRollPressed()
+{
+    RequestServerForRollingChange(true);
 }
 
 
@@ -577,7 +607,7 @@ void AMyProjectPlayerController::ShowEnemyInfo(ANPC* Enemy)
         CurrentEnemyInfoWidget = CreateWidget<UEnemyInfoWidget>(this, EnemyInfoWidgetClass);
         if (CurrentEnemyInfoWidget)
         {
-            CurrentEnemyInfoWidget->AddToViewport();
+            CurrentEnemyInfoWidget->AddToViewport(1);
         }
     }
 
@@ -603,7 +633,7 @@ void AMyProjectPlayerController::ShowEnemyInfo_Internal(FString EnemyName, float
 
             if (CurrentEnemyInfoWidget)
             {
-                CurrentEnemyInfoWidget->AddToViewport();
+                CurrentEnemyInfoWidget->AddToViewport(1);
                 UE_LOG(LogTemp, Log, TEXT("Success to add EnemyInfoWidget"));
             }
             else
