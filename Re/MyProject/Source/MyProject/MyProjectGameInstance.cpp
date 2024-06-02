@@ -382,7 +382,7 @@ void UMyProjectGameInstance::HandleRoll(const Protocol::S_ROLL& RollPkt)
 	if(AnimInstance)
 	{
 		if (Protocol::MoveState::MOVE_STATE_ROOL == RollPkt.info().state()) {
-			Player->SetRolling(true);
+			Player->StartRoll(RollPkt.forwardinput(), RollPkt.rightinput());
 		}
 	}
 	
@@ -429,10 +429,6 @@ void UMyProjectGameInstance::HandleMonsterSpawn(const Protocol::ObjectInfo& Mons
 	{
 		UE_LOG(LogTemp, Error, TEXT("Failed to spawn monster at %s"), *Location.ToString());
 	}
-
-	/*if (MonsterInfo.monster_type() == Protocol::MONSTER_TYPE_TEST) {
-		SpawnMonsterAtLocation(MonsterInfo.pos_info());
-	}*/
 }
 
 void UMyProjectGameInstance::HandleHIT(const Protocol::S_HIT& pkt)

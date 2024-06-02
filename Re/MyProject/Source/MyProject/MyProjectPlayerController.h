@@ -104,7 +104,6 @@ public:
 	void ToggleIPAddressWidget();
 
 	void SetNearbyStatue(ACharacterStatue* Statue);
-	void ChangeCharacter(const Protocol::PlayerType PlayerType);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
 	TSubclassOf<class UIPAddressWidget> IPAddressWidgetClass;

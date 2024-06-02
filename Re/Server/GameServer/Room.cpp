@@ -281,6 +281,8 @@ void Room::HandleRoll(Protocol::C_ROLL pkt)
 		{
 			Protocol::PosInfo* info = roolPkt.mutable_info();
 			info->CopyFrom(pkt.info());
+			roolPkt.set_forwardinput(pkt.forwardinput());
+			roolPkt.set_rightinput(pkt.rightinput());
 		}
 
 		SendBufferRef sendBuffer = ClientPacketHandler::MakeSendBuffer(roolPkt);

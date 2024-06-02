@@ -181,6 +181,8 @@ PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORIT
 PROTOBUF_CONSTEXPR C_ROLL::C_ROLL(
     ::_pbi::ConstantInitialized): _impl_{
     /*decltype(_impl_.info_)*/nullptr
+  , /*decltype(_impl_.forwardinput_)*/0
+  , /*decltype(_impl_.rightinput_)*/0
   , /*decltype(_impl_._cached_size_)*/{}} {}
 struct C_ROLLDefaultTypeInternal {
   PROTOBUF_CONSTEXPR C_ROLLDefaultTypeInternal()
@@ -194,6 +196,8 @@ PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORIT
 PROTOBUF_CONSTEXPR S_ROLL::S_ROLL(
     ::_pbi::ConstantInitialized): _impl_{
     /*decltype(_impl_.info_)*/nullptr
+  , /*decltype(_impl_.forwardinput_)*/0
+  , /*decltype(_impl_.rightinput_)*/0
   , /*decltype(_impl_._cached_size_)*/{}} {}
 struct S_ROLLDefaultTypeInternal {
   PROTOBUF_CONSTEXPR S_ROLLDefaultTypeInternal()
@@ -464,6 +468,8 @@ const uint32_t TableStruct_Protocol_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
   PROTOBUF_FIELD_OFFSET(::Protocol::C_ROLL, _impl_.info_),
+  PROTOBUF_FIELD_OFFSET(::Protocol::C_ROLL, _impl_.forwardinput_),
+  PROTOBUF_FIELD_OFFSET(::Protocol::C_ROLL, _impl_.rightinput_),
   ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::Protocol::S_ROLL, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -471,6 +477,8 @@ const uint32_t TableStruct_Protocol_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
   PROTOBUF_FIELD_OFFSET(::Protocol::S_ROLL, _impl_.info_),
+  PROTOBUF_FIELD_OFFSET(::Protocol::S_ROLL, _impl_.forwardinput_),
+  PROTOBUF_FIELD_OFFSET(::Protocol::S_ROLL, _impl_.rightinput_),
   ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::Protocol::C_SELECT, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -576,19 +584,19 @@ static const ::_pbi::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protode
   { 71, -1, -1, sizeof(::Protocol::C_JUMP)},
   { 78, -1, -1, sizeof(::Protocol::S_JUMP)},
   { 85, -1, -1, sizeof(::Protocol::C_ROLL)},
-  { 92, -1, -1, sizeof(::Protocol::S_ROLL)},
-  { 99, -1, -1, sizeof(::Protocol::C_SELECT)},
-  { 107, -1, -1, sizeof(::Protocol::S_SELECT)},
-  { 116, -1, -1, sizeof(::Protocol::C_CHAT)},
-  { 123, -1, -1, sizeof(::Protocol::S_CHAT)},
-  { 131, -1, -1, sizeof(::Protocol::C_ZOOM)},
-  { 138, -1, -1, sizeof(::Protocol::S_ZOOM)},
-  { 145, -1, -1, sizeof(::Protocol::S_SPAWN_MONSTER)},
-  { 152, -1, -1, sizeof(::Protocol::C_HIT)},
-  { 160, -1, -1, sizeof(::Protocol::S_HIT)},
-  { 168, -1, -1, sizeof(::Protocol::S_ATTACK)},
-  { 175, -1, -1, sizeof(::Protocol::C_TELEPORT)},
-  { 182, -1, -1, sizeof(::Protocol::S_TELEPORT)},
+  { 94, -1, -1, sizeof(::Protocol::S_ROLL)},
+  { 103, -1, -1, sizeof(::Protocol::C_SELECT)},
+  { 111, -1, -1, sizeof(::Protocol::S_SELECT)},
+  { 120, -1, -1, sizeof(::Protocol::C_CHAT)},
+  { 127, -1, -1, sizeof(::Protocol::S_CHAT)},
+  { 135, -1, -1, sizeof(::Protocol::C_ZOOM)},
+  { 142, -1, -1, sizeof(::Protocol::S_ZOOM)},
+  { 149, -1, -1, sizeof(::Protocol::S_SPAWN_MONSTER)},
+  { 156, -1, -1, sizeof(::Protocol::C_HIT)},
+  { 164, -1, -1, sizeof(::Protocol::S_HIT)},
+  { 172, -1, -1, sizeof(::Protocol::S_ATTACK)},
+  { 179, -1, -1, sizeof(::Protocol::C_TELEPORT)},
+  { 186, -1, -1, sizeof(::Protocol::S_TELEPORT)},
 };
 
 static const ::_pb::Message* const file_default_instances[] = {
@@ -635,25 +643,27 @@ const char descriptor_table_protodef_Protocol_2eproto[] PROTOBUF_SECTION_VARIABL
   ".PosInfo\")\n\006S_MOVE\022\037\n\004info\030\001 \001(\0132\021.Proto"
   "col.PosInfo\")\n\006C_JUMP\022\037\n\004info\030\001 \001(\0132\021.Pr"
   "otocol.PosInfo\")\n\006S_JUMP\022\037\n\004info\030\001 \001(\0132\021"
-  ".Protocol.PosInfo\")\n\006C_ROLL\022\037\n\004info\030\001 \001("
-  "\0132\021.Protocol.PosInfo\")\n\006S_ROLL\022\037\n\004info\030\001"
-  " \001(\0132\021.Protocol.PosInfo\"H\n\010C_SELECT\022\021\n\to"
-  "bject_id\030\001 \001(\004\022)\n\013player_type\030\002 \001(\0162\024.Pr"
-  "otocol.PlayerType\"g\n\010S_SELECT\022\037\n\004info\030\001 "
-  "\001(\0132\021.Protocol.PosInfo\022\017\n\007success\030\002 \001(\010\022"
-  ")\n\013player_type\030\003 \001(\0162\024.Protocol.PlayerTy"
-  "pe\"\025\n\006C_CHAT\022\013\n\003msg\030\001 \001(\t\"\'\n\006S_CHAT\022\020\n\010p"
-  "layerId\030\001 \001(\004\022\013\n\003msg\030\002 \001(\t\"*\n\006C_ZOOM\022 \n\004"
-  "info\030\001 \001(\0132\022.Protocol.ZoomInfo\"*\n\006S_ZOOM"
-  "\022 \n\004info\030\001 \001(\0132\022.Protocol.ZoomInfo\"9\n\017S_"
-  "SPAWN_MONSTER\022&\n\010monsters\030\001 \003(\0132\024.Protoc"
-  "ol.ObjectInfo\"*\n\005C_HIT\022\021\n\tobject_id\030\001 \001("
-  "\004\022\016\n\006on_HIT\030\002 \001(\010\"*\n\005S_HIT\022\021\n\tobject_id\030"
-  "\001 \001(\004\022\016\n\006on_HIT\030\002 \001(\010\"+\n\010S_ATTACK\022\037\n\004inf"
-  "o\030\001 \001(\0132\021.Protocol.PosInfo\"-\n\nC_TELEPORT"
-  "\022\037\n\004info\030\001 \001(\0132\021.Protocol.PosInfo\"-\n\nS_T"
-  "ELEPORT\022\037\n\004info\030\001 \001(\0132\021.Protocol.PosInfo"
-  "b\006proto3"
+  ".Protocol.PosInfo\"S\n\006C_ROLL\022\037\n\004info\030\001 \001("
+  "\0132\021.Protocol.PosInfo\022\024\n\014ForwardInput\030\002 \001"
+  "(\002\022\022\n\nRightInput\030\003 \001(\002\"S\n\006S_ROLL\022\037\n\004info"
+  "\030\001 \001(\0132\021.Protocol.PosInfo\022\024\n\014ForwardInpu"
+  "t\030\002 \001(\002\022\022\n\nRightInput\030\003 \001(\002\"H\n\010C_SELECT\022"
+  "\021\n\tobject_id\030\001 \001(\004\022)\n\013player_type\030\002 \001(\0162"
+  "\024.Protocol.PlayerType\"g\n\010S_SELECT\022\037\n\004inf"
+  "o\030\001 \001(\0132\021.Protocol.PosInfo\022\017\n\007success\030\002 "
+  "\001(\010\022)\n\013player_type\030\003 \001(\0162\024.Protocol.Play"
+  "erType\"\025\n\006C_CHAT\022\013\n\003msg\030\001 \001(\t\"\'\n\006S_CHAT\022"
+  "\020\n\010playerId\030\001 \001(\004\022\013\n\003msg\030\002 \001(\t\"*\n\006C_ZOOM"
+  "\022 \n\004info\030\001 \001(\0132\022.Protocol.ZoomInfo\"*\n\006S_"
+  "ZOOM\022 \n\004info\030\001 \001(\0132\022.Protocol.ZoomInfo\"9"
+  "\n\017S_SPAWN_MONSTER\022&\n\010monsters\030\001 \003(\0132\024.Pr"
+  "otocol.ObjectInfo\"*\n\005C_HIT\022\021\n\tobject_id\030"
+  "\001 \001(\004\022\016\n\006on_HIT\030\002 \001(\010\"*\n\005S_HIT\022\021\n\tobject"
+  "_id\030\001 \001(\004\022\016\n\006on_HIT\030\002 \001(\010\"+\n\010S_ATTACK\022\037\n"
+  "\004info\030\001 \001(\0132\021.Protocol.PosInfo\"-\n\nC_TELE"
+  "PORT\022\037\n\004info\030\001 \001(\0132\021.Protocol.PosInfo\"-\n"
+  "\nS_TELEPORT\022\037\n\004info\030\001 \001(\0132\021.Protocol.Pos"
+  "Infob\006proto3"
   ;
 static const ::_pbi::DescriptorTable* const descriptor_table_Protocol_2eproto_deps[2] = {
   &::descriptor_table_Enum_2eproto,
@@ -661,7 +671,7 @@ static const ::_pbi::DescriptorTable* const descriptor_table_Protocol_2eproto_de
 };
 static ::_pbi::once_flag descriptor_table_Protocol_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_Protocol_2eproto = {
-    false, false, 1288, descriptor_table_protodef_Protocol_2eproto,
+    false, false, 1372, descriptor_table_protodef_Protocol_2eproto,
     "Protocol.proto",
     &descriptor_table_Protocol_2eproto_once, descriptor_table_Protocol_2eproto_deps, 2, 26,
     schemas, file_default_instances, TableStruct_Protocol_2eproto::offsets,
@@ -2921,12 +2931,17 @@ C_ROLL::C_ROLL(const C_ROLL& from)
   C_ROLL* const _this = this; (void)_this;
   new (&_impl_) Impl_{
       decltype(_impl_.info_){nullptr}
+    , decltype(_impl_.forwardinput_){}
+    , decltype(_impl_.rightinput_){}
     , /*decltype(_impl_._cached_size_)*/{}};
 
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   if (from._internal_has_info()) {
     _this->_impl_.info_ = new ::Protocol::PosInfo(*from._impl_.info_);
   }
+  ::memcpy(&_impl_.forwardinput_, &from._impl_.forwardinput_,
+    static_cast<size_t>(reinterpret_cast<char*>(&_impl_.rightinput_) -
+    reinterpret_cast<char*>(&_impl_.forwardinput_)) + sizeof(_impl_.rightinput_));
   // @@protoc_insertion_point(copy_constructor:Protocol.C_ROLL)
 }
 
@@ -2936,6 +2951,8 @@ inline void C_ROLL::SharedCtor(
   (void)is_message_owned;
   new (&_impl_) Impl_{
       decltype(_impl_.info_){nullptr}
+    , decltype(_impl_.forwardinput_){0}
+    , decltype(_impl_.rightinput_){0}
     , /*decltype(_impl_._cached_size_)*/{}
   };
 }
@@ -2968,6 +2985,9 @@ void C_ROLL::Clear() {
     delete _impl_.info_;
   }
   _impl_.info_ = nullptr;
+  ::memset(&_impl_.forwardinput_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&_impl_.rightinput_) -
+      reinterpret_cast<char*>(&_impl_.forwardinput_)) + sizeof(_impl_.rightinput_));
   _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
@@ -2982,6 +3002,22 @@ const char* C_ROLL::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
           ptr = ctx->ParseMessage(_internal_mutable_info(), ptr);
           CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // float ForwardInput = 2;
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 21)) {
+          _impl_.forwardinput_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      // float RightInput = 3;
+      case 3:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 29)) {
+          _impl_.rightinput_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
         } else
           goto handle_unusual;
         continue;
@@ -3021,6 +3057,26 @@ uint8_t* C_ROLL::_InternalSerialize(
         _Internal::info(this).GetCachedSize(), target, stream);
   }
 
+  // float ForwardInput = 2;
+  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  float tmp_forwardinput = this->_internal_forwardinput();
+  uint32_t raw_forwardinput;
+  memcpy(&raw_forwardinput, &tmp_forwardinput, sizeof(tmp_forwardinput));
+  if (raw_forwardinput != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(2, this->_internal_forwardinput(), target);
+  }
+
+  // float RightInput = 3;
+  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  float tmp_rightinput = this->_internal_rightinput();
+  uint32_t raw_rightinput;
+  memcpy(&raw_rightinput, &tmp_rightinput, sizeof(tmp_rightinput));
+  if (raw_rightinput != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(3, this->_internal_rightinput(), target);
+  }
+
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
@@ -3042,6 +3098,24 @@ size_t C_ROLL::ByteSizeLong() const {
     total_size += 1 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
         *_impl_.info_);
+  }
+
+  // float ForwardInput = 2;
+  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  float tmp_forwardinput = this->_internal_forwardinput();
+  uint32_t raw_forwardinput;
+  memcpy(&raw_forwardinput, &tmp_forwardinput, sizeof(tmp_forwardinput));
+  if (raw_forwardinput != 0) {
+    total_size += 1 + 4;
+  }
+
+  // float RightInput = 3;
+  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  float tmp_rightinput = this->_internal_rightinput();
+  uint32_t raw_rightinput;
+  memcpy(&raw_rightinput, &tmp_rightinput, sizeof(tmp_rightinput));
+  if (raw_rightinput != 0) {
+    total_size += 1 + 4;
   }
 
   return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
@@ -3066,6 +3140,20 @@ void C_ROLL::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBU
     _this->_internal_mutable_info()->::Protocol::PosInfo::MergeFrom(
         from._internal_info());
   }
+  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  float tmp_forwardinput = from._internal_forwardinput();
+  uint32_t raw_forwardinput;
+  memcpy(&raw_forwardinput, &tmp_forwardinput, sizeof(tmp_forwardinput));
+  if (raw_forwardinput != 0) {
+    _this->_internal_set_forwardinput(from._internal_forwardinput());
+  }
+  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  float tmp_rightinput = from._internal_rightinput();
+  uint32_t raw_rightinput;
+  memcpy(&raw_rightinput, &tmp_rightinput, sizeof(tmp_rightinput));
+  if (raw_rightinput != 0) {
+    _this->_internal_set_rightinput(from._internal_rightinput());
+  }
   _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
 }
 
@@ -3083,7 +3171,12 @@ bool C_ROLL::IsInitialized() const {
 void C_ROLL::InternalSwap(C_ROLL* other) {
   using std::swap;
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
-  swap(_impl_.info_, other->_impl_.info_);
+  ::PROTOBUF_NAMESPACE_ID::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(C_ROLL, _impl_.rightinput_)
+      + sizeof(C_ROLL::_impl_.rightinput_)
+      - PROTOBUF_FIELD_OFFSET(C_ROLL, _impl_.info_)>(
+          reinterpret_cast<char*>(&_impl_.info_),
+          reinterpret_cast<char*>(&other->_impl_.info_));
 }
 
 ::PROTOBUF_NAMESPACE_ID::Metadata C_ROLL::GetMetadata() const {
@@ -3120,12 +3213,17 @@ S_ROLL::S_ROLL(const S_ROLL& from)
   S_ROLL* const _this = this; (void)_this;
   new (&_impl_) Impl_{
       decltype(_impl_.info_){nullptr}
+    , decltype(_impl_.forwardinput_){}
+    , decltype(_impl_.rightinput_){}
     , /*decltype(_impl_._cached_size_)*/{}};
 
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   if (from._internal_has_info()) {
     _this->_impl_.info_ = new ::Protocol::PosInfo(*from._impl_.info_);
   }
+  ::memcpy(&_impl_.forwardinput_, &from._impl_.forwardinput_,
+    static_cast<size_t>(reinterpret_cast<char*>(&_impl_.rightinput_) -
+    reinterpret_cast<char*>(&_impl_.forwardinput_)) + sizeof(_impl_.rightinput_));
   // @@protoc_insertion_point(copy_constructor:Protocol.S_ROLL)
 }
 
@@ -3135,6 +3233,8 @@ inline void S_ROLL::SharedCtor(
   (void)is_message_owned;
   new (&_impl_) Impl_{
       decltype(_impl_.info_){nullptr}
+    , decltype(_impl_.forwardinput_){0}
+    , decltype(_impl_.rightinput_){0}
     , /*decltype(_impl_._cached_size_)*/{}
   };
 }
@@ -3167,6 +3267,9 @@ void S_ROLL::Clear() {
     delete _impl_.info_;
   }
   _impl_.info_ = nullptr;
+  ::memset(&_impl_.forwardinput_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&_impl_.rightinput_) -
+      reinterpret_cast<char*>(&_impl_.forwardinput_)) + sizeof(_impl_.rightinput_));
   _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
@@ -3181,6 +3284,22 @@ const char* S_ROLL::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
           ptr = ctx->ParseMessage(_internal_mutable_info(), ptr);
           CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // float ForwardInput = 2;
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 21)) {
+          _impl_.forwardinput_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      // float RightInput = 3;
+      case 3:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 29)) {
+          _impl_.rightinput_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
         } else
           goto handle_unusual;
         continue;
@@ -3220,6 +3339,26 @@ uint8_t* S_ROLL::_InternalSerialize(
         _Internal::info(this).GetCachedSize(), target, stream);
   }
 
+  // float ForwardInput = 2;
+  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  float tmp_forwardinput = this->_internal_forwardinput();
+  uint32_t raw_forwardinput;
+  memcpy(&raw_forwardinput, &tmp_forwardinput, sizeof(tmp_forwardinput));
+  if (raw_forwardinput != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(2, this->_internal_forwardinput(), target);
+  }
+
+  // float RightInput = 3;
+  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  float tmp_rightinput = this->_internal_rightinput();
+  uint32_t raw_rightinput;
+  memcpy(&raw_rightinput, &tmp_rightinput, sizeof(tmp_rightinput));
+  if (raw_rightinput != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(3, this->_internal_rightinput(), target);
+  }
+
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
@@ -3241,6 +3380,24 @@ size_t S_ROLL::ByteSizeLong() const {
     total_size += 1 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
         *_impl_.info_);
+  }
+
+  // float ForwardInput = 2;
+  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  float tmp_forwardinput = this->_internal_forwardinput();
+  uint32_t raw_forwardinput;
+  memcpy(&raw_forwardinput, &tmp_forwardinput, sizeof(tmp_forwardinput));
+  if (raw_forwardinput != 0) {
+    total_size += 1 + 4;
+  }
+
+  // float RightInput = 3;
+  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  float tmp_rightinput = this->_internal_rightinput();
+  uint32_t raw_rightinput;
+  memcpy(&raw_rightinput, &tmp_rightinput, sizeof(tmp_rightinput));
+  if (raw_rightinput != 0) {
+    total_size += 1 + 4;
   }
 
   return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
@@ -3265,6 +3422,20 @@ void S_ROLL::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBU
     _this->_internal_mutable_info()->::Protocol::PosInfo::MergeFrom(
         from._internal_info());
   }
+  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  float tmp_forwardinput = from._internal_forwardinput();
+  uint32_t raw_forwardinput;
+  memcpy(&raw_forwardinput, &tmp_forwardinput, sizeof(tmp_forwardinput));
+  if (raw_forwardinput != 0) {
+    _this->_internal_set_forwardinput(from._internal_forwardinput());
+  }
+  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  float tmp_rightinput = from._internal_rightinput();
+  uint32_t raw_rightinput;
+  memcpy(&raw_rightinput, &tmp_rightinput, sizeof(tmp_rightinput));
+  if (raw_rightinput != 0) {
+    _this->_internal_set_rightinput(from._internal_rightinput());
+  }
   _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
 }
 
@@ -3282,7 +3453,12 @@ bool S_ROLL::IsInitialized() const {
 void S_ROLL::InternalSwap(S_ROLL* other) {
   using std::swap;
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
-  swap(_impl_.info_, other->_impl_.info_);
+  ::PROTOBUF_NAMESPACE_ID::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(S_ROLL, _impl_.rightinput_)
+      + sizeof(S_ROLL::_impl_.rightinput_)
+      - PROTOBUF_FIELD_OFFSET(S_ROLL, _impl_.info_)>(
+          reinterpret_cast<char*>(&_impl_.info_),
+          reinterpret_cast<char*>(&other->_impl_.info_));
 }
 
 ::PROTOBUF_NAMESPACE_ID::Metadata S_ROLL::GetMetadata() const {

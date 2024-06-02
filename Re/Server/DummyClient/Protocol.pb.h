@@ -2135,6 +2135,8 @@ class C_ROLL final :
 
   enum : int {
     kInfoFieldNumber = 1,
+    kForwardInputFieldNumber = 2,
+    kRightInputFieldNumber = 3,
   };
   // .Protocol.PosInfo info = 1;
   bool has_info() const;
@@ -2154,6 +2156,24 @@ class C_ROLL final :
       ::Protocol::PosInfo* info);
   ::Protocol::PosInfo* unsafe_arena_release_info();
 
+  // float ForwardInput = 2;
+  void clear_forwardinput();
+  float forwardinput() const;
+  void set_forwardinput(float value);
+  private:
+  float _internal_forwardinput() const;
+  void _internal_set_forwardinput(float value);
+  public:
+
+  // float RightInput = 3;
+  void clear_rightinput();
+  float rightinput() const;
+  void set_rightinput(float value);
+  private:
+  float _internal_rightinput() const;
+  void _internal_set_rightinput(float value);
+  public:
+
   // @@protoc_insertion_point(class_scope:Protocol.C_ROLL)
  private:
   class _Internal;
@@ -2163,6 +2183,8 @@ class C_ROLL final :
   typedef void DestructorSkippable_;
   struct Impl_ {
     ::Protocol::PosInfo* info_;
+    float forwardinput_;
+    float rightinput_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   };
   union { Impl_ _impl_; };
@@ -2292,6 +2314,8 @@ class S_ROLL final :
 
   enum : int {
     kInfoFieldNumber = 1,
+    kForwardInputFieldNumber = 2,
+    kRightInputFieldNumber = 3,
   };
   // .Protocol.PosInfo info = 1;
   bool has_info() const;
@@ -2311,6 +2335,24 @@ class S_ROLL final :
       ::Protocol::PosInfo* info);
   ::Protocol::PosInfo* unsafe_arena_release_info();
 
+  // float ForwardInput = 2;
+  void clear_forwardinput();
+  float forwardinput() const;
+  void set_forwardinput(float value);
+  private:
+  float _internal_forwardinput() const;
+  void _internal_set_forwardinput(float value);
+  public:
+
+  // float RightInput = 3;
+  void clear_rightinput();
+  float rightinput() const;
+  void set_rightinput(float value);
+  private:
+  float _internal_rightinput() const;
+  void _internal_set_rightinput(float value);
+  public:
+
   // @@protoc_insertion_point(class_scope:Protocol.S_ROLL)
  private:
   class _Internal;
@@ -2320,6 +2362,8 @@ class S_ROLL final :
   typedef void DestructorSkippable_;
   struct Impl_ {
     ::Protocol::PosInfo* info_;
+    float forwardinput_;
+    float rightinput_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   };
   union { Impl_ _impl_; };
@@ -5095,6 +5139,46 @@ inline void C_ROLL::set_allocated_info(::Protocol::PosInfo* info) {
   // @@protoc_insertion_point(field_set_allocated:Protocol.C_ROLL.info)
 }
 
+// float ForwardInput = 2;
+inline void C_ROLL::clear_forwardinput() {
+  _impl_.forwardinput_ = 0;
+}
+inline float C_ROLL::_internal_forwardinput() const {
+  return _impl_.forwardinput_;
+}
+inline float C_ROLL::forwardinput() const {
+  // @@protoc_insertion_point(field_get:Protocol.C_ROLL.ForwardInput)
+  return _internal_forwardinput();
+}
+inline void C_ROLL::_internal_set_forwardinput(float value) {
+  
+  _impl_.forwardinput_ = value;
+}
+inline void C_ROLL::set_forwardinput(float value) {
+  _internal_set_forwardinput(value);
+  // @@protoc_insertion_point(field_set:Protocol.C_ROLL.ForwardInput)
+}
+
+// float RightInput = 3;
+inline void C_ROLL::clear_rightinput() {
+  _impl_.rightinput_ = 0;
+}
+inline float C_ROLL::_internal_rightinput() const {
+  return _impl_.rightinput_;
+}
+inline float C_ROLL::rightinput() const {
+  // @@protoc_insertion_point(field_get:Protocol.C_ROLL.RightInput)
+  return _internal_rightinput();
+}
+inline void C_ROLL::_internal_set_rightinput(float value) {
+  
+  _impl_.rightinput_ = value;
+}
+inline void C_ROLL::set_rightinput(float value) {
+  _internal_set_rightinput(value);
+  // @@protoc_insertion_point(field_set:Protocol.C_ROLL.RightInput)
+}
+
 // -------------------------------------------------------------------
 
 // S_ROLL
@@ -5182,6 +5266,46 @@ inline void S_ROLL::set_allocated_info(::Protocol::PosInfo* info) {
   }
   _impl_.info_ = info;
   // @@protoc_insertion_point(field_set_allocated:Protocol.S_ROLL.info)
+}
+
+// float ForwardInput = 2;
+inline void S_ROLL::clear_forwardinput() {
+  _impl_.forwardinput_ = 0;
+}
+inline float S_ROLL::_internal_forwardinput() const {
+  return _impl_.forwardinput_;
+}
+inline float S_ROLL::forwardinput() const {
+  // @@protoc_insertion_point(field_get:Protocol.S_ROLL.ForwardInput)
+  return _internal_forwardinput();
+}
+inline void S_ROLL::_internal_set_forwardinput(float value) {
+  
+  _impl_.forwardinput_ = value;
+}
+inline void S_ROLL::set_forwardinput(float value) {
+  _internal_set_forwardinput(value);
+  // @@protoc_insertion_point(field_set:Protocol.S_ROLL.ForwardInput)
+}
+
+// float RightInput = 3;
+inline void S_ROLL::clear_rightinput() {
+  _impl_.rightinput_ = 0;
+}
+inline float S_ROLL::_internal_rightinput() const {
+  return _impl_.rightinput_;
+}
+inline float S_ROLL::rightinput() const {
+  // @@protoc_insertion_point(field_get:Protocol.S_ROLL.RightInput)
+  return _internal_rightinput();
+}
+inline void S_ROLL::_internal_set_rightinput(float value) {
+  
+  _impl_.rightinput_ = value;
+}
+inline void S_ROLL::set_rightinput(float value) {
+  _internal_set_rightinput(value);
+  // @@protoc_insertion_point(field_set:Protocol.S_ROLL.RightInput)
 }
 
 // -------------------------------------------------------------------

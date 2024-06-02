@@ -73,11 +73,15 @@ message S_JUMP
 message C_ROLL
 {
 	PosInfo info = 1;
+	float ForwardInput = 2;
+	float RightInput = 3;
 }
 
 message S_ROLL
 {
 	PosInfo info = 1;
+	float ForwardInput = 2;
+	float RightInput = 3;
 }
 
 
