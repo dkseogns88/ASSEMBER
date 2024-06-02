@@ -89,7 +89,8 @@ bool Room::HandleEnterPlayer(PlayerRef player)
 		_player1->posInfo->set_y(1410.f);
 		_player1->posInfo->set_z(92.f);
 		player->posInfo->set_yaw(Utils::GetRandom(0.f, 500.f));
-
+		
+		DoTimer(2000, &Room::UpdateMonsterAI);
 	}
 	else if (_player2 == nullptr)
 	{
@@ -145,7 +146,7 @@ bool Room::HandleEnterPlayer(PlayerRef player)
 	}
 
 	// 입장한 플레이어 모두에게 기존 몬스터들을 알리자.
-	/*{
+	{
 		Protocol::S_SPAWN_MONSTER spawnPkt;
 
 		for (auto& item : _monsters)
@@ -159,10 +160,9 @@ bool Room::HandleEnterPlayer(PlayerRef player)
 		SendBufferRef sendBuffer = ClientPacketHandler::MakeSendBuffer(spawnPkt);
 		if (auto session = player->session.lock())
 			session->Send(sendBuffer);
-	}*/
-
-	//DoTimer(2000, &Room::UpdateMonsterAI);
-
+	}
+	
+	
 	return success;
 }
 
@@ -291,19 +291,24 @@ void Room::HandleRoll(Protocol::C_ROLL pkt)
 void Room::HandleHit(Protocol::C_HIT pkt)
 {
 	const uint64 objectId = pkt.object_id(); // 몬스터 id
-	if (_monsters.find(objectId) == _monsters.end())
+	if (_objects.find(objectId) == _objects.end())
 		return;
 
+	if (pkt.on_hit() == true)
 	{
-
 		Protocol::S_HIT hitPkt;
 		hitPkt.set_object_id(pkt.object_id());
 		hitPkt.set_on_hit(pkt.on_hit());
 
 		SendBufferRef sendBuffer = ClientPacketHandler::MakeSendBuffer(hitPkt);
-		Broadcast(sendBuffer);
-	}
+		Broadcast(sendBuffer, objectId);
 
+		_objects[objectId]->_hp -= 20;
+		if (_objects[objectId]->_hp <= 0) {
+
+			RemoveMonster(objectId);
+		}
+	}
 }
 
 void Room::HandleSelect(Protocol::C_SELECT pkt)

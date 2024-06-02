@@ -13,7 +13,7 @@ Monster::Monster()
 
 Monster::~Monster()
 {
-
+	cout << "Delete Monster" << endl;
 }
 
 void Monster::executeBehavior()
@@ -39,7 +39,6 @@ void Monster::ChasePlayer()
 		FVector playerLocation{ target->posInfo->x(), target->posInfo->y(), target->posInfo->z() };
 
 		if ((playerLocation - nowLocation).length() < 500.f) {
-			cout << "Attack!" << endl;
 			Protocol::S_ATTACK attackPkt;
 			Protocol::PosInfo* info = attackPkt.mutable_info();
 			info->CopyFrom(*posInfo);

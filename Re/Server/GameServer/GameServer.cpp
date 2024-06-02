@@ -45,7 +45,6 @@ int main()
 
 	wstring ip;
 	int port;
-	
 	in >> ip;
 	in >> port;
 	

@@ -66,7 +66,6 @@ void ANPC::Attack()
 
 void ANPC::TakeDamaged()
 {
-    
     // 데미지 로직
     if (!bIsDamaged)
     {

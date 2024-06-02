@@ -434,7 +434,6 @@ void UMyProjectGameInstance::HandleMonsterSpawn(const Protocol::ObjectInfo& Mons
 		SpawnMonsterAtLocation(MonsterInfo.pos_info());
 	}*/
 }
-// 이부분 서버처리 수정해야함
 
 void UMyProjectGameInstance::HandleHIT(const Protocol::S_HIT& pkt)
 {
@@ -467,7 +466,6 @@ void UMyProjectGameInstance::HandleHIT(const Protocol::S_HIT& pkt)
 
 void UMyProjectGameInstance::HandleAttack(const Protocol::S_ATTACK& pkt)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 200, FColor::Green, FString::Printf(TEXT("Attack!!")));
 	
 	return ;
 }
