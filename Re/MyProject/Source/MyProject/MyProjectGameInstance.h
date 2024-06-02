@@ -64,6 +64,7 @@ public:
 	void HandleMove(const Protocol::S_MOVE& MovePkt);
 	void HandleJump(const Protocol::S_JUMP& JumpPkt);
 	void HandleZoom(const Protocol::S_ZOOM& ZommPkt);
+	void HandleRoll();//구르기함수
 
 	void HandleMonsterSpawn(const Protocol::S_SPAWN_MONSTER& SpawnPkt);
 	void HandleMonsterSpawn(const Protocol::ObjectInfo& MonsterInfo);

@@ -348,6 +348,20 @@ void UMyProjectGameInstance::HandleZoom(const Protocol::S_ZOOM& ZoomPkt)
 	}
 }
 
+//구르기 관리함수
+void UMyProjectGameInstance::HandleRoll()
+{
+	/*
+	UAnimInstanceCustom* AnimInstance = Cast<UAnimInstanceCustom>(Player->GetMesh()->GetAnimInstance());
+	 if(AnimInstance)
+	{
+	bool bIsRolling;
+	AnimInstance->SetRolling(bIsRolling);
+    }
+	*/
+
+}
+
 void UMyProjectGameInstance::HandleMonsterSpawn(const Protocol::S_SPAWN_MONSTER& SpawnPkt)
 {
 	for (const auto& MonsterInfo : SpawnPkt.monsters())

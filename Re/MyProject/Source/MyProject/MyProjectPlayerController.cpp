@@ -363,7 +363,7 @@ void AMyProjectPlayerController::RequestServerForRollingChange(bool bIsRolling)
         UE_LOG(LogTemp, Log, TEXT("Rolling set"));
 
 
-
+        //여기에 서버패킷부분 추가
 
 
 
