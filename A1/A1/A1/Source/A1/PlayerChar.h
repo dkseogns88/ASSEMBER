@@ -18,6 +18,18 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+	
+	UPROPERTY(ReplicatedUsing = Aimingchanged)
+	bool bIsAiming = false;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement")
+	bool bIsMoving = false;
+
+	
+	UFUNCTION()
+	void Aimingchanged();
+
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 public:
 	virtual void Tick(float DeltaTime) override;
@@ -40,6 +52,10 @@ public:
 	virtual void TurnLeft(float Value) override;
 	virtual void TurnRight(float Value) override;
 
+	bool IsAiming() const { return bIsAiming; }
+	void SetAiming(bool bNewAiming);
+	bool IsMoving() const { return bIsMoving; }
+	FVector2D GetMovementInput() const { return MovementInput; }
 
 	
 	virtual void Jump() override;
@@ -52,4 +68,6 @@ private:
 	class USpringArmComponent* CameraBoom;
 
 	void Roll();
+	FVector2D MovementInput;
+	
 };

@@ -16,16 +16,36 @@ class A1_API AA1PlayerController : public APlayerController
 {
 	GENERATED_BODY()
 	
-protected:
 
-	/** Input Mapping Context to be used for player input */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-	UInputMappingContext* InputMappingContext;
-
-	// Begin Actor interface
+public:
+	AA1PlayerController();
+	void AimingChange(bool bIsAiming);
+	void AimPressed();
+	void AimReleased();
 protected:
 
 	virtual void BeginPlay() override;
+	virtual void SetupInputComponent() override;
 
-	// End Actor interface
+	
+
+protected:
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputMappingContext* InputMappingContext;
+
+	
+private:
+	
+	UPROPERTY(EditAnywhere, Category = "UI")
+	TSubclassOf<class UCrosshairWidget> CrosshairWidgetClass;
+
+	
+	UPROPERTY()
+	class UCrosshairWidget* CrosshairWidgetInstance;
+
+	
+
+
+	
 };

@@ -32,14 +32,14 @@ public:
     
     virtual void Jump() override;
 
-    bool AttackReady = false;
-
-    UFUNCTION(BlueprintCallable, Category = "Character Actions")
-    virtual void ReadyAttack();
    
 
     UFUNCTION(BlueprintCallable, Category = "Character Actions")
-    virtual void Attack();
+    virtual void ReadyAttack(bool canattack);
+   
+
+    UFUNCTION(BlueprintCallable, Category = "Character Actions")
+    virtual void Attack(bool canattack);
    
 
     UFUNCTION(BlueprintCallable, Category = "Character Actions")

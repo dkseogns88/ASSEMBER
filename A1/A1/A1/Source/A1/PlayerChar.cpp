@@ -4,6 +4,8 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/InputComponent.h"
+#include "AnimInstanceCustom.h"
+#include "Net/UnrealNetwork.h"
 #include "GameFramework/Controller.h"
 
 APlayerChar::APlayerChar()
@@ -24,9 +26,12 @@ APlayerChar::APlayerChar()
    
     GetCharacterMovement()->MaxWalkSpeed = 600.0f;
     GetCharacterMovement()->bOrientRotationToMovement = true; 
-    GetCharacterMovement()->bUseControllerDesiredRotation = false; 
+    GetCharacterMovement()->bUseControllerDesiredRotation = true; 
     GetCharacterMovement()->JumpZVelocity = 300.f;
-    IsMoving = false;
+    GetCharacterMovement()->bAllowPhysicsRotationDuringAnimRootMotion = false; // Prevents rotation while root motion is active
+   
+    
+    MovementInput = FVector2D(0.0f, 0.0f);
 }
 
 void APlayerChar::BeginPlay()
@@ -34,10 +39,23 @@ void APlayerChar::BeginPlay()
     Super::BeginPlay();
 }
 
+
 void APlayerChar::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
 
+    if (MovementInput.SizeSquared() > 0)
+    {
+        bIsMoving = true;
+    }
+    else
+    {
+        bIsMoving = false;
+    }
+    if (UAnimInstanceCustom* AnimInstance = Cast<UAnimInstanceCustom>(GetMesh()->GetAnimInstance()))
+    {
+        AnimInstance->SetMovementInput(MovementInput);
+    }
 }
 
 void APlayerChar::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -69,40 +87,12 @@ void APlayerChar::UseSkill(int32 SkillIndex)
 
 void APlayerChar::MoveForward(float Value)
 {
-    if (Controller != nullptr)
-    {
-        if (Value != 0.0f)
-        {
-            const FRotator Rotation = Controller->GetControlRotation();
-            const FRotator YawRotation(0, Rotation.Yaw, 0);
-            const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-            AddMovementInput(Direction, Value);
-            IsMoving = true;
-        }
-        else
-        {
-            IsMoving = false;
-        }
-    }
+    MovementInput.X = Value;
 }
 
 void APlayerChar::MoveRight(float Value)
 {
-    if (Controller != nullptr)
-    {
-        if (Value != 0.0f)
-        {
-            const FRotator Rotation = Controller->GetControlRotation();
-            const FRotator YawRotation(0, Rotation.Yaw, 0);
-            const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-            AddMovementInput(Direction, Value);
-            IsMoving = true;
-        }
-        else
-        {
-            IsMoving = false;
-        }
-    }
+    MovementInput.Y = Value;
 }
 
 void APlayerChar::TurnLeft(float Value)
@@ -118,4 +108,37 @@ void APlayerChar::TurnRight(float Value)
 void APlayerChar::Jump()
 {
     Super::Jump();
+}
+
+void APlayerChar::SetAiming(bool bNewAiming)
+{
+    bIsAiming = bNewAiming;
+    UE_LOG(LogTemp, Log, TEXT("Aiming state set to: %s"), bIsAiming ? TEXT("True") : TEXT("False"));
+
+
+
+    UAnimInstanceCustom* AnimInstance = Cast<UAnimInstanceCustom>(GetMesh()->GetAnimInstance());
+    if (AnimInstance)
+    {
+
+        AnimInstance->bIsAiming = bIsAiming;
+        UE_LOG(LogTemp, Log, TEXT("Aiming state updated in animation blueprint to: %s"), bIsAiming ? TEXT("True") : TEXT("False"));
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("Failed to cast to UAnimInstanceCustom"));
+    }
+}
+
+void APlayerChar::Aimingchanged()
+{
+    SetAiming(bIsAiming);
+}
+
+void APlayerChar::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+    DOREPLIFETIME(APlayerChar, bIsAiming);
+
+
 }

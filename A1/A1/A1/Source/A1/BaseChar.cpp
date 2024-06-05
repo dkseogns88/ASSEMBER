@@ -54,15 +54,15 @@ void ABaseChar::Jump()
     Super::Jump();
 }
 
-void ABaseChar::ReadyAttack()
+void ABaseChar::ReadyAttack(bool canattack)
 {
-    AttackReady = true;
+    canattack = true;
     
 }
 
-void ABaseChar::Attack()
+void ABaseChar::Attack(bool canattack)
 {
-    AttackReady = false;
+    canattack = false;
 }
 
 void ABaseChar::TakeDMG(float Value)
