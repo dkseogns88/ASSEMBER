@@ -2,7 +2,7 @@
 
 
 #include "A1GameMode.h"
-#include "A1/PlayerChar.h"
+#include "A1/Characters/PlayerChar.h"
 
 AA1GameMode::AA1GameMode()
 {

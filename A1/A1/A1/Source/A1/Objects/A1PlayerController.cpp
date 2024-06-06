@@ -3,8 +3,8 @@
 
 #include "A1PlayerController.h"
 #include "EnhancedInputSubsystems.h"
-#include "PlayerChar.h"
-#include "CrosshairWidget.h"
+#include "../Characters/PlayerChar.h"
+#include "../Widgets/CrosshairWidget.h"
 #include "Engine/LocalPlayer.h"
 
 AA1PlayerController::AA1PlayerController()

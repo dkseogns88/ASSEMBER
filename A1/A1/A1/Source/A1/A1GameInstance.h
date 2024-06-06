@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BaseChar.h"
-#include "Monster.generated.h"
+#include "Engine/GameInstance.h"
+#include "A1GameInstance.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class A1_API AMonster : public ABaseChar
+class A1_API UA1GameInstance : public UGameInstance
 {
 	GENERATED_BODY()
 	
