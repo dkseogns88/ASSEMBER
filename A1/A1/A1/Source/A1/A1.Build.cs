@@ -10,14 +10,8 @@ public class A1 : ModuleRules
 
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "Sockets", "EnhancedInput", "Networking", "UMG", "Slate", "SlateCore" });
 
-		PrivateDependencyModuleNames.AddRange(new string[] { "ProtobufCore" });
-
 		bEnableExceptions = true;
 
-		PrivateIncludePaths.AddRange(new string[]
-        {
-            
-			
-        });
+		
 	}
 }

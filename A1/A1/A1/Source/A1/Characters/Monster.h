@@ -60,7 +60,7 @@ protected:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
     UBoxComponent* BoxComponent;
 
-    UPROPERTY(BlueprintReadWrite, Category = "Character State")
+    
     bool IsMoving;
 
 
