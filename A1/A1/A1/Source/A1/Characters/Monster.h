@@ -21,13 +21,14 @@ class A1_API AMonster : public ABaseChar
     friend class UA1PlayerController;
 protected:
   
-    virtual void BeginPlay() override;
-    virtual void Tick(float DeltaTime) override;
+    virtual void BeginPlay();
+    virtual void Tick(float DeltaTime);
     virtual void ReadyAttack(bool canattack) override;
     virtual void Attack(bool canattack) override;
     virtual void TakeDMG(float Value) override;
     virtual void Die() override;
-
+    virtual void TurnLeft(float Value) override;
+    virtual void TurnRight(float Value) override;
     void ResetAttack();
     void ResetDamage();
  
@@ -58,6 +59,10 @@ protected:
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
     UBoxComponent* BoxComponent;
+
+    UPROPERTY(BlueprintReadWrite, Category = "Character State")
+    bool IsMoving;
+
 
 
 public:

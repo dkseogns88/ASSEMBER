@@ -83,6 +83,16 @@ void AMonster::Die()
     }
 }
 
+void AMonster::TurnLeft(float Value)
+{
+    AddActorLocalRotation(FRotator(0.0f, -Value, 0.0f));
+}
+
+void AMonster::TurnRight(float Value)
+{
+    AddActorLocalRotation(FRotator(0.0f, Value, 0.0f));
+}
+
 void AMonster::ResetAttack()
 {
     bIsAttacking = false;
