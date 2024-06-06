@@ -53,6 +53,8 @@ void AA1PlayerController::SetupInputComponent()
 
 	InputComponent->BindAction("Aim", IE_Pressed, this, &AA1PlayerController::AimPressed);
 	InputComponent->BindAction("Aim", IE_Released, this, &AA1PlayerController::AimReleased);
+    InputComponent->BindAction("Fire", IE_Pressed, this, &AA1PlayerController::TryFireWeapon);
+
 }
 
 void AA1PlayerController::AimingChange(bool bIsAiming)
@@ -80,4 +82,49 @@ void AA1PlayerController::AimingChange(bool bIsAiming)
         
     }
     
+}
+
+void AA1PlayerController::FireWeapon()
+{
+    FVector CameraLoc;
+    FRotator CameraRot;
+    GetPlayerViewPoint(CameraLoc, CameraRot); // 플레이어의 카메라 위치와 회전을 가져옴
+
+
+    FVector Start = CameraLoc + CameraRot.Vector() * 400;
+
+    FVector End = CameraLoc + CameraRot.Vector() * 10000; // 히트스캔 거리 설정
+
+    // 디버깅용 라인 그리기 (에디터에서만 보임)
+    DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 1.0f, 0, 1.0f);
+
+
+   
+
+
+
+    // 클라이언트
+
+    FHitResult HitResult;
+    FCollisionQueryParams Params;
+    Params.AddIgnoredActor(GetPawn()); // 자기 자신은 무시
+
+    if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Pawn, Params))
+    {
+
+        //몬스터충돌처리 예정
+    }
+    // 디버깅용 라인 그리기 (에디터에서만 보임)
+    DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 1.0f, 0, 1.0f);
+
+}
+
+void AA1PlayerController::TryFireWeapon()
+{
+    APlayerChar* MyCharacter = Cast<APlayerChar>(GetPawn());
+    if (MyCharacter && MyCharacter->IsAiming())
+    {
+        FireWeapon();
+    }
+
 }

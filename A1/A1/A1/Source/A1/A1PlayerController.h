@@ -20,6 +20,8 @@ class A1_API AA1PlayerController : public APlayerController
 public:
 	AA1PlayerController();
 	void AimingChange(bool bIsAiming);
+	void FireWeapon();
+	void TryFireWeapon();
 	void AimPressed();
 	void AimReleased();
 protected:
