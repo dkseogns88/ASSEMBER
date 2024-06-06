@@ -8,6 +8,16 @@ public class A1 : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "Sockets", "EnhancedInput", "Networking", "UMG", "Slate", "SlateCore" });
+
+		PrivateDependencyModuleNames.AddRange(new string[] { "ProtobufCore" });
+
+		bEnableExceptions = true;
+
+		PrivateIncludePaths.AddRange(new string[]
+        {
+            
+			
+        });
 	}
 }
