@@ -34,7 +34,7 @@ protected:
 public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
+	
 	UFUNCTION(BlueprintCallable, Category = "Character Actions")
 	void StartRoll();
 
@@ -57,7 +57,9 @@ public:
 	bool IsMoving() const { return bIsMoving; }
 	FVector2D GetMovementInput() const { return MovementInput; }
 
-	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement", meta = (AllowPrivateAccess = "true"))
+	float Speed;
+	void SetMovementSpeed(float NewSpeed);
 	virtual void Jump() override;
 
 private:

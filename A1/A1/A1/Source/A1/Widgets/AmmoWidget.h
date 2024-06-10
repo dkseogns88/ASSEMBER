@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "BaseWidget.h"
+#include "Components/TextBlock.h"
 #include "AmmoWidget.generated.h"
 
 /**
@@ -14,4 +15,22 @@ class A1_API UAmmoWidget : public UBaseWidget
 {
 	GENERATED_BODY()
 	
+
+public:
+    UFUNCTION(BlueprintCallable, Category = "Ammo")
+    void UpdateAmmoCount(int32 CurrentAmmo, int32 MaxAmmo);
+
+    virtual void NativeConstruct() override;
+
+
+protected:
+
+
+
+    UPROPERTY(meta = (BindWidget))
+    UTextBlock* CurrentAmmoText;
+
+    UPROPERTY(meta = (BindWidget))
+    UTextBlock* TotalAmmoText;
+
 };

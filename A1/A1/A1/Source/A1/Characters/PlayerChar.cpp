@@ -71,6 +71,12 @@ void APlayerChar::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
     
 }
 
+void APlayerChar::SetMovementSpeed(float NewSpeed)
+{
+    Speed = NewSpeed;
+    GetCharacterMovement()->MaxWalkSpeed = Speed;
+}
+
 void APlayerChar::StartRoll()
 {
     
