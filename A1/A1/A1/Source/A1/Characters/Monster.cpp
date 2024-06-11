@@ -28,6 +28,11 @@ void AMonster::Tick(float DeltaTime)
         ReadyAttack(bIsAttacking);
         TimeSinceLastAttack = 0.0f;
     }
+
+    if (Health <= 0)
+    {
+        Die();
+    }
 }
 
 void AMonster::ReadyAttack(bool canattack)
@@ -62,8 +67,10 @@ void AMonster::TakeDMG(float Value)
     {
         bIsDamaged = true;
         UE_LOG(LogTemp, Log, TEXT("%s Damage taken"), *MonName);
+        Health = Health - Value;
         // Reset damage after 0.5 seconds (duration of the damage animation)
         GetWorld()->GetTimerManager().SetTimer(DamageResetTimerHandle, this, &AMonster::ResetDamage, 0.5f, false);
+        
     }
 }
 
@@ -110,7 +117,7 @@ AMonster::AMonster()
     bIsDamaged = false;
     bIsDead = false;
     TimeSinceLastAttack = 0.0f;
-
+    
 
     BoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComponent"));
     BoxComponent->SetupAttachment(RootComponent);

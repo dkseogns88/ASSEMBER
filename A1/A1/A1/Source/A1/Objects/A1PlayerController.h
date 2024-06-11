@@ -79,7 +79,7 @@ public:
 
 	bool bIsUIActive = false;
 	
-
+	FTimerHandle FireCooldownTimerHandle;
 
 
 	UFUNCTION(BlueprintCallable, Category = "LevelUp")

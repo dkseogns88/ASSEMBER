@@ -34,3 +34,7 @@ void UAnimInstanceCustom::SetMovementInput(FVector2D NewMovementInput)
 {
     MovementInput = NewMovementInput;
 }
+void UAnimInstanceCustom::SetIsMovingBackward(bool bIsMovingBackward)
+{
+    bIsMovingBackward = bIsMovingBackward;
+}

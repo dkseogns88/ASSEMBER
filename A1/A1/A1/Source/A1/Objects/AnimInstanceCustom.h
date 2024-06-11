@@ -18,8 +18,12 @@ public:
     UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Movement")
     bool bIsMoving;
 
+  
+
     UFUNCTION(BlueprintCallable, Category = "Movement")
     void SetMovementInput(FVector2D NewMovementInput);
+
+    void SetIsMovingBackward(bool bIsMovingBackward);
 
     void NativeInitializeAnimation() override;
 

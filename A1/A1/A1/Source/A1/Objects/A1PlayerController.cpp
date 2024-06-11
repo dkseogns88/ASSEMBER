@@ -26,6 +26,7 @@ AA1PlayerController::AA1PlayerController()
 
     MaxAmmo = 6;
     CurrentAmmo = MaxAmmo;
+    AttackPower = 50.0f;
 
  /*   static ConstructorHelpers::FObjectFinder<USoundBase> FireSoundObj(TEXT("/Game/Sound/pistol.pistol"));
     if (FireSoundObj.Succeeded())
@@ -224,8 +225,13 @@ void AA1PlayerController::FireWeapon()
 
     if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Pawn, Params))
     {
-
-        //몬스터충돌처리 예정
+        AMonster* HitMonster = Cast<AMonster>(HitResult.GetActor());
+        if (HitMonster)
+        {
+            // 몬스터의 체력 감소
+            HitMonster->TakeDMG(AttackPower); 
+        }
+        
     }
     // 디버깅용 라인 그리기 (에디터에서만 보임)
     DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 1.0f, 0, 1.0f);
@@ -240,11 +246,21 @@ void AA1PlayerController::TryFireWeapon()
     {
         if (CurrentAmmo > 0)
         {
-            FireWeapon();
-            CurrentAmmo--;
-            if (AmmoWidget)
+            if (!GetWorld()->GetTimerManager().IsTimerActive(FireCooldownTimerHandle))
             {
-                AmmoWidget->UpdateAmmoCount(CurrentAmmo, MaxAmmo);
+                FireWeapon();
+                CurrentAmmo--;
+                if (AmmoWidget)
+                {
+                    AmmoWidget->UpdateAmmoCount(CurrentAmmo, MaxAmmo);
+                }
+
+                // 발사 후 쿨다운 설정
+                GetWorld()->GetTimerManager().SetTimer(FireCooldownTimerHandle, 0.5f, false);
+            }
+            else
+            {
+                UE_LOG(LogTemp, Warning, TEXT("Weapon is on cooldown."));
             }
         }
         else
@@ -303,7 +319,7 @@ void AA1PlayerController::ShowLevelUpUI()
 {
     if (LevelUpWidgetInstance && !LevelUpWidgetInstance->IsInViewport())
     {
-        LevelUpWidgetInstance->AddToViewport(1);
+        LevelUpWidgetInstance->ShowWidget();
         bShowMouseCursor = true;
         SetInputMode(FInputModeGameAndUI());
         UE_LOG(LogTemp, Log, TEXT("Level Up UI shown"));

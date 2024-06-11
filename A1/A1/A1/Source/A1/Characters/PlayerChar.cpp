@@ -45,17 +45,13 @@ void APlayerChar::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
 
-    if (MovementInput.SizeSquared() > 0)
-    {
-        bIsMoving = true;
-    }
-    else
-    {
-        bIsMoving = false;
-    }
+    bIsMoving = MovementInput.SizeSquared() > 0.0f;
+    bIsMovingBackward = MovementInput.X < 0.0f;
+
     if (UAnimInstanceCustom* AnimInstance = Cast<UAnimInstanceCustom>(GetMesh()->GetAnimInstance()))
     {
         AnimInstance->SetMovementInput(MovementInput);
+        AnimInstance->SetIsMovingBackward(bIsMovingBackward);
     }
 }
 
@@ -95,11 +91,22 @@ void APlayerChar::UseSkill(int32 SkillIndex)
 void APlayerChar::MoveForward(float Value)
 {
     MovementInput.X = Value;
+    if (Value != 0.0f)
+    {
+        AddMovementInput(GetActorForwardVector(), Value);
+    }
+     
 }
 
 void APlayerChar::MoveRight(float Value)
 {
+   
     MovementInput.Y = Value;
+    if (Value != 0.0f)
+    {
+        AddMovementInput(GetActorRightVector(), Value);
+    }
+   
 }
 
 void APlayerChar::TurnLeft(float Value)

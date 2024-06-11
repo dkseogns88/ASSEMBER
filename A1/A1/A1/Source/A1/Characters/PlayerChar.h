@@ -22,8 +22,14 @@ protected:
 	UPROPERTY(ReplicatedUsing = Aimingchanged)
 	bool bIsAiming = false;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Movement")
 	bool bIsMoving = false;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Movement")
+	bool bIsMovingBackward;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Movement")
+	bool bIsJumping = false;
 
 	
 	UFUNCTION()
@@ -61,6 +67,7 @@ public:
 	float Speed;
 	void SetMovementSpeed(float NewSpeed);
 	virtual void Jump() override;
+	
 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))

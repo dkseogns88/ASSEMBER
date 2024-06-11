@@ -17,8 +17,8 @@ class A1_API AMonster : public ABaseChar
 
     GENERATED_BODY()
 
-    friend class UA1GameInstance;
-    friend class UA1PlayerController;
+    friend class AA1GameInstance;
+    friend class AA1PlayerController;
 protected:
   
     virtual void BeginPlay();
