@@ -31,6 +31,8 @@ protected:
     virtual void TurnRight(float Value) override;
     void ResetAttack();
     void ResetDamage();
+    void EnableAttack();
+    void FireProjectile();
  
 
    
@@ -50,6 +52,12 @@ protected:
     UPROPERTY(BlueprintReadWrite, Category = "Character State")
     bool bIsDead;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character State")
+    float AttackDuration;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character State")
+    TSubclassOf<class AMonsterProjectile> ProjectileClass;
+
     // 기타 속성
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPC Info")
     FString MonName;
@@ -60,9 +68,12 @@ protected:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
     UBoxComponent* BoxComponent;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")
+    float AttackInterval = 5.0f;
+
     
     bool IsMoving;
-
+   
 
 
 public:
@@ -78,7 +89,7 @@ public:
    
 
     float TimeSinceLastAttack;
-    const float AttackInterval = 3.0f;  // 3 seconds interval
+   
 
 
 

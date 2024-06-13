@@ -11,7 +11,7 @@ void UHealthBarWidget::UpdateHealth(float HealthPercentage)
     }
     if (HealthText)
     {
-        FString HealthTextString = FString::Printf(TEXT("%.0f%%"), HealthPercentage * 100);
+        FString HealthTextString = FString::Printf(TEXT("%.0f%%"), HealthPercentage);
         HealthText->SetText(FText::FromString(HealthTextString));
     }
 }

@@ -11,6 +11,7 @@
 #include "../Widgets/AmmoWidget.h"
 #include "../Widgets/IPAddressWidget.h"
 #include "../Characters/Monster.h"
+#include "../Widgets/HealthBarWidget.h"
 #include "A1PlayerController.generated.h"
 
 class UInputMappingContext;
@@ -51,6 +52,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Stats")
 	void ShowLevelUpUI();
+
+	UFUNCTION(BlueprintCallable, Category = "Stats")
+	void ApplyDamage(float DamageAmount);
 
 	
 	UFUNCTION(BlueprintCallable, Category = "Character")

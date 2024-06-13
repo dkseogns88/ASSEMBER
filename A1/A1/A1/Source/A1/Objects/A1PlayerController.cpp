@@ -8,6 +8,7 @@
 #include "Blueprint/UserWidget.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/LocalPlayer.h"
+#include "Engine/Engine.h"
 
 AA1PlayerController::AA1PlayerController()
 {
@@ -27,7 +28,7 @@ AA1PlayerController::AA1PlayerController()
     MaxAmmo = 6;
     CurrentAmmo = MaxAmmo;
     AttackPower = 50.0f;
-
+    PlayerHealth = 100.0f;
  /*   static ConstructorHelpers::FObjectFinder<USoundBase> FireSoundObj(TEXT("/Game/Sound/pistol.pistol"));
     if (FireSoundObj.Succeeded())
     {
@@ -122,7 +123,7 @@ void AA1PlayerController::BeginPlay()
             UE_LOG(LogTemp, Log, TEXT("Health bar widget created successfully."));
             HealthBarWidgets->AddToViewport(1);
             HealthBarWidgets->NativeConstruct();
-            HealthBarWidgets->UpdateHealth(PlayerHealth / 100.0f);
+            HealthBarWidgets->UpdateHealth(PlayerHealth);
 
         }
 
@@ -276,7 +277,7 @@ void AA1PlayerController::SetHealth(float NewHealth)
     PlayerHealth = NewHealth;
     if (HealthBarWidgets)
     {
-        HealthBarWidgets->UpdateHealth(PlayerHealth / 100.0f);  // Assuming Health is out of 100
+        HealthBarWidgets->UpdateHealth(PlayerHealth);  // Assuming Health is out of 100
     }
     UE_LOG(LogTemp, Log, TEXT("Health set to %f"), PlayerHealth);
 }
@@ -311,6 +312,7 @@ void AA1PlayerController::UpdateStats(float NewHealth, float NewMovementSpeed, f
         if (APlayerChar* Players = Cast<APlayerChar>(ControlledPawn))
         {
             Players->SetMovementSpeed(MovementSpeed);
+            HealthBarWidgets->UpdateHealth(PlayerHealth);
         }
     }
 }
@@ -324,6 +326,25 @@ void AA1PlayerController::ShowLevelUpUI()
         SetInputMode(FInputModeGameAndUI());
         UE_LOG(LogTemp, Log, TEXT("Level Up UI shown"));
     }
+}
+
+void AA1PlayerController::ApplyDamage(float DamageAmount)
+{
+    PlayerHealth -= DamageAmount;
+    if (PlayerHealth <= 0)
+    {
+       //죽었을때 처리
+        
+    }
+    else
+    {
+        if (GEngine)
+        {
+            FString HealthString = FString::Printf(TEXT("Player Health: %.2f"), PlayerHealth);
+            GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, HealthString);
+        }
+    }
+    HealthBarWidgets->UpdateHealth(PlayerHealth);
 }
 
 void AA1PlayerController::Tick(float DeltaTime)
@@ -495,7 +516,7 @@ void AA1PlayerController::ShowEnemyInfo_Internal(FString EnemyName, float Health
 
     if (CurrentEnemyInfoWidget)
     {
-        UE_LOG(LogTemp, Log, TEXT("Setting enemy info: %s"), *EnemyName);
+       // UE_LOG(LogTemp, Log, TEXT("Setting enemy info: %s"), *EnemyName);
         CurrentEnemyInfoWidget->SetEnemyName(EnemyName);
         CurrentEnemyInfoWidget->SetEnemyHealth(Health / 100.0f);
     }

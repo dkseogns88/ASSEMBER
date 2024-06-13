@@ -156,3 +156,25 @@ void APlayerChar::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifet
 
 
 }
+
+void APlayerChar::IsDamaged()
+{
+    if (!bIsDamaged)
+    {
+        bIsDamaged = true;
+        // 피격 애니메이션 트리거 추가
+        UE_LOG(LogTemp, Log, TEXT("%s is damaged"), *GetName());
+
+        // 일정 시간 후 피격 상태 초기화
+        GetWorld()->GetTimerManager().SetTimerForNextTick([this]()
+            {
+                bIsDamaged = false;
+            });
+
+        // 게임 내에서 로그 출력
+        if (GEngine)
+        {
+            GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("%s is damaged 999"), *GetName()));
+        }
+    }
+}

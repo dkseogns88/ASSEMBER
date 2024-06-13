@@ -6,10 +6,33 @@
 #include "UObject/ConstructorHelpers.h"
 #include "Animation/AnimInstance.h"
 #include "TimerManager.h"
+#include "../Objects/MonsterProjectile.h"
+#include "Components/BoxComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/GameplayStatics.h"
+#include "Engine/Engine.h"
+#include "Components/SphereComponent.h" 
 
+
+AMonster::AMonster()
+{
+    PrimaryActorTick.bCanEverTick = true;
+    bIsAttacking = false;
+    bIsDamaged = false;
+    bIsDead = false;
+    TimeSinceLastAttack = 0.0f;
+    AttackDuration = 1.0f;
+    
+    BoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComponent"));
+    BoxComponent->SetupAttachment(RootComponent);
+}
+
+AMonster::~AMonster()
+{
+
+}
 void AMonster::BeginPlay()
 {
 
@@ -22,10 +45,9 @@ void AMonster::Tick(float DeltaTime)
 
     // Attack interval handling
     TimeSinceLastAttack += DeltaTime;
-    if (TimeSinceLastAttack >= AttackInterval)
+    if (TimeSinceLastAttack >= AttackInterval && !bIsDamaged)
     {
-       
-        ReadyAttack(bIsAttacking);
+        ReadyAttack(true);
         TimeSinceLastAttack = 0.0f;
     }
 
@@ -37,25 +59,23 @@ void AMonster::Tick(float DeltaTime)
 
 void AMonster::ReadyAttack(bool canattack)
 {
-    if (!bIsAttacking)
+    if (canattack && !bIsAttacking && !bIsDamaged)
     {
-        canattack = true;
         bIsAttacking = true;
-        UE_LOG(LogTemp, Log, TEXT("%s Attack triggered"), *MonName);
-        // Reset attack after 1 second (duration of the attack animation)
+        UE_LOG(LogTemp, Log, TEXT("%s Attack triggered"), *GetName());
         Attack(canattack);
     }
 }
 
 void AMonster::Attack(bool canattack)
 {
-    if (canattack)
+    if (canattack && !bIsDamaged)
     {
-        // Execute attack logic
-        UE_LOG(LogTemp, Log, TEXT("%s is attacking"), *MonName);
-
-        // Reset attack state after attack duration
-        GetWorld()->GetTimerManager().SetTimer(AttackResetTimerHandle, this, &AMonster::ResetAttack, 1.0f, false);
+       
+        UE_LOG(LogTemp, Log, TEXT("%s is attacking"), *GetName());
+        FireProjectile();
+        
+        GetWorld()->GetTimerManager().SetTimer(AttackResetTimerHandle, this, &AMonster::ResetAttack, AttackDuration, false);
     }
 
    
@@ -68,7 +88,6 @@ void AMonster::TakeDMG(float Value)
         bIsDamaged = true;
         UE_LOG(LogTemp, Log, TEXT("%s Damage taken"), *MonName);
         Health = Health - Value;
-        // Reset damage after 0.5 seconds (duration of the damage animation)
         GetWorld()->GetTimerManager().SetTimer(DamageResetTimerHandle, this, &AMonster::ResetDamage, 0.5f, false);
         
     }
@@ -103,6 +122,10 @@ void AMonster::TurnRight(float Value)
 void AMonster::ResetAttack()
 {
     bIsAttacking = false;
+    UE_LOG(LogTemp, Log, TEXT("%s has finished attacking"), *GetName());
+
+    // 일정 시간 후 canattack을 true로 설정하여 다시 공격할 수 있도록 함
+    GetWorld()->GetTimerManager().SetTimer(AttackResetTimerHandle, this, &AMonster::EnableAttack, AttackInterval, false);
 }
 
 void AMonster::ResetDamage()
@@ -110,23 +133,56 @@ void AMonster::ResetDamage()
     bIsDamaged = false;
 }
 
-AMonster::AMonster()
+void AMonster::EnableAttack()
 {
-    PrimaryActorTick.bCanEverTick = true;
-    bIsAttacking = false;
-    bIsDamaged = false;
-    bIsDead = false;
-    TimeSinceLastAttack = 0.0f;
-    
-
-    BoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComponent"));
-    BoxComponent->SetupAttachment(RootComponent);
-}
-
-AMonster::~AMonster()
-{
+    ReadyAttack(true);
    
 }
+
+void AMonster::FireProjectile()
+{
+
+    if (ProjectileClass)
+    {
+        FVector MuzzleLocation = GetActorLocation() + FVector(0, 0, 100);
+        FRotator MuzzleRotation = GetActorRotation();
+
+        FActorSpawnParameters SpawnParams;
+        SpawnParams.Owner = this;  // This ensures the projectile knows its owner
+        SpawnParams.Instigator = GetInstigator();
+
+        AMonsterProjectile* Projectile = GetWorld()->SpawnActor<AMonsterProjectile>(ProjectileClass, MuzzleLocation, MuzzleRotation, SpawnParams);
+        if (Projectile)
+        {
+            FVector LaunchDirection = MuzzleRotation.Vector();
+            Projectile->ProjectileMovementComponent->Velocity = LaunchDirection * Projectile->ProjectileMovementComponent->InitialSpeed;
+
+            // Ignore the owner (monster) that fired the projectile
+            Projectile->CollisionComponent->IgnoreActorWhenMoving(this, true);
+
+            if (GEngine)
+            {
+                GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Projectile fired by %s"), *GetName()));
+            }
+        }
+        else
+        {
+            if (GEngine)
+            {
+                GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Failed to spawn projectile")));
+            }
+        }
+    }
+    else
+    {
+        if (GEngine)
+        {
+            GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("ProjectileClass is not set")));
+        }
+    }
+}
+
+
 
 TArray<FVector> AMonster::GetBoxCornerPoints() const
 {

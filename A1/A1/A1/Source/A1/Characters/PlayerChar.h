@@ -31,6 +31,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Movement")
 	bool bIsJumping = false;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Combat")
+	bool bIsDamaged = false;
+
 	
 	UFUNCTION()
 	void Aimingchanged();
@@ -68,6 +71,8 @@ public:
 	void SetMovementSpeed(float NewSpeed);
 	virtual void Jump() override;
 	
+	UFUNCTION(BlueprintCallable, Category = "Combat")
+	void IsDamaged();
 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
