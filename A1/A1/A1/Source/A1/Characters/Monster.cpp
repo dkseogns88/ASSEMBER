@@ -13,6 +13,8 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/Engine.h"
+#include "PlayerChar.h"
+#include "../Objects/A1PlayerController.h"
 #include "Components/SphereComponent.h" 
 
 
@@ -55,6 +57,11 @@ void AMonster::Tick(float DeltaTime)
     {
         Die();
     }
+
+    if (bIsAttacking && !bIsDealPlayer)
+    {
+        CheckSwordHit();
+    }
 }
 
 void AMonster::ReadyAttack(bool canattack)
@@ -71,10 +78,17 @@ void AMonster::Attack(bool canattack)
 {
     if (canattack && !bIsDamaged)
     {
-       
         UE_LOG(LogTemp, Log, TEXT("%s is attacking"), *GetName());
-        FireProjectile();
-        
+
+        if (MonsterType == "Gunner")
+        {
+            FireProjectile();
+        }
+        else if (MonsterType == "Warrior")
+        {
+            SwordAttack();
+        }
+
         GetWorld()->GetTimerManager().SetTimer(AttackResetTimerHandle, this, &AMonster::ResetAttack, AttackDuration, false);
     }
 
@@ -182,6 +196,64 @@ void AMonster::FireProjectile()
     }
 }
 
+void AMonster::SwordAttack()
+{
+    
+    UE_LOG(LogTemp, Log, TEXT("%s performs a sword attack"), *GetName());
+
+    // 공격 시작
+    bIsAttacking = true;
+    bIsDealPlayer = false;
+
+    // 0.7초 후에 공격 종료
+    GetWorld()->GetTimerManager().SetTimer(AttackEndHandle, this, &AMonster::EndSwordAttack, 0.7f, false);
+    
+}
+
+void AMonster::EndSwordAttack()
+{
+    bIsAttacking = false;
+    UE_LOG(LogTemp, Log, TEXT("%s ends the sword attack"), *GetName());
+}
+
+void AMonster::CheckSwordHit()
+{
+    FVector Start = GetActorLocation();
+    FVector End = Start + GetActorForwardVector() * 100.0f; // 공격 범위 설정
+
+    TArray<FHitResult> HitResults;
+    FCollisionShape CollisionShape = FCollisionShape::MakeSphere(50.0f); // 충돌 구의 반경
+
+    bool bHit = GetWorld()->SweepMultiByChannel(HitResults, Start, End, FQuat::Identity, ECC_Pawn, CollisionShape);
+
+    if (bHit)
+    {
+        for (FHitResult HitResult : HitResults)
+        {
+            AActor* HitActor = HitResult.GetActor();
+            if (HitActor && HitActor->IsA(APlayerChar::StaticClass()))
+            {
+                APlayerChar* HitCharacter = Cast<APlayerChar>(HitActor);
+                if (HitCharacter)
+                {
+                    AA1PlayerController* PlayerController = Cast<AA1PlayerController>(HitCharacter->GetController());
+                    if (PlayerController)
+                    {
+                        PlayerController->ApplyDamage(50.0f);
+
+                        if (GEngine)
+                        {
+                            GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Fanatic Dealing %f damage to %s"), 50.0f, *HitCharacter->GetName()));
+                        }
+                        bIsDealPlayer = true;
+                        break;
+                    }
+                    HitCharacter->IsDamaged();
+                }
+            }
+        }
+    }
+}
 
 
 TArray<FVector> AMonster::GetBoxCornerPoints() const

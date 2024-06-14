@@ -33,6 +33,9 @@ protected:
     void ResetDamage();
     void EnableAttack();
     void FireProjectile();
+    void SwordAttack();
+    void CheckSwordHit();
+    void EndSwordAttack();
  
 
    
@@ -41,6 +44,7 @@ protected:
     FTimerHandle AttackResetTimerHandle;
     FTimerHandle DamageResetTimerHandle;
     FTimerHandle DeathHandle;
+    FTimerHandle AttackEndHandle;
 
     // 상태 플래그
     UPROPERTY(BlueprintReadWrite, Category = "Character State")
@@ -68,11 +72,15 @@ protected:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
     UBoxComponent* BoxComponent;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character State")
     float AttackInterval = 5.0f;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPC Info")
+    FString MonsterType;
     
     bool IsMoving;
+
+    bool bIsDealPlayer;
    
 
 
