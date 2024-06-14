@@ -15,6 +15,7 @@
 #include "Engine/Engine.h"
 #include "PlayerChar.h"
 #include "../Objects/A1PlayerController.h"
+#include "Sound/SoundCue.h"
 #include "Components/SphereComponent.h" 
 
 
@@ -29,6 +30,8 @@ AMonster::AMonster()
     
     BoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComponent"));
     BoxComponent->SetupAttachment(RootComponent);
+
+    FireSound = nullptr;
 }
 
 AMonster::~AMonster()
@@ -83,6 +86,11 @@ void AMonster::Attack(bool canattack)
         if (MonsterType == "Gunner")
         {
             FireProjectile();
+            if (FireSound)
+            {
+                UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
+            }
+            }
         }
         else if (MonsterType == "Warrior")
         {
@@ -90,10 +98,12 @@ void AMonster::Attack(bool canattack)
         }
 
         GetWorld()->GetTimerManager().SetTimer(AttackResetTimerHandle, this, &AMonster::ResetAttack, AttackDuration, false);
-    }
+    
+}
+
 
    
-}
+
 
 void AMonster::TakeDMG(float Value)
 {
@@ -119,7 +129,7 @@ void AMonster::Die()
         GetWorld()->GetTimerManager().SetTimer(DeathHandle, [this]()
             {
                 this->Destroy();
-            }, 1.5f, false);
+            }, 0.3f, false);
     }
 }
 
@@ -158,7 +168,7 @@ void AMonster::FireProjectile()
 
     if (ProjectileClass)
     {
-        FVector MuzzleLocation = GetActorLocation() + FVector(0, 0, 100);
+        FVector MuzzleLocation = GetActorLocation() + FVector(0, 0, 50);
         FRotator MuzzleRotation = GetActorRotation();
 
         FActorSpawnParameters SpawnParams;

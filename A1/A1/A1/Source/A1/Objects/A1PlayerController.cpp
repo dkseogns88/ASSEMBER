@@ -9,6 +9,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Engine/LocalPlayer.h"
 #include "Engine/Engine.h"
+#include "Sound/SoundBase.h"
 
 AA1PlayerController::AA1PlayerController()
 {
@@ -29,7 +30,9 @@ AA1PlayerController::AA1PlayerController()
     CurrentAmmo = MaxAmmo;
     AttackPower = 50.0f;
     PlayerHealth = 100.0f;
- /*   static ConstructorHelpers::FObjectFinder<USoundBase> FireSoundObj(TEXT("/Game/Sound/pistol.pistol"));
+    PlayerMaxHealth = 100.0f;
+
+    static ConstructorHelpers::FObjectFinder<USoundBase> FireSoundObj(TEXT("/Game/Sound/pistol.pistol"));
     if (FireSoundObj.Succeeded())
     {
         FireSound = FireSoundObj.Object;
@@ -39,7 +42,7 @@ AA1PlayerController::AA1PlayerController()
     if (ReloadSoundObj.Succeeded())
     {
         ReloadSound = ReloadSoundObj.Object;
-    }*/
+    }
 
     static ConstructorHelpers::FClassFinder<UEnemyInfoWidget> EnemyInfoWidgetBPClass(TEXT("/Game/MyBP/Widgets/EnemyInfoWidget.EnemyInfoWidget_C"));
     if (EnemyInfoWidgetBPClass.Succeeded())
@@ -82,6 +85,12 @@ AA1PlayerController::AA1PlayerController()
 	{
 		CrosshairWidgetClass = CrosshairBPClass.Class;
 	}
+
+    static ConstructorHelpers::FClassFinder<UPlayerStatWidget> PlayerStatBPClass(TEXT("/Game/MyBP/Widgets/PlayerStatWidget.PlayerStatWidget_C"));
+    if (PlayerStatBPClass.Succeeded())
+    {
+        PlayerStatWidgetClass = PlayerStatBPClass.Class;
+    }
 }
 
 void AA1PlayerController::AimPressed()
@@ -105,6 +114,16 @@ void AA1PlayerController::BeginPlay()
         {
             CrosshairWidgetInstance->AddToViewport();
             CrosshairWidgetInstance->ShowCrosshair(false);
+        }
+    }
+
+    if (PlayerStatWidgetClass)
+    {
+        PlayerStatWidget = CreateWidget<UPlayerStatWidget>(this, PlayerStatWidgetClass);
+        if (PlayerStatWidget)
+        {
+            PlayerStatWidget->AddToViewport();
+            PlayerStatWidget->SetVisibility(ESlateVisibility::Hidden);
         }
     }
     InitializeStats(100.0f, 500.0f, 20.0f);
@@ -167,6 +186,8 @@ void AA1PlayerController::SetupInputComponent()
 
     InputComponent->BindAction("InteractStatue", IE_Pressed, this, &AA1PlayerController::Interact);
 
+    InputComponent->BindAction("TogglePlayerStats", IE_Pressed, this, &AA1PlayerController::TogglePlayerStatWidget);
+
     //InputComponent->BindAction("Roll", IE_Pressed, this, &AA1PlayerController::OnRollPressed);
 
    
@@ -213,7 +234,10 @@ void AA1PlayerController::FireWeapon()
     // 디버깅용 라인 그리기 (에디터에서만 보임)
     DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 1.0f, 0, 1.0f);
 
-
+    if (FireSound)
+    {
+        UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetPawn()->GetActorLocation());
+    }
    
 
 
@@ -299,12 +323,14 @@ void AA1PlayerController::InitializeStats(float InitialHealth, float InitialMove
     }
 }
 
-void AA1PlayerController::UpdateStats(float NewHealth, float NewMovementSpeed, float NewAttackPower)
+void AA1PlayerController::UpdateStats(float NewHealth, float NewMovementSpeed, float NewAttackPower, float NewMaxHealth)
 {
     PlayerHealth = NewHealth;
+    PlayerMaxHealth = NewMaxHealth;
     MovementSpeed = NewMovementSpeed;
     AttackPower = NewAttackPower;
-    UE_LOG(LogTemp, Log, TEXT("Stats Updated: Health = %f, Movement Speed = %f, Attack Power = %f"), PlayerHealth, MovementSpeed, AttackPower);
+    
+    UE_LOG(LogTemp, Log, TEXT("Stats Updated: Health = %f, Movement Speed = %f, Attack Power = %f, MaxHealth"), PlayerHealth, MovementSpeed, AttackPower, NewMaxHealth);
 
     // 동기화: 플레이어 캐릭터의 이동 속도를 업데이트
     if (APawn* ControlledPawn = GetPawn())
@@ -327,6 +353,23 @@ void AA1PlayerController::ShowLevelUpUI()
         UE_LOG(LogTemp, Log, TEXT("Level Up UI shown"));
     }
 }
+
+void AA1PlayerController::TogglePlayerStatWidget()
+{
+    if (PlayerStatWidget)
+    {
+        if (PlayerStatWidget->IsVisible())
+        {
+            PlayerStatWidget->SetVisibility(ESlateVisibility::Hidden);
+        }
+        else
+        {
+            PlayerStatWidget->SetVisibility(ESlateVisibility::Visible);
+            PlayerStatWidget->UpdateStats(PlayerHealth, MovementSpeed, AttackPower);
+        }
+    }
+}
+
 
 void AA1PlayerController::ApplyDamage(float DamageAmount)
 {
@@ -389,6 +432,11 @@ void AA1PlayerController::Tick(float DeltaTime)
     {
         RemoveEnemyInfo(); // LineTrace가 실패한 경우
     }
+
+    if (PlayerStatWidget && PlayerStatWidget->IsVisible())
+    {
+        PlayerStatWidget->UpdateStats(PlayerHealth, MovementSpeed, AttackPower);
+    }
 }
 
 void AA1PlayerController::RemoveEnemyInfo()
@@ -426,10 +474,10 @@ void AA1PlayerController::ReloadWeapon()
         AmmoWidget->UpdateAmmoCount(CurrentAmmo, MaxAmmo);
     }
 
-    /*if (ReloadSound)
+    if (ReloadSound)
     {
         UGameplayStatics::PlaySoundAtLocation(this, ReloadSound, GetPawn()->GetActorLocation());
-    }*/
+    }
 }
 
 void AA1PlayerController::HandleLevelUpOption(int OptionIndex)
@@ -529,6 +577,7 @@ void AA1PlayerController::ShowEnemyInfo_Internal(FString EnemyName, float Health
 void AA1PlayerController::UpdateStatsBasedOnOption(int OptionIndex)
 {
     float NewHealth = PlayerHealth;
+    float NewMaxHealth = PlayerMaxHealth;
     float NewMovementSpeed = MovementSpeed;
     float NewAttackPower = AttackPower;
 
@@ -538,10 +587,11 @@ void AA1PlayerController::UpdateStatsBasedOnOption(int OptionIndex)
         NewAttackPower *= 1.20f; // Increase attack power by 20%
         break;
     case 2:
-        NewHealth *= 1.15f; // Increase health by 15%
+        NewMaxHealth *= 1.15f; // Increase health by 15%
+        NewHealth = PlayerHealth + 0.15f * (PlayerMaxHealth);
         break;
     case 3:
-        NewHealth = 100.0f; // Restore health to 100%
+        NewHealth = NewMaxHealth; // Restore health to 100%
         break;
     case 4:
         NewMovementSpeed *= 1.10f; // Increase movement speed by 10%
@@ -552,7 +602,7 @@ void AA1PlayerController::UpdateStatsBasedOnOption(int OptionIndex)
         if (RandomStat == 1)
             NewAttackPower *= 1.25f; // Increase attack power by 25%
         else if (RandomStat == 2)
-            NewHealth *= 1.25f; // Increase health by 25%
+            NewMaxHealth *= 1.25f; // Increase health by 25%
         else
             NewMovementSpeed *= 1.25f; // Increase movement speed by 25%
         break;
@@ -562,7 +612,7 @@ void AA1PlayerController::UpdateStatsBasedOnOption(int OptionIndex)
     }
 
     // Update all stats and sync with character
-    UpdateStats(NewHealth, NewMovementSpeed, NewAttackPower);
+    UpdateStats(NewHealth, NewMovementSpeed, NewAttackPower,NewMaxHealth);
 
     UE_LOG(LogTemp, Log, TEXT("Stats updated: Health = %f, Movement Speed = %f, Attack Power = %f"), NewHealth, NewMovementSpeed, NewAttackPower);
 }

@@ -81,6 +81,9 @@ protected:
     bool IsMoving;
 
     bool bIsDealPlayer;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
+    USoundCue* FireSound;
    
 
 

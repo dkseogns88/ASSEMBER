@@ -12,6 +12,7 @@
 #include "../Widgets/IPAddressWidget.h"
 #include "../Characters/Monster.h"
 #include "../Widgets/HealthBarWidget.h"
+#include "../Widgets/PlayerStatWidget.h"
 #include "A1PlayerController.generated.h"
 
 class UInputMappingContext;
@@ -34,6 +35,9 @@ public:
 	float PlayerHealth;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
+	float PlayerMaxHealth;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
 	float MovementSpeed;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
@@ -48,7 +52,7 @@ public:
 
 	// Function to update stats
 	UFUNCTION(BlueprintCallable, Category = "Stats")
-	void UpdateStats(float NewHealth, float NewMovementSpeed, float NewAttackPower);
+	void UpdateStats(float NewHealth, float NewMovementSpeed, float NewAttackPower,float NewMaxHealth);
 
 	UFUNCTION(BlueprintCallable, Category = "Stats")
 	void ShowLevelUpUI();
@@ -122,10 +126,16 @@ private:
 	UPROPERTY(EditAnywhere, Category = "UI")
 	TSubclassOf<class UCrosshairWidget> CrosshairWidgetClass;
 
+	UPROPERTY(EditAnywhere, Category = "UI")
+	TSubclassOf<UPlayerStatWidget> PlayerStatWidgetClass;
 
 	UPROPERTY()
 	class UCrosshairWidget* CrosshairWidgetInstance;
 
+	UPROPERTY()
+	UPlayerStatWidget* PlayerStatWidget;
+
+	void TogglePlayerStatWidget();
 public:
 	AA1PlayerController();
 	void AimingChange(bool bIsAiming);
@@ -141,11 +151,9 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;
 	
-	/*UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sound")
-	USoundBase* FireSound;
+	
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sound")
-	USoundBase* ReloadSound;*/
+	
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI")
 	TSubclassOf<UBaseWidget> HealthBarWidgetClass;
@@ -167,6 +175,11 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ammo")
 	int32 MaxAmmo;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sound")
+	USoundBase* FireSound;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sound")
+	USoundBase* ReloadSound;
 
 
 	
