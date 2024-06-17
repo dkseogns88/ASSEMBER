@@ -172,7 +172,7 @@ void AMonster::FireProjectile()
         FRotator MuzzleRotation = GetActorRotation();
 
         FActorSpawnParameters SpawnParams;
-        SpawnParams.Owner = this;  // This ensures the projectile knows its owner
+        SpawnParams.Owner = this;  
         SpawnParams.Instigator = GetInstigator();
 
         AMonsterProjectile* Projectile = GetWorld()->SpawnActor<AMonsterProjectile>(ProjectileClass, MuzzleLocation, MuzzleRotation, SpawnParams);
@@ -181,7 +181,7 @@ void AMonster::FireProjectile()
             FVector LaunchDirection = MuzzleRotation.Vector();
             Projectile->ProjectileMovementComponent->Velocity = LaunchDirection * Projectile->ProjectileMovementComponent->InitialSpeed;
 
-            // Ignore the owner (monster) that fired the projectile
+            
             Projectile->CollisionComponent->IgnoreActorWhenMoving(this, true);
 
             if (GEngine)
@@ -258,7 +258,7 @@ void AMonster::CheckSwordHit()
                         bIsDealPlayer = true;
                         break;
                     }
-                    HitCharacter->IsDamaged();
+                    HitCharacter->IsDamaged(true);
                 }
             }
         }

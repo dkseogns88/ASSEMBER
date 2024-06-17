@@ -18,7 +18,21 @@ public:
     UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Movement")
     bool bIsMoving;
 
+   
   
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+    bool bIsDamaged;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+    bool bIsUsingSkill;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+    bool bIsJumping;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+    bool bIsMovingBackward;
+   
+
 
     UFUNCTION(BlueprintCallable, Category = "Movement")
     void SetMovementInput(FVector2D NewMovementInput);
@@ -27,12 +41,13 @@ public:
 
     void NativeInitializeAnimation() override;
 
+   
+
     void NativeUpdateAnimation(float DeltaSeconds) override;
 
     void SetAiming(bool bAiming);
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-    bool bIsRolling;
+   
 
     void SetRolling(bool bRolling);
 

@@ -19,20 +19,8 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	
-	UPROPERTY(ReplicatedUsing = Aimingchanged)
-	bool bIsAiming = false;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Movement")
-	bool bIsMoving = false;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Movement")
-	bool bIsMovingBackward;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Movement")
-	bool bIsJumping = false;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Combat")
-	bool bIsDamaged = false;
+	
 
 	
 	UFUNCTION()
@@ -51,7 +39,28 @@ public:
 	void EndRoll();
 
 	UFUNCTION(BlueprintCallable, Category = "Character Actions")
-	void UseSkill(int32 SkillIndex);
+	void UseSkill(bool UsingSkill);
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Combat")
+	bool bIsUsingSkill;
+
+	UPROPERTY(ReplicatedUsing = Aimingchanged)
+	bool bIsAiming;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Movement")
+	bool bIsMoving;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Movement")
+	bool bIsMovingBackward;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Movement")
+	bool bIsJumping;
+
+	virtual void Landed(const FHitResult& Hit) override;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Combat")
+	bool bIsDamaged;
+
 
 	
 	virtual void MoveForward(float Value) override;
@@ -72,8 +81,9 @@ public:
 	virtual void Jump() override;
 	
 	UFUNCTION(BlueprintCallable, Category = "Combat")
-	void IsDamaged();
+	void IsDamaged(bool Damaged);
 
+	FTimerHandle DamageResetTimerHandle;
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FirstPersonCamera;
@@ -81,7 +91,7 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class USpringArmComponent* CameraBoom;
 
-	void Roll();
+	
 	FVector2D MovementInput;
 	
 };

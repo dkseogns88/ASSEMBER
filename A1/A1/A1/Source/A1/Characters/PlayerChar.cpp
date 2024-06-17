@@ -12,7 +12,13 @@
 APlayerChar::APlayerChar()
 {
     PrimaryActorTick.bCanEverTick = true;
-
+    
+    bIsDamaged = false;
+    bIsUsingSkill = false;
+    bIsMoving = false;
+    bIsAiming = false;
+    bIsMovingBackward = false;
+    bIsJumping = false;
    
     CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
     CameraBoom->SetupAttachment(RootComponent);
@@ -83,10 +89,17 @@ void APlayerChar::EndRoll()
     
 }
 
-void APlayerChar::UseSkill(int32 SkillIndex)
+void APlayerChar::UseSkill(bool UsingSkill)
 {
-    
+    bIsUsingSkill = UsingSkill;
+    UAnimInstanceCustom* AnimInstance = Cast<UAnimInstanceCustom>(GetMesh()->GetAnimInstance());
+    if (AnimInstance)
+    {
+        AnimInstance->bIsUsingSkill = bIsUsingSkill;
+    }
 }
+
+
 
 void APlayerChar::MoveForward(float Value)
 {
@@ -122,6 +135,25 @@ void APlayerChar::TurnRight(float Value)
 void APlayerChar::Jump()
 {
     Super::Jump();
+    bIsJumping = true;
+    UAnimInstanceCustom* AnimInstance = Cast<UAnimInstanceCustom>(GetMesh()->GetAnimInstance());
+    if (AnimInstance)
+    {
+
+        AnimInstance->bIsJumping = bIsJumping;
+
+    }
+}
+
+void APlayerChar::Landed(const FHitResult& Hit)
+{
+    Super::Landed(Hit);
+    bIsJumping = false;
+    UAnimInstanceCustom* AnimInstance = Cast<UAnimInstanceCustom>(GetMesh()->GetAnimInstance());
+    if (AnimInstance)
+    {
+        AnimInstance->bIsJumping = bIsJumping;
+    }
 }
 
 void APlayerChar::SetAiming(bool bNewAiming)
@@ -157,19 +189,34 @@ void APlayerChar::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifet
 
 }
 
-void APlayerChar::IsDamaged()
+void APlayerChar::IsDamaged(bool Damaged)
 {
     if (!bIsDamaged)
     {
-        bIsDamaged = true;
-        // 피격 애니메이션 트리거 추가
+        bIsDamaged = Damaged;
+        UAnimInstanceCustom* AnimInstance = Cast<UAnimInstanceCustom>(GetMesh()->GetAnimInstance());
+        if (AnimInstance)
+        {
+            AnimInstance->bIsDamaged = bIsDamaged;
+        }
+        
         UE_LOG(LogTemp, Log, TEXT("%s is damaged"), *GetName());
 
-        // 일정 시간 후 피격 상태 초기화
-        GetWorld()->GetTimerManager().SetTimerForNextTick([this]()
+        // 일정 시간 후 피격 상태 초기화 
+        GetWorld()->GetTimerManager().SetTimer(
+            DamageResetTimerHandle,
+            [this]()
             {
                 bIsDamaged = false;
-            });
+                UAnimInstanceCustom* AnimInstance = Cast<UAnimInstanceCustom>(GetMesh()->GetAnimInstance());
+                if (AnimInstance)
+                {
+                    AnimInstance->bIsDamaged = bIsDamaged;
+                }
+            },
+            0.5f,
+            false
+        );
 
         // 게임 내에서 로그 출력
         if (GEngine)
@@ -178,3 +225,4 @@ void APlayerChar::IsDamaged()
         }
     }
 }
+

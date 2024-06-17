@@ -19,13 +19,14 @@ class A1_API AMonster : public ABaseChar
 
     friend class AA1GameInstance;
     friend class AA1PlayerController;
+    
 protected:
   
     virtual void BeginPlay();
     virtual void Tick(float DeltaTime);
     virtual void ReadyAttack(bool canattack) override;
     virtual void Attack(bool canattack) override;
-    virtual void TakeDMG(float Value) override;
+    
     virtual void Die() override;
     virtual void TurnLeft(float Value) override;
     virtual void TurnRight(float Value) override;
@@ -95,6 +96,7 @@ public:
     TArray<FVector> GetBoxCornerPoints() const;
     void CheckMeshSetup();
     void CheckAndTeleport();
+    virtual void TakeDMG(float Value) override;
 
 public:
    

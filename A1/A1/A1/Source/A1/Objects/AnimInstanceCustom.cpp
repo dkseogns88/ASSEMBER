@@ -3,10 +3,12 @@
 
 #include "AnimInstanceCustom.h"
 #include "../Characters/PlayerChar.h"
+#include "../Characters/PlayerChar.h"
 void UAnimInstanceCustom::NativeInitializeAnimation()
 {
     Super::NativeInitializeAnimation();
 }
+
 
 void UAnimInstanceCustom::NativeUpdateAnimation(float DeltaSeconds)
 {
@@ -17,6 +19,12 @@ void UAnimInstanceCustom::NativeUpdateAnimation(float DeltaSeconds)
     {
         bIsMoving = OwningCharacter->IsMoving();
         MovementInput = OwningCharacter->GetMovementInput();
+        bIsAiming = OwningCharacter->IsAiming();
+       
+        bIsMovingBackward = OwningCharacter->bIsMovingBackward;
+        bIsDamaged = OwningCharacter->bIsDamaged;
+        bIsUsingSkill = OwningCharacter->bIsUsingSkill;
+        bIsJumping = OwningCharacter->bIsJumping;
     }
 }
 
@@ -25,16 +33,12 @@ void UAnimInstanceCustom::SetAiming(bool bAiming)
     bIsAiming = bAiming;
 }
 
-void UAnimInstanceCustom::SetRolling(bool bRolling)
-{
-    bIsRolling = bRolling;
-}
 
 void UAnimInstanceCustom::SetMovementInput(FVector2D NewMovementInput)
 {
     MovementInput = NewMovementInput;
 }
-void UAnimInstanceCustom::SetIsMovingBackward(bool bIsMovingBackward)
+void UAnimInstanceCustom::SetIsMovingBackward(bool bMovingBackward)
 {
-    bIsMovingBackward = bIsMovingBackward;
+    bIsMovingBackward = bMovingBackward;
 }

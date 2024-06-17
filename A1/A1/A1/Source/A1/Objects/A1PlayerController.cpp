@@ -9,6 +9,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Engine/LocalPlayer.h"
 #include "Engine/Engine.h"
+#include "AnimInstanceCustom.h"
 #include "Sound/SoundBase.h"
 
 AA1PlayerController::AA1PlayerController()
@@ -61,12 +62,7 @@ AA1PlayerController::AA1PlayerController()
         LevelUpWidgetClass = LevelUpWidgetBPClass.Class;
     }
 
-    //SkillManager = CreateDefaultSubobject<USkillManager>(TEXT("SkillManager"));
-
-    ////스킬 추가
-    //USkill* Hellgun = NewObject<USkill>();
-    //Hellgun->Initialize("Hellgun", 300.0f, 50.0f);
-    //SkillManager->AddSkill(Hellgun);
+   
 
     static ConstructorHelpers::FClassFinder<UIPAddressWidget> IPAddressWidgetBPClass(TEXT("/Game/MyBP/Widgets/IPAddressWidget.IPAddressWidget_C"));
     if (IPAddressWidgetBPClass.Succeeded())
@@ -90,6 +86,12 @@ AA1PlayerController::AA1PlayerController()
     if (PlayerStatBPClass.Succeeded())
     {
         PlayerStatWidgetClass = PlayerStatBPClass.Class;
+    }
+
+    static ConstructorHelpers::FClassFinder<ASKill> SkillBPClass(TEXT("/Game/MyBP/BP_Skill.BP_Skill_C"));
+    if (SkillBPClass.Succeeded())
+    {
+        SkillClass = SkillBPClass.Class;
     }
 }
 
@@ -178,7 +180,7 @@ void AA1PlayerController::SetupInputComponent()
     InputComponent->BindAction("Fire", IE_Pressed, this, &AA1PlayerController::TryFireWeapon);
     InputComponent->BindAction("Reload", IE_Pressed, this, &AA1PlayerController::ReloadWeapon);
 
-    //InputComponent->BindAction("UseSkill", IE_Pressed, this, &AA1PlayerController::UseSkill);
+    InputComponent->BindAction("UseSkill", IE_Pressed, this, &AA1PlayerController::UseSkill);
 
     InputComponent->BindAction("LevelUpUI", IE_Pressed, this, &AA1PlayerController::ShowLevelUpUI);
 
@@ -623,4 +625,43 @@ void AA1PlayerController::Interact()
     {
         NearbyStatue->OnInteract(this);
     }*/
+}
+
+void AA1PlayerController::UseSkill()
+{
+    if (SkillClass)
+    {
+        APlayerChar* PlayerChar = Cast<APlayerChar>(GetPawn());
+        if (PlayerChar && !(PlayerChar->bIsJumping))
+        {
+            PlayerChar->UseSkill(true); // 애니메이션 상태 설정
+            FTimerHandle TimerHandle;
+            GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this, PlayerChar]()
+                {
+                    FVector Location = GetPawn()->GetActorLocation();
+                    FRotator Rotation = GetPawn()->GetActorRotation();
+                    FActorSpawnParameters SpawnParams;
+                    SpawnParams.Owner = this;
+
+                    ASKill* Skill = GetWorld()->SpawnActor<ASKill>(SkillClass, Location, Rotation, SpawnParams);
+                    if (Skill)
+                    {
+                        Skill->OnSkillEnd.AddDynamic(this, &AA1PlayerController::OnSkillEnd);
+                        Skill->InitializeSkill(GetPawn(), 300.0f, 100.0f);  // 범위, 데미지
+                        UE_LOG(LogTemp, Log, TEXT("Skill spawned and initialized"));
+                    }
+                   
+                }, 1.0f, false); // 스킬시전시간
+        }
+    }
+   
+}
+
+void AA1PlayerController::OnSkillEnd()
+{
+    APlayerChar* PlayerChar = Cast<APlayerChar>(GetPawn());
+    if (PlayerChar)
+    {
+        PlayerChar->UseSkill(false);
+    }
 }

@@ -13,6 +13,7 @@
 #include "../Characters/Monster.h"
 #include "../Widgets/HealthBarWidget.h"
 #include "../Widgets/PlayerStatWidget.h"
+#include "../SKill.h"
 #include "A1PlayerController.generated.h"
 
 class UInputMappingContext;
@@ -59,6 +60,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Stats")
 	void ApplyDamage(float DamageAmount);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
+	TSubclassOf<ASKill> SkillClass; 
 
 	
 	UFUNCTION(BlueprintCallable, Category = "Character")
@@ -136,6 +140,11 @@ private:
 	UPlayerStatWidget* PlayerStatWidget;
 
 	void TogglePlayerStatWidget();
+
+	void UseSkill();
+
+	UFUNCTION()
+	void OnSkillEnd();
 public:
 	AA1PlayerController();
 	void AimingChange(bool bIsAiming);
@@ -187,19 +196,7 @@ private:
 	
 
 
-	//void UseSkill();
-	//void PerformSkill(FName SkillName);
 
-	//UPROPERTY(EditDefaultsOnly, Category = "Skill")
-	//USkillManager* SkillManager;
-
-	//// 스킬 사용 횟수를 저장하는 변수
-	//TMap<FName, int32> SkillUsageCount;
-
-	//void LogSkillUsage(FName SkillName);
-
-	//float ForwardInput;
-	//float RightInput;
 
 	
 

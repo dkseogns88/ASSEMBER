@@ -72,7 +72,7 @@ void AMonsterProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor,
                         GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Monk dealing %f damage to %s"), Damage, *HitCharacter->GetName()));
                     }
                 }
-                HitCharacter->IsDamaged();
+                HitCharacter->IsDamaged(true);
             }
             
         }
