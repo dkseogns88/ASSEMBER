@@ -9,6 +9,8 @@
 #include "GameFramework/Controller.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "EnhancedInputComponent.h"
+#include "EnhancedInputSubsystems.h"
+#include "../Objects/A1PlayerController.h"
 #include "Network/A1NetworkManager.h"
 
 
@@ -53,6 +55,14 @@ APlayerChar::APlayerChar()
 void APlayerChar::BeginPlay()
 {
     Super::BeginPlay();
+
+    if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
+    {
+        if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+        {
+            Subsystem->AddMappingContext(DefaultMappingContext1P, 0);
+        }
+    }
 }
 
 
@@ -77,13 +87,65 @@ void APlayerChar::Tick(float DeltaTime)
 void APlayerChar::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
     Super::SetupPlayerInputComponent(PlayerInputComponent);
+    if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
+    {
+        EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &APlayerChar::Move);
+        EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
+        EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
+       
+        
+        EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &APlayerChar::Look);
+    }
     
-    PlayerInputComponent->BindAxis("MoveForward", this, &APlayerChar::MoveForward);
-    PlayerInputComponent->BindAxis("MoveRight", this, &APlayerChar::MoveRight);
-    PlayerInputComponent->BindAxis("Turn", this, &APlayerChar::TurnRight);
-    PlayerInputComponent->BindAxis("LookUp", this, &APlayerChar::AddControllerPitchInput);
-    PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &APlayerChar::Jump);
-    
+}
+void APlayerChar::Move(const FInputActionValue& Value)
+{
+    // input is a Vector2D
+    FVector2D MovementVector = Value.Get<FVector2D>();
+
+    if (Controller != nullptr)
+    {
+        // add movement 
+        AddMovementInput(GetActorForwardVector(), MovementVector.Y);
+        AddMovementInput(GetActorRightVector(), MovementVector.X);
+    }
+}
+
+void APlayerChar::Look(const FInputActionValue& Value)
+{
+    // input is a Vector2D
+    FVector2D LookAxisVector = Value.Get<FVector2D>();
+
+    if (Controller != nullptr)
+    {
+        // add yaw and pitch input to controller
+        AddControllerYawInput(LookAxisVector.X);
+        AddControllerPitchInput(LookAxisVector.Y);
+    }
+}
+
+void APlayerChar::Jump()
+{
+    Super::Jump();
+    bIsJumping = true;
+    UAnimInstanceCustom* AnimInstance = Cast<UAnimInstanceCustom>(GetMesh()->GetAnimInstance());
+    if (AnimInstance)
+    {
+
+        // AnimInstance->bIsJumping = bIsJumping;
+
+    }
+}
+
+void APlayerChar::Landed(const FHitResult& Hit)
+{
+    Super::Landed(Hit);
+    bIsJumping = false;
+    UAnimInstanceCustom* AnimInstance = Cast<UAnimInstanceCustom>(GetMesh()->GetAnimInstance());
+    if (AnimInstance)
+    {
+        //AnimInstance->bIsJumping = bIsJumping;
+    }
 }
 
 void APlayerChar::SetMovementSpeed(float NewSpeed)
@@ -114,38 +176,8 @@ void APlayerChar::UseSkillAnim(bool UsingSkill)
 
 
 
-void APlayerChar::MoveForward(float Value)
-{
-    MovementInput.X = Value;
-    MoveCache();
-    if (Value != 0.0f)
-    {
-        AddMovementInput(GetActorForwardVector(), Value);
-    }
 
-}
 
-void APlayerChar::MoveRight(float Value)
-{
-   
-    MovementInput.Y = Value;
-    MoveCache();
-    if (Value != 0.0f)
-    {
-        AddMovementInput(GetActorRightVector(), Value);
-    }
-   
-}
-
-void APlayerChar::TurnLeft(float Value)
-{
-    AddControllerYawInput(-Value);
-}
-
-void APlayerChar::TurnRight(float Value)
-{
-    AddControllerYawInput(Value);
-}
 
 void APlayerChar::MoveCache()
 {
@@ -183,29 +215,7 @@ void APlayerChar::MoveCache()
     //);
 }
 
-void APlayerChar::Jump()
-{
-    Super::Jump();
-    bIsJumping = true;
-    UAnimInstanceCustom* AnimInstance = Cast<UAnimInstanceCustom>(GetMesh()->GetAnimInstance());
-    if (AnimInstance)
-    {
 
-       // AnimInstance->bIsJumping = bIsJumping;
-
-    }
-}
-
-void APlayerChar::Landed(const FHitResult& Hit)
-{
-    Super::Landed(Hit);
-    bIsJumping = false;
-    UAnimInstanceCustom* AnimInstance = Cast<UAnimInstanceCustom>(GetMesh()->GetAnimInstance());
-    if (AnimInstance)
-    {
-        //AnimInstance->bIsJumping = bIsJumping;
-    }
-}
 
 void APlayerChar::SetAiming(bool bNewAiming)
 {

@@ -69,7 +69,7 @@ public:
 	void ApplyDamage(float DamageAmount);
 
 	
-	UFUNCTION(BlueprintCallable, Category = "Character")
+	//UFUNCTION(BlueprintCallable, Category = "Character")
 	//void RequestServerForAimingChange(bool bIsAiming);
 	//void RequestServerForRollingChange(bool bIsRolling);
 

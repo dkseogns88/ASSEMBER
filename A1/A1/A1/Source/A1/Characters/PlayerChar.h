@@ -4,6 +4,15 @@
 #include "BaseChar.h"
 #include "PlayerChar.generated.h"
 
+
+
+class UInputComponent;
+class USkeletalMeshComponent;
+class UCameraComponent;
+class UInputAction;
+class UInputMappingContext;
+struct FInputActionValue;
+
 /**
  * 
  */
@@ -18,6 +27,7 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
 
 	UFUNCTION(BlueprintCallable, Category = "Character Actions")
 	void StartRoll();
@@ -50,16 +60,23 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement", meta = (AllowPrivateAccess = "true"))
 	float Speed;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Combat")
-	bool bIsDamaged;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* MoveAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* LookAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* JumpAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputMappingContext* DefaultMappingContext1P;
 
 	virtual void Landed(const FHitResult& Hit) override;
 
-	virtual void MoveForward(float Value) override;
-	virtual void MoveRight(float Value) override;
+	
 
-	virtual void TurnLeft(float Value) override;
-	virtual void TurnRight(float Value) override;
+	
 
 	bool IsAiming() const { return bIsAiming; }
 	void SetAiming(bool bNewAiming);
@@ -76,6 +93,11 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	
+	void Move(const FInputActionValue& Value);
+
+	
+	void Look(const FInputActionValue& Value);
+
 	UFUNCTION()
 	void Aimingchanged();
 
@@ -89,7 +111,8 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class USpringArmComponent* CameraBoom;
 
-	
+
+
 	FVector2D MovementInput;
 	
 	/////////////////////////////////////
