@@ -39,8 +39,9 @@ public:
 
 	void HandleLeave(const Protocol::S_LEAVE_GAME& LeavePkt);
 
-
 	void HandleMove(const Protocol::S_MOVE& MovePkt);
+
+	void HandleZoom(const Protocol::S_ZOOM& ZoomPkt);
 
 
 private:

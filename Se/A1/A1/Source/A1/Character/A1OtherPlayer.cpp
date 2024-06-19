@@ -61,6 +61,15 @@ void AA1OtherPlayer::Tick(float DeltaTime)
 		{
 			SetActorLocation(TargetLocation);
 		}
+
+		if (DestInfo->object_id() == 2) {
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Emerald,
+				FString::Printf(TEXT("OtherPlayerLocation - X: %.f,  Y: %.f,  Z: %.f"), NowLocation.X, NowLocation.Y, NowLocation.Z));
+
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow,
+				FString::Printf(TEXT("OtherTargetLocation - X: %.f,  Y: %.f,  Z: %.f"), TargetLocation.X, TargetLocation.Y, TargetLocation.Z));
+		}
+
 	}
 }
 

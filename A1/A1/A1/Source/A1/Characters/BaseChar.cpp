@@ -26,7 +26,16 @@ ABaseChar::~ABaseChar()
 void ABaseChar::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+    {
+        FVector Location = GetActorLocation();
+        DestInfo->set_x(Location.X);
+        DestInfo->set_y(Location.Y);
+        DestInfo->set_z(Location.Z);
+        DestInfo->set_yaw(GetControlRotation().Yaw);
+
+        SetMoveState(Protocol::MOVE_STATE_IDLE);
+    }
 }
 
 

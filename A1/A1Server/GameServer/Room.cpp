@@ -135,6 +135,27 @@ void Room::HandleMove(Protocol::C_MOVE pkt)
 	}
 }
 
+void Room::HandleZoom(Protocol::C_ZOOM pkt)
+{
+	const uint64 objectId = pkt.info().object_id();
+	if (_objects.find(objectId) == _objects.end())
+		return;
+
+	PlayerRef player = dynamic_pointer_cast<Player>(_objects[objectId]);
+
+	{
+		Protocol::S_ZOOM zoomPkt;
+		{
+			Protocol::ZoomInfo* info = zoomPkt.mutable_info();
+			info->CopyFrom(pkt.info());
+		}
+
+		SendBufferRef sendBuffer = ClientPacketHandler::MakeSendBuffer(zoomPkt);
+		Broadcast(sendBuffer);
+	}
+
+}
+
 
 RoomRef Room::GetRoomRef()
 {

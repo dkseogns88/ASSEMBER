@@ -20,6 +20,8 @@ enum : uint16
 	PKT_S_DESPAWN = 1007,
 	PKT_C_MOVE = 1008,
 	PKT_S_MOVE = 1009,
+	PKT_C_ZOOM = 1010,
+	PKT_S_ZOOM = 1011,
 };
 
 // Custom Handlers
@@ -30,6 +32,7 @@ bool Handle_S_LEAVE_GAME(PacketSessionRef& session, Protocol::S_LEAVE_GAME& pkt)
 bool Handle_S_SPAWN(PacketSessionRef& session, Protocol::S_SPAWN& pkt);
 bool Handle_S_DESPAWN(PacketSessionRef& session, Protocol::S_DESPAWN& pkt);
 bool Handle_S_MOVE(PacketSessionRef& session, Protocol::S_MOVE& pkt);
+bool Handle_S_ZOOM(PacketSessionRef& session, Protocol::S_ZOOM& pkt);
 
 class ServerPacketHandler
 {
@@ -44,6 +47,7 @@ public:
 		GPacketHandler[PKT_S_SPAWN] = [](PacketSessionRef& session, BYTE* buffer, int32 len) { return HandlePacket<Protocol::S_SPAWN>(Handle_S_SPAWN, session, buffer, len); };
 		GPacketHandler[PKT_S_DESPAWN] = [](PacketSessionRef& session, BYTE* buffer, int32 len) { return HandlePacket<Protocol::S_DESPAWN>(Handle_S_DESPAWN, session, buffer, len); };
 		GPacketHandler[PKT_S_MOVE] = [](PacketSessionRef& session, BYTE* buffer, int32 len) { return HandlePacket<Protocol::S_MOVE>(Handle_S_MOVE, session, buffer, len); };
+		GPacketHandler[PKT_S_ZOOM] = [](PacketSessionRef& session, BYTE* buffer, int32 len) { return HandlePacket<Protocol::S_ZOOM>(Handle_S_ZOOM, session, buffer, len); };
 	}
 
 	static bool HandlePacket(PacketSessionRef& session, BYTE* buffer, int32 len)
@@ -55,6 +59,7 @@ public:
 	static SendBufferRef MakeSendBuffer(Protocol::C_ENTER_GAME& pkt) { return MakeSendBuffer(pkt, PKT_C_ENTER_GAME); }
 	static SendBufferRef MakeSendBuffer(Protocol::C_LEAVE_GAME& pkt) { return MakeSendBuffer(pkt, PKT_C_LEAVE_GAME); }
 	static SendBufferRef MakeSendBuffer(Protocol::C_MOVE& pkt) { return MakeSendBuffer(pkt, PKT_C_MOVE); }
+	static SendBufferRef MakeSendBuffer(Protocol::C_ZOOM& pkt) { return MakeSendBuffer(pkt, PKT_C_ZOOM); }
 
 private:
 	template<typename PacketType, typename ProcessFunc>

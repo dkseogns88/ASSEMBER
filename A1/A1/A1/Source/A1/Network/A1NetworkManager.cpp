@@ -124,7 +124,6 @@ void UA1NetworkManager::HandleSpawn(const Protocol::S_SPAWN& SpawnPkt)
 	}
 }
 
-
 void UA1NetworkManager::HandleDespawn(uint64 ObjectId)
 {
 	if (Socket == nullptr || GameServerSession == nullptr)
@@ -163,6 +162,16 @@ void UA1NetworkManager::HandleMove(const Protocol::S_MOVE& MovePkt)
 	{
 		const Protocol::PosInfo& Info = MovePkt.info();
 		Player->SetDestInfo(Info);
+	}
+}
+
+void UA1NetworkManager::HandleZoom(const Protocol::S_ZOOM& ZoomPkt)
+{
+	const uint64 ObjectId = ZoomPkt.info().object_id();
+
+	if (ABaseChar* Player = ValidationPlayer(ObjectId))
+	{
+		Cast<AOtherPlayerChar>(Player)->PlayZoom(ZoomPkt.info().b_zoom());
 	}
 }
 

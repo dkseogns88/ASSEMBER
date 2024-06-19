@@ -16,9 +16,12 @@ public:
 	ABaseChar();
     ~ABaseChar();
 
+
+
 protected:
 	virtual void BeginPlay() override;
     
+
 
 public:	
 	virtual void Tick(float DeltaTime) override;
@@ -68,7 +71,7 @@ public:
     void SetDestInfo(const Protocol::PosInfo& Info);
     Protocol::PosInfo* GetPlayerInfo() { return PlayerInfo; }
 
-    protected:
+protected:
     class Protocol::PosInfo* PlayerInfo;
     class Protocol::PosInfo* DestInfo;
 

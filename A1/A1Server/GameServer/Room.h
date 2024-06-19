@@ -12,6 +12,8 @@ public:
 
 	void HandleMove(Protocol::C_MOVE pkt);
 
+	void HandleZoom(Protocol::C_ZOOM pkt);
+
 public:
 
 	RoomRef GetRoomRef();
@@ -24,6 +26,8 @@ private:
 	bool RemoveObject(uint64 objectId);
 	bool RemovePlayer(uint64 objectId);
 	bool RemoveMonster(uint64 objectId);
+
+
 
 public:
 	void Broadcast(SendBufferRef sendBuffer, uint64 exceptId = 0);
