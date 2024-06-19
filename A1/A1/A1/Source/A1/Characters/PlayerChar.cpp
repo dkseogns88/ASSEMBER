@@ -8,6 +8,7 @@
 #include "Net/UnrealNetwork.h"
 #include "GameFramework/Controller.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "EnhancedInputComponent.h"
 #include "Network/A1NetworkManager.h"
 
 
@@ -76,7 +77,7 @@ void APlayerChar::Tick(float DeltaTime)
 void APlayerChar::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
     Super::SetupPlayerInputComponent(PlayerInputComponent);
-
+    
     PlayerInputComponent->BindAxis("MoveForward", this, &APlayerChar::MoveForward);
     PlayerInputComponent->BindAxis("MoveRight", this, &APlayerChar::MoveRight);
     PlayerInputComponent->BindAxis("Turn", this, &APlayerChar::TurnRight);
@@ -101,7 +102,7 @@ void APlayerChar::EndRoll()
     
 }
 
-void APlayerChar::UseSkill(bool UsingSkill)
+void APlayerChar::UseSkillAnim(bool UsingSkill)
 {
     bIsUsingSkill = UsingSkill;
     UAnimInstanceCustom* AnimInstance = Cast<UAnimInstanceCustom>(GetMesh()->GetAnimInstance());
@@ -274,6 +275,12 @@ void APlayerChar::IsDamaged(bool Damaged)
             GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("%s is damaged 999"), *GetName()));
         }
     }
+}
+
+FVector2D APlayerChar::GetMovementInput() const
+{
+    const FVector InputVector = GetVelocity();
+    return FVector2D(InputVector.X, InputVector.Y);
 }
 
 void APlayerChar::StateTick()

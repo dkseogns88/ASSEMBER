@@ -27,6 +27,7 @@ AMonster::AMonster()
     bIsDead = false;
     TimeSinceLastAttack = 0.0f;
     AttackDuration = 1.0f;
+    SwordDMG = 50.0f;
     
     BoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComponent"));
     BoxComponent->SetupAttachment(RootComponent);
@@ -105,13 +106,13 @@ void AMonster::Attack(bool canattack)
    
 
 
-void AMonster::TakeDMG(float Value)
+void AMonster::TakeDMG(float DMG)
 {
     if (!bIsDamaged)
     {
         bIsDamaged = true;
         UE_LOG(LogTemp, Log, TEXT("%s Damage taken"), *MonName);
-        Health = Health - Value;
+        Health = Health - DMG;
         GetWorld()->GetTimerManager().SetTimer(DamageResetTimerHandle, this, &AMonster::ResetDamage, 0.5f, false);
         
     }
@@ -184,26 +185,10 @@ void AMonster::FireProjectile()
             
             Projectile->CollisionComponent->IgnoreActorWhenMoving(this, true);
 
-            if (GEngine)
-            {
-                GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Projectile fired by %s"), *GetName()));
-            }
-        }
-        else
-        {
-            if (GEngine)
-            {
-                GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Failed to spawn projectile")));
-            }
+           
         }
     }
-    else
-    {
-        if (GEngine)
-        {
-            GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("ProjectileClass is not set")));
-        }
-    }
+    
 }
 
 void AMonster::SwordAttack()
@@ -229,10 +214,10 @@ void AMonster::EndSwordAttack()
 void AMonster::CheckSwordHit()
 {
     FVector Start = GetActorLocation();
-    FVector End = Start + GetActorForwardVector() * 100.0f; // 공격 범위 설정
+    FVector End = Start + GetActorForwardVector() * 100.0f; 
 
     TArray<FHitResult> HitResults;
-    FCollisionShape CollisionShape = FCollisionShape::MakeSphere(50.0f); // 충돌 구의 반경
+    FCollisionShape CollisionShape = FCollisionShape::MakeSphere(50.0f); 
 
     bool bHit = GetWorld()->SweepMultiByChannel(HitResults, Start, End, FQuat::Identity, ECC_Pawn, CollisionShape);
 
@@ -249,11 +234,11 @@ void AMonster::CheckSwordHit()
                     AA1PlayerController* PlayerController = Cast<AA1PlayerController>(HitCharacter->GetController());
                     if (PlayerController)
                     {
-                        PlayerController->ApplyDamage(50.0f);
-
+                        PlayerController->ApplyDamage(SwordDMG);
+                        //데미지로그
                         if (GEngine)
                         {
-                            GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Fanatic Dealing %f damage to %s"), 50.0f, *HitCharacter->GetName()));
+                            GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Fanatic Dealing %f damage to %s"), SwordDMG, *HitCharacter->GetName()));
                         }
                         bIsDealPlayer = true;
                         break;

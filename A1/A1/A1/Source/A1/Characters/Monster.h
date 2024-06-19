@@ -70,6 +70,12 @@ protected:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPC Info")
     float Health;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPC Info")
+    float SwordDMG;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPC Info")
+    float GunDMG;
+
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
     UBoxComponent* BoxComponent;
 
@@ -96,7 +102,7 @@ public:
     TArray<FVector> GetBoxCornerPoints() const;
     void CheckMeshSetup();
     void CheckAndTeleport();
-    virtual void TakeDMG(float Value) override;
+    virtual void TakeDMG(float DMG) override;
 
 public:
    

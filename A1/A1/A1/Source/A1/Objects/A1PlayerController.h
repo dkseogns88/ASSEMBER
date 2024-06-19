@@ -45,6 +45,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
 	float AttackPower;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
+	float SkillPower;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
+	float SkillRange;
+
 	UFUNCTION(BlueprintCallable, Category = "Stats")
 	void SetHealth(float NewHealth);
 
@@ -62,35 +68,16 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Stats")
 	void ApplyDamage(float DamageAmount);
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
-	TSubclassOf<ASKill> SkillClass; 
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skills", meta = (AllowPrivateAccess = "true"))
-	TSubclassOf<ABombSkill> BombSkillClass;
-
-	UPROPERTY()
-	ABombSkill* CurrentBombSkill;
-
+	
 	UFUNCTION(BlueprintCallable, Category = "Character")
-
 	//void RequestServerForAimingChange(bool bIsAiming);
 	//void RequestServerForRollingChange(bool bIsRolling);
-
-	void Tick(float DeltaTime);
 
 	UFUNCTION(BlueprintCallable, Category = "UI")
 	void RemoveEnemyInfo();
 
 	UFUNCTION(BlueprintCallable, Category = "UI")
 	void ShowEnemyInfo(AMonster* Enemy);
-
-
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
-	TSubclassOf<UEnemyInfoWidget> EnemyInfoWidgetClass;
-
-	UPROPERTY()
-	UEnemyInfoWidget* CurrentEnemyInfoWidget;
 
 	UFUNCTION()
 	void ReloadWeapon();
@@ -110,9 +97,26 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
 	TSubclassOf<class UBaseWidget> IPAddressWidgetClass;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
+	TSubclassOf<ASKill> SkillClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skills", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<ABombSkill> BombSkillClass;
+
+	UPROPERTY()
+	ABombSkill* CurrentBombSkill;
+
+	
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+	TSubclassOf<UEnemyInfoWidget> EnemyInfoWidgetClass;
+
+	UPROPERTY()
+	UEnemyInfoWidget* CurrentEnemyInfoWidget;
+
 private:
 
-	void ShowEnemyInfo_Internal(FString EnemyName, float Health);
+	
 
 	// Level Up UI
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI", meta = (AllowPrivateAccess = "true"))
@@ -120,18 +124,6 @@ private:
 
 	UPROPERTY()
 	ULevelUpWidget* LevelUpWidgetInstance;
-
-	// Function to update stats based on selected option
-	void UpdateStatsBasedOnOption(int OptionIndex);
-
-	//IPAdress Widget
-	UPROPERTY()
-	UIPAddressWidget* IPAddressWidget;
-
-	bool bIsIPWidgetVisible;
-
-	void Interact();
-	//ACharacterStatue* NearbyStatue;
 
 	UPROPERTY(EditAnywhere, Category = "UI")
 	TSubclassOf<class UCrosshairWidget> CrosshairWidgetClass;
@@ -144,6 +136,18 @@ private:
 
 	UPROPERTY()
 	UPlayerStatWidget* PlayerStatWidget;
+
+	UPROPERTY()
+	UIPAddressWidget* IPAddressWidget;
+
+	
+	void UpdateStatsBasedOnOption(int OptionIndex);
+
+	void ShowEnemyInfo_Internal(FString EnemyName, float Health);
+	
+	bool bIsIPWidgetVisible;
+
+	void Interact();
 
 	void TogglePlayerStatWidget();
 
@@ -162,30 +166,24 @@ private:
 
 public:
 	AA1PlayerController();
+	void Tick(float DeltaTime);
 	void AimingChange(bool bIsAiming);
 	void FireWeapon();
 	void TryFireWeapon();
 	void AimPressed();
 	void AimReleased();
 protected:
+	virtual void BeginPlay() override;
+	virtual void SetupInputComponent() override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputMappingContext* InputMappingContext;
 
-	virtual void BeginPlay() override;
-	virtual void SetupInputComponent() override;
-	
-	
-
-	
-
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI")
 	TSubclassOf<UBaseWidget> HealthBarWidgetClass;
 
-	// Health bar widget instance
 	UPROPERTY()
 	UHealthBarWidget* HealthBarWidgets;
-
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI")
 	TSubclassOf<UBaseWidget> AmmoWidgetClass;
@@ -206,8 +204,7 @@ protected:
 	USoundBase* ReloadSound;
 
 
-	
-private:
+
 	
 
 

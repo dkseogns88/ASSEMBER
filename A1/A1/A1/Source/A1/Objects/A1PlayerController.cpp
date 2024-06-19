@@ -14,7 +14,17 @@
 
 AA1PlayerController::AA1PlayerController()
 {
-    // 위젯 블루프린트 클래스 로드
+    
+    MaxAmmo = 6;
+    CurrentAmmo = MaxAmmo;
+    AttackPower = 50.0f;
+    PlayerHealth = 100.0f;
+    PlayerMaxHealth = 100.0f;
+    MovementSpeed = 500.0f;
+    SkillPower = 100.0f;
+    SkillRange = 500.0f;
+
+    
     static ConstructorHelpers::FClassFinder<UHealthBarWidget> HealthBarBPClass(TEXT("/Game/MyBP/Widgets/HealthBarWidget.HealthBarWidget_C"));
     if (HealthBarBPClass.Succeeded())
     {
@@ -26,12 +36,6 @@ AA1PlayerController::AA1PlayerController()
     {
         AmmoWidgetClass = AmmoWidgetBPClass.Class;
     }
-
-    MaxAmmo = 6;
-    CurrentAmmo = MaxAmmo;
-    AttackPower = 50.0f;
-    PlayerHealth = 100.0f;
-    PlayerMaxHealth = 100.0f;
 
     static ConstructorHelpers::FObjectFinder<USoundBase> FireSoundObj(TEXT("/Game/Sound/pistol.pistol"));
     if (FireSoundObj.Succeeded())
@@ -61,8 +65,6 @@ AA1PlayerController::AA1PlayerController()
     {
         LevelUpWidgetClass = LevelUpWidgetBPClass.Class;
     }
-
-   
 
     static ConstructorHelpers::FClassFinder<UIPAddressWidget> IPAddressWidgetBPClass(TEXT("/Game/MyBP/Widgets/IPAddressWidget.IPAddressWidget_C"));
     if (IPAddressWidgetBPClass.Succeeded())
@@ -113,7 +115,14 @@ void AA1PlayerController::AimReleased()
 void AA1PlayerController::BeginPlay()
 {
 	Super::BeginPlay();
+    
+    
 
+    //Set Player Stat
+    InitializeStats(PlayerHealth, MovementSpeed, AttackPower);
+    SetHealth(PlayerHealth);
+
+    //Create Widgets
     if (CrosshairWidgetClass)
     {
         CrosshairWidgetInstance = CreateWidget<UCrosshairWidget>(this, CrosshairWidgetClass);
@@ -133,14 +142,11 @@ void AA1PlayerController::BeginPlay()
             PlayerStatWidget->SetVisibility(ESlateVisibility::Hidden);
         }
     }
-    InitializeStats(100.0f, 500.0f, 20.0f);
-
-
+    
     if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
     {
         Subsystem->AddMappingContext(InputMappingContext, 0);
     }
-
     if (IsLocalController())
     {
         HealthBarWidgets = CreateWidget<UHealthBarWidget>(this, HealthBarWidgetClass);
@@ -172,7 +178,7 @@ void AA1PlayerController::BeginPlay()
 
     }
 
-    SetHealth(PlayerHealth);
+   
 
 }
 
@@ -228,18 +234,19 @@ void AA1PlayerController::AimingChange(bool bIsAiming)
     
 }
 
+//GetCameraCenterLocation for Shoot
 FVector AA1PlayerController::GetCamCenLoc(FVector& CameraLocation, FRotator& CameraRotation)
 {
     GetPlayerViewPoint(CameraLocation, CameraRotation);
 
     FVector Start = CameraLocation + CameraRotation.Vector() * 400.0f;
-    FVector End = CameraLocation + CameraRotation.Vector() * 10000.0f; // 히트스캔 거리 설정
+    FVector End = CameraLocation + CameraRotation.Vector() * 10000.0f; 
 
     DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 1.0f, 0, 1.0f);
 
     FHitResult HitResult;
     FCollisionQueryParams Params;
-    Params.AddIgnoredActor(GetPawn()); // 자기 자신은 무시
+    Params.AddIgnoredActor(GetPawn()); 
 
     if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, Params))
     {
@@ -249,43 +256,9 @@ FVector AA1PlayerController::GetCamCenLoc(FVector& CameraLocation, FRotator& Cam
     return End;
 }
 
-void AA1PlayerController::FireWeapon()
-{
-    FVector CameraLoc;
-    FRotator CameraRot;
-    FVector TargetLocation = GetCamCenLoc(CameraLoc, CameraRot);
-
-    if (FireSound)
-    {
-        UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetPawn()->GetActorLocation());
-    }
-   
-
-
-
-    // 클라이언트
-
-    FHitResult HitResult;
-    FCollisionQueryParams Params;
-    Params.AddIgnoredActor(GetPawn()); // 자기 자신은 무시
-
-    if (GetWorld()->LineTraceSingleByChannel(HitResult, CameraLoc, TargetLocation, ECC_Pawn, Params))
-    {
-        AMonster* HitMonster = Cast<AMonster>(HitResult.GetActor());
-        if (HitMonster)
-        {
-            // 몬스터의 체력 감소
-            HitMonster->TakeDMG(AttackPower); 
-        }
-        
-    }
-   
-
-}
-
 void AA1PlayerController::TryFireWeapon()
 {
-    
+
     APlayerChar* MyCharacter = Cast<APlayerChar>(GetPawn());
     if (MyCharacter && MyCharacter->IsAiming())
     {
@@ -300,21 +273,42 @@ void AA1PlayerController::TryFireWeapon()
                     AmmoWidget->UpdateAmmoCount(CurrentAmmo, MaxAmmo);
                 }
 
-                // 발사 후 쿨다운 설정
+                // Cooltime at shoot
                 GetWorld()->GetTimerManager().SetTimer(FireCooldownTimerHandle, 0.5f, false);
             }
-            else
-            {
-                UE_LOG(LogTemp, Warning, TEXT("Weapon is on cooldown."));
-            }
-        }
-        else
-        {
-            UE_LOG(LogTemp, Warning, TEXT("No ammo left to fire."));
         }
     }
 
 }
+
+void AA1PlayerController::FireWeapon()
+{
+    FVector CameraLoc;
+    FRotator CameraRot;
+    FVector TargetLocation = GetCamCenLoc(CameraLoc, CameraRot);
+    FHitResult HitResult;
+    FCollisionQueryParams Params;
+    Params.AddIgnoredActor(GetPawn());
+
+    if (FireSound)
+    {
+        UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetPawn()->GetActorLocation());
+    }
+   
+    if (GetWorld()->LineTraceSingleByChannel(HitResult, CameraLoc, TargetLocation, ECC_Pawn, Params))
+    {
+        AMonster* HitMonster = Cast<AMonster>(HitResult.GetActor());
+        if (HitMonster)
+        {
+            // Dealing Monster
+            HitMonster->TakeDMG(AttackPower); 
+        }
+        
+    }
+ 
+}
+
+
 
 
 
@@ -323,7 +317,7 @@ void AA1PlayerController::SetHealth(float NewHealth)
     PlayerHealth = NewHealth;
     if (HealthBarWidgets)
     {
-        HealthBarWidgets->UpdateHealth(PlayerHealth);  // Assuming Health is out of 100
+        HealthBarWidgets->UpdateHealth(PlayerHealth);  
     }
     UE_LOG(LogTemp, Log, TEXT("Health set to %f"), PlayerHealth);
 }
@@ -335,7 +329,7 @@ void AA1PlayerController::InitializeStats(float InitialHealth, float InitialMove
     AttackPower = InitialAttackPower;
     UE_LOG(LogTemp, Log, TEXT("Stats Initialized: Health = %f, Movement Speed = %f, Attack Power = %f"), PlayerHealth, MovementSpeed, AttackPower);
 
-    // 동기화: 플레이어 캐릭터의 이동 속도를 업데이트
+   
     if (APawn* ControlledPawn = GetPawn())
     {
         if (APlayerChar* Players = Cast<APlayerChar>(ControlledPawn))
@@ -354,7 +348,6 @@ void AA1PlayerController::UpdateStats(float NewHealth, float NewMovementSpeed, f
     
     UE_LOG(LogTemp, Log, TEXT("Stats Updated: Health = %f, Movement Speed = %f, Attack Power = %f, MaxHealth"), PlayerHealth, MovementSpeed, AttackPower, NewMaxHealth);
 
-    // 동기화: 플레이어 캐릭터의 이동 속도를 업데이트
     if (APawn* ControlledPawn = GetPawn())
     {
         if (APlayerChar* Players = Cast<APlayerChar>(ControlledPawn))
@@ -396,18 +389,11 @@ void AA1PlayerController::TogglePlayerStatWidget()
 void AA1PlayerController::ApplyDamage(float DamageAmount)
 {
     PlayerHealth -= DamageAmount;
+    //When Player die
     if (PlayerHealth <= 0)
     {
-       //죽었을때 처리
+     
         
-    }
-    else
-    {
-        if (GEngine)
-        {
-            FString HealthString = FString::Printf(TEXT("Player Health: %.2f"), PlayerHealth);
-            GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, HealthString);
-        }
     }
     HealthBarWidgets->UpdateHealth(PlayerHealth);
 }
@@ -654,7 +640,7 @@ void AA1PlayerController::UseSkill()
         APlayerChar* PlayerChar = Cast<APlayerChar>(GetPawn());
         if (PlayerChar && !(PlayerChar->bIsJumping))
         {
-            PlayerChar->UseSkill(true); // 애니메이션 상태 설정
+            PlayerChar->UseSkillAnim(true); 
             FTimerHandle TimerHandle;
             GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this, PlayerChar]()
                 {
@@ -667,11 +653,11 @@ void AA1PlayerController::UseSkill()
                     if (Skill)
                     {
                         Skill->OnSkillEnd.AddDynamic(this, &AA1PlayerController::OnSkillEnd);
-                        Skill->InitializeSkill(GetPawn(), 300.0f, 100.0f);  // 범위, 데미지
+                        Skill->InitializeSkill(GetPawn(), SkillRange, SkillPower);  
                         UE_LOG(LogTemp, Log, TEXT("Skill spawned and initialized"));
                     }
                    
-                }, 1.0f, false); // 스킬시전시간
+                }, 1.0f, false); // Use Skill,Animation time
         }
     }
    
@@ -682,7 +668,7 @@ void AA1PlayerController::OnSkillEnd()
     APlayerChar* PlayerChar = Cast<APlayerChar>(GetPawn());
     if (PlayerChar)
     {
-        PlayerChar->UseSkill(false);
+        PlayerChar->UseSkillAnim(false);
     }
 }
 
@@ -697,7 +683,7 @@ void AA1PlayerController::UseBombSkill()
         APlayerChar* PlayerChar = Cast<APlayerChar>(GetPawn());
         if (PlayerChar)
         {
-            PlayerChar->UseSkill(false); // 애니메이션 상태 설정
+            PlayerChar->UseSkillAnim(false); 
 
             FVector Location = GetPawn()->GetActorLocation();
             FRotator Rotation = CameraRot;
@@ -709,7 +695,7 @@ void AA1PlayerController::UseBombSkill()
             if (CurrentBombSkill)
             {
                 CurrentBombSkill->OnSkillEnd.AddDynamic(this, &AA1PlayerController::OnSkillEnd);
-                CurrentBombSkill->InitializeSkill(GetPawn(), TargetLocation, 300.0f, 100.0f);  // 폭탄 스킬 설정
+                CurrentBombSkill->InitializeSkill(GetPawn(), TargetLocation, SkillRange, SkillPower);  
                 UE_LOG(LogTemp, Log, TEXT("Bomb skill spawned and initialized"));
             }
             else
@@ -734,6 +720,6 @@ void AA1PlayerController::ThrowBomb()
 
         FVector LaunchVelocity = CameraRot.Vector() * 1000.0f; 
         CurrentBombSkill->ThrowBomb(LaunchVelocity);
-        CurrentBombSkill = nullptr; // 폭탄을 던졌으므로 현재 폭탄 스킬을 초기화
+        CurrentBombSkill = nullptr; 
     }
 }
