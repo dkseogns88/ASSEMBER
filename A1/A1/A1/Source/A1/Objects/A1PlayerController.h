@@ -68,10 +68,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Stats")
 	void ApplyDamage(float DamageAmount);
 
-	
-	//UFUNCTION(BlueprintCallable, Category = "Character")
-	//void RequestServerForAimingChange(bool bIsAiming);
-	//void RequestServerForRollingChange(bool bIsRolling);
 
 	UFUNCTION(BlueprintCallable, Category = "UI")
 	void RemoveEnemyInfo();
