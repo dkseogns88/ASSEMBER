@@ -1,0 +1,28 @@
+syntax = "proto3";
+package Protocol;
+
+import "Enum.proto";
+
+message PosInfo
+{
+	uint64 object_id	= 1;
+	MoveState state		= 2;
+
+	float x				= 3;
+	float y				= 4;
+	float z				= 5;
+	float yaw			= 6;
+
+	float d_x			= 7;
+	float d_y			= 8;
+	float d_z			= 9;
+}
+
+message ObjectInfo
+{
+	uint64	object_id			= 1;
+	ObjectType object_type		= 2;
+	PlayerType player_type		= 3;
+	MonsterType monster_type	= 4;
+	PosInfo pos_Info			= 5;
+}

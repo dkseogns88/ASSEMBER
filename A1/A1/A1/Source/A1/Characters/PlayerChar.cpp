@@ -7,7 +7,15 @@
 #include "../Objects/AnimInstanceCustom.h"
 #include "Net/UnrealNetwork.h"
 #include "GameFramework/Controller.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "Network/A1NetworkManager.h"
 
+
+UA1NetworkManager* APlayerChar::GetNetworkManager() const
+{
+    return GetGameInstance()->GetSubsystem<UA1NetworkManager>();
+
+}
 
 APlayerChar::APlayerChar()
 {
@@ -56,9 +64,13 @@ void APlayerChar::Tick(float DeltaTime)
 
     if (UAnimInstanceCustom* AnimInstance = Cast<UAnimInstanceCustom>(GetMesh()->GetAnimInstance()))
     {
-        AnimInstance->SetMovementInput(MovementInput);
-        AnimInstance->SetIsMovingBackward(bIsMovingBackward);
+        //AnimInstance->SetMovementInput(MovementInput);
+        //AnimInstance->SetIsMovingBackward(bIsMovingBackward);
     }
+     
+    StateTick();
+    SendTick(DeltaTime);
+    
 }
 
 void APlayerChar::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -95,7 +107,7 @@ void APlayerChar::UseSkill(bool UsingSkill)
     UAnimInstanceCustom* AnimInstance = Cast<UAnimInstanceCustom>(GetMesh()->GetAnimInstance());
     if (AnimInstance)
     {
-        AnimInstance->bIsUsingSkill = bIsUsingSkill;
+        //AnimInstance->bIsUsingSkill = bIsUsingSkill;
     }
 }
 
@@ -104,17 +116,19 @@ void APlayerChar::UseSkill(bool UsingSkill)
 void APlayerChar::MoveForward(float Value)
 {
     MovementInput.X = Value;
+    MoveCache();
     if (Value != 0.0f)
     {
         AddMovementInput(GetActorForwardVector(), Value);
     }
-     
+
 }
 
 void APlayerChar::MoveRight(float Value)
 {
    
     MovementInput.Y = Value;
+    MoveCache();
     if (Value != 0.0f)
     {
         AddMovementInput(GetActorRightVector(), Value);
@@ -132,6 +146,42 @@ void APlayerChar::TurnRight(float Value)
     AddControllerYawInput(Value);
 }
 
+void APlayerChar::MoveCache()
+{
+    FVector ForwardDirection;
+    FVector RightDirection;
+
+    if (MovementInput.X != 0)
+    {
+        FRotator Rotator = GetControlRotation();
+        ForwardDirection = UKismetMathLibrary::GetForwardVector(FRotator(0, Rotator.Yaw, 0));
+    }
+
+    if (MovementInput.Y != 0)
+    {
+        FRotator Rotator = GetControlRotation();
+        RightDirection = UKismetMathLibrary::GetRightVector(FRotator(0, Rotator.Yaw, 0));
+    }
+
+    DesiredInput = MovementInput;
+
+    DesiredMoveDirection = FVector::ZeroVector;
+    DesiredMoveDirection += ForwardDirection * MovementInput.X;
+    DesiredMoveDirection += RightDirection * MovementInput.Y;
+    DesiredMoveDirection.Normalize();
+
+    const FVector Location = GetActorLocation();
+    FRotator Rotator = UKismetMathLibrary::FindLookAtRotation(Location, Location + DesiredMoveDirection);
+    DesiredYaw = GetControlRotation().Yaw;
+
+    //FRotator MyRotator = GetControlRotation();
+    //GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, FString::Printf(
+    //    TEXT("Actor YAW: %.f"),
+    //    MyRotator.Yaw
+    //    )
+    //);
+}
+
 void APlayerChar::Jump()
 {
     Super::Jump();
@@ -140,7 +190,7 @@ void APlayerChar::Jump()
     if (AnimInstance)
     {
 
-        AnimInstance->bIsJumping = bIsJumping;
+       // AnimInstance->bIsJumping = bIsJumping;
 
     }
 }
@@ -152,7 +202,7 @@ void APlayerChar::Landed(const FHitResult& Hit)
     UAnimInstanceCustom* AnimInstance = Cast<UAnimInstanceCustom>(GetMesh()->GetAnimInstance());
     if (AnimInstance)
     {
-        AnimInstance->bIsJumping = bIsJumping;
+        //AnimInstance->bIsJumping = bIsJumping;
     }
 }
 
@@ -167,7 +217,7 @@ void APlayerChar::SetAiming(bool bNewAiming)
     if (AnimInstance)
     {
 
-        AnimInstance->bIsAiming = bIsAiming;
+       // AnimInstance->bIsAiming = bIsAiming;
         UE_LOG(LogTemp, Log, TEXT("Aiming state updated in animation blueprint to: %s"), bIsAiming ? TEXT("True") : TEXT("False"));
     }
     else
@@ -197,7 +247,7 @@ void APlayerChar::IsDamaged(bool Damaged)
         UAnimInstanceCustom* AnimInstance = Cast<UAnimInstanceCustom>(GetMesh()->GetAnimInstance());
         if (AnimInstance)
         {
-            AnimInstance->bIsDamaged = bIsDamaged;
+           // AnimInstance->bIsDamaged = bIsDamaged;
         }
         
         UE_LOG(LogTemp, Log, TEXT("%s is damaged"), *GetName());
@@ -211,7 +261,7 @@ void APlayerChar::IsDamaged(bool Damaged)
                 UAnimInstanceCustom* AnimInstance = Cast<UAnimInstanceCustom>(GetMesh()->GetAnimInstance());
                 if (AnimInstance)
                 {
-                    AnimInstance->bIsDamaged = bIsDamaged;
+                    //AnimInstance->bIsDamaged = bIsDamaged;
                 }
             },
             0.5f,
@@ -226,8 +276,55 @@ void APlayerChar::IsDamaged(bool Damaged)
     }
 }
 
-FVector2D APlayerChar::GetMovementInput() const
+void APlayerChar::StateTick()
 {
-    const FVector InputVector = GetVelocity();
-    return FVector2D(InputVector.X, InputVector.Y);
+    if (DesiredInput == FVector2D::Zero())
+    {
+        SetMoveState(Protocol::MOVE_STATE_IDLE);
+    }
+    else if ((DesiredInput != FVector2D::Zero()))
+    {
+        SetMoveState(Protocol::MOVE_STATE_RUN);
+    }
 }
+
+void APlayerChar::SendTick(float DeltaTime)
+{
+    // Send ÆÇÁ¤
+    bool ForceSendPacket = false;
+
+    if ((LastDesiredInput != DesiredInput))
+    {
+        ForceSendPacket = true;
+        LastDesiredInput = DesiredInput;
+    }
+
+    MovePacketSendTimer -= DeltaTime;
+
+    if (MovePacketSendTimer <= 0 || ForceSendPacket)
+    {
+        MovePacketSendTimer = MOVE_PACKET_SEND_DELAY;
+
+        if (GetMoveState() == Protocol::MOVE_STATE_RUN
+            || GetMoveState() == Protocol::MOVE_STATE_IDLE)
+        {
+            Send_Idle_Move();
+        }
+    }
+}
+
+void APlayerChar::Send_Idle_Move()
+{
+    Protocol::C_MOVE MovePkt;
+
+    Protocol::PosInfo* Info = MovePkt.mutable_info();
+    Info->CopyFrom(*PlayerInfo);
+    Info->set_yaw(DesiredYaw);
+    Info->set_state(GetMoveState());
+    Info->set_d_x(DesiredMoveDirection.X);
+    Info->set_d_y(DesiredMoveDirection.Y);
+    Info->set_d_z(DesiredMoveDirection.Z);
+
+    GetNetworkManager()->SendPacket(MovePkt);
+}
+

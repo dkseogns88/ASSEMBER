@@ -19,10 +19,6 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	
-
-	
-
-	
 	UFUNCTION()
 	void Aimingchanged();
 
@@ -63,7 +59,6 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Combat")
 	bool bIsDamaged;
 
-
 	
 	virtual void MoveForward(float Value) override;
 	virtual void MoveRight(float Value) override;
@@ -97,4 +92,29 @@ private:
 	
 	FVector2D MovementInput;
 	
+	/////////////////////////////////////
+	////////////	¼­¹ö    /////////////
+	/////////////////////////////////////
+
+
+public:
+	class UA1NetworkManager* GetNetworkManager() const;
+
+private:
+	void MoveCache();
+
+	void StateTick();
+	void SendTick(float DeltaTime);
+
+	void Send_Idle_Move();
+
+	FVector2D DesiredInput;
+	FVector DesiredMoveDirection;
+	float DesiredYaw;
+
+	FVector2D LastDesiredInput;
+
+	const float MOVE_PACKET_SEND_DELAY = 0.2f;
+	float MovePacketSendTimer = MOVE_PACKET_SEND_DELAY;
+
 };
