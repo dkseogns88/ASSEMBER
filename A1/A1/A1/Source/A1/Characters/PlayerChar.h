@@ -41,6 +41,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Character Actions")
 	void UseSkill(bool UsingSkill);
 
+	
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Combat")
 	bool bIsUsingSkill;
 
@@ -70,10 +72,11 @@ public:
 	virtual void TurnLeft(float Value) override;
 	virtual void TurnRight(float Value) override;
 
+
 	bool IsAiming() const { return bIsAiming; }
 	void SetAiming(bool bNewAiming);
 	bool IsMoving() const { return bIsMoving; }
-	FVector2D GetMovementInput() const { return MovementInput; }
+	FVector2D GetMovementInput() const;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement", meta = (AllowPrivateAccess = "true"))
 	float Speed;

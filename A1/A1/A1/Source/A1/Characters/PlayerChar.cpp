@@ -226,3 +226,8 @@ void APlayerChar::IsDamaged(bool Damaged)
     }
 }
 
+FVector2D APlayerChar::GetMovementInput() const
+{
+    const FVector InputVector = GetVelocity();
+    return FVector2D(InputVector.X, InputVector.Y);
+}

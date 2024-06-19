@@ -14,6 +14,7 @@
 #include "../Widgets/HealthBarWidget.h"
 #include "../Widgets/PlayerStatWidget.h"
 #include "../SKill.h"
+#include "../BombSkill.h"
 #include "A1PlayerController.generated.h"
 
 class UInputMappingContext;
@@ -64,7 +65,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
 	TSubclassOf<ASKill> SkillClass; 
 
-	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skills", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<ABombSkill> BombSkillClass;
+
+	UPROPERTY()
+	ABombSkill* CurrentBombSkill;
+
 	UFUNCTION(BlueprintCallable, Category = "Character")
 
 	//void RequestServerForAimingChange(bool bIsAiming);
@@ -145,6 +151,15 @@ private:
 
 	UFUNCTION()
 	void OnSkillEnd();
+	
+	FVector GetCamCenLoc(FVector& CameraLocation, FRotator& CameraRotation);
+
+	UFUNCTION(BlueprintCallable, Category = "Skills")
+	void UseBombSkill();
+
+	UFUNCTION(BlueprintCallable, Category = "Skills")
+	void ThrowBomb();
+
 public:
 	AA1PlayerController();
 	void AimingChange(bool bIsAiming);

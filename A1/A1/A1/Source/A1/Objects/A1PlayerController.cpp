@@ -93,6 +93,11 @@ AA1PlayerController::AA1PlayerController()
     {
         SkillClass = SkillBPClass.Class;
     }
+    static ConstructorHelpers::FClassFinder<ABombSkill> BombSkillBPClass(TEXT("/Game/MyBP/BP_BombSkill.BP_BombSkill_C"));
+    if (BombSkillBPClass.Succeeded())
+    {
+        BombSkillClass = BombSkillBPClass.Class;
+    }
 }
 
 void AA1PlayerController::AimPressed()
@@ -189,7 +194,8 @@ void AA1PlayerController::SetupInputComponent()
     InputComponent->BindAction("InteractStatue", IE_Pressed, this, &AA1PlayerController::Interact);
 
     InputComponent->BindAction("TogglePlayerStats", IE_Pressed, this, &AA1PlayerController::TogglePlayerStatWidget);
-
+    InputComponent->BindAction("UseBombSkill", IE_Pressed, this, &AA1PlayerController::UseBombSkill);
+    InputComponent->BindAction("ThrowBomb", IE_Pressed, this, &AA1PlayerController::ThrowBomb);
     //InputComponent->BindAction("Roll", IE_Pressed, this, &AA1PlayerController::OnRollPressed);
 
    
@@ -222,19 +228,32 @@ void AA1PlayerController::AimingChange(bool bIsAiming)
     
 }
 
+FVector AA1PlayerController::GetCamCenLoc(FVector& CameraLocation, FRotator& CameraRotation)
+{
+    GetPlayerViewPoint(CameraLocation, CameraRotation);
+
+    FVector Start = CameraLocation + CameraRotation.Vector() * 400.0f;
+    FVector End = CameraLocation + CameraRotation.Vector() * 10000.0f; // 히트스캔 거리 설정
+
+    DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 1.0f, 0, 1.0f);
+
+    FHitResult HitResult;
+    FCollisionQueryParams Params;
+    Params.AddIgnoredActor(GetPawn()); // 자기 자신은 무시
+
+    if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, Params))
+    {
+        return HitResult.Location;
+    }
+
+    return End;
+}
+
 void AA1PlayerController::FireWeapon()
 {
     FVector CameraLoc;
     FRotator CameraRot;
-    GetPlayerViewPoint(CameraLoc, CameraRot); // 플레이어의 카메라 위치와 회전을 가져옴
-
-
-    FVector Start = CameraLoc + CameraRot.Vector() * 400;
-
-    FVector End = CameraLoc + CameraRot.Vector() * 10000; // 히트스캔 거리 설정
-
-    // 디버깅용 라인 그리기 (에디터에서만 보임)
-    DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 1.0f, 0, 1.0f);
+    FVector TargetLocation = GetCamCenLoc(CameraLoc, CameraRot);
 
     if (FireSound)
     {
@@ -250,7 +269,7 @@ void AA1PlayerController::FireWeapon()
     FCollisionQueryParams Params;
     Params.AddIgnoredActor(GetPawn()); // 자기 자신은 무시
 
-    if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Pawn, Params))
+    if (GetWorld()->LineTraceSingleByChannel(HitResult, CameraLoc, TargetLocation, ECC_Pawn, Params))
     {
         AMonster* HitMonster = Cast<AMonster>(HitResult.GetActor());
         if (HitMonster)
@@ -260,8 +279,7 @@ void AA1PlayerController::FireWeapon()
         }
         
     }
-    // 디버깅용 라인 그리기 (에디터에서만 보임)
-    DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 1.0f, 0, 1.0f);
+   
 
 }
 
@@ -297,6 +315,8 @@ void AA1PlayerController::TryFireWeapon()
     }
 
 }
+
+
 
 void AA1PlayerController::SetHealth(float NewHealth)
 {
@@ -663,5 +683,57 @@ void AA1PlayerController::OnSkillEnd()
     if (PlayerChar)
     {
         PlayerChar->UseSkill(false);
+    }
+}
+
+void AA1PlayerController::UseBombSkill()
+{
+    if (BombSkillClass)
+    {
+        FVector CameraLoc;
+        FRotator CameraRot;
+        FVector TargetLocation = GetCamCenLoc(CameraLoc, CameraRot);
+
+        APlayerChar* PlayerChar = Cast<APlayerChar>(GetPawn());
+        if (PlayerChar)
+        {
+            PlayerChar->UseSkill(false); // 애니메이션 상태 설정
+
+            FVector Location = GetPawn()->GetActorLocation();
+            FRotator Rotation = CameraRot;
+            FActorSpawnParameters SpawnParams;
+            SpawnParams.Owner = this;
+
+            AActor* SpawnedActor = GetWorld()->SpawnActor(BombSkillClass, &Location, &Rotation, SpawnParams);
+            CurrentBombSkill = Cast<ABombSkill>(SpawnedActor);
+            if (CurrentBombSkill)
+            {
+                CurrentBombSkill->OnSkillEnd.AddDynamic(this, &AA1PlayerController::OnSkillEnd);
+                CurrentBombSkill->InitializeSkill(GetPawn(), TargetLocation, 300.0f, 100.0f);  // 폭탄 스킬 설정
+                UE_LOG(LogTemp, Log, TEXT("Bomb skill spawned and initialized"));
+            }
+            else
+            {
+                UE_LOG(LogTemp, Warning, TEXT("Failed to spawn bomb skill"));
+            }
+        }
+    }
+    else
+    {
+        UE_LOG(LogTemp, Warning, TEXT("BombSkillClass is not set"));
+    }
+}
+
+void AA1PlayerController::ThrowBomb()
+{
+    if (CurrentBombSkill)
+    {
+        FVector CameraLoc;
+        FRotator CameraRot;
+        GetCamCenLoc(CameraLoc, CameraRot);
+
+        FVector LaunchVelocity = CameraRot.Vector() * 1000.0f; 
+        CurrentBombSkill->ThrowBomb(LaunchVelocity);
+        CurrentBombSkill = nullptr; // 폭탄을 던졌으므로 현재 폭탄 스킬을 초기화
     }
 }

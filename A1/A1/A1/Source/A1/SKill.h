@@ -15,22 +15,28 @@ class A1_API ASKill : public AActor
 public:
 	ASKill();
 
-	void InitializeSkill(AActor* SkillCaster, float SkillRadius, float DamageAmount);
+	virtual void InitializeSkill(AActor* SkillCaster, float SkillRadius, float DamageAmount);
+	virtual void ApplyDamage();
+	
 
+	
 	
 
 protected:
 	virtual void BeginPlay() override;
-
-
-
-private:
-	void ApplyDamage();
 	void EndSkill();
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
 	AActor* Caster;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
 	float Radius;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
 	float Damage;
+
+	
+	
 
 public:
 	// Delegate to notify the controller when the skill ends
