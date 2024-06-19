@@ -205,11 +205,6 @@ protected:
 	////////////	¼­¹ö    /////////////
 	/////////////////////////////////////
 
-public:
-	UAnimMontage* GetZoomMontage() const { return ZoomMontage.Get(); }
 
-private:
-	UPROPERTY(EditAnywhere)
-	TObjectPtr<class UAnimMontage> ZoomMontage;
 	
 };

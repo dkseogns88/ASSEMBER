@@ -15,22 +15,6 @@ AOtherPlayerChar::~AOtherPlayerChar()
 {
 }
 
-void AOtherPlayerChar::PlayZoom(bool IsZoom)
-{
-	if (IsZoom)
-	{
-		auto* PC = Cast<AA1PlayerController>(UGameplayStatics::GetPlayerController(this, 0));
-
-		PlayAnimMontage(PC->GetZoomMontage());
-	}
-
-	else
-	{
-		auto* PC = Cast<AA1PlayerController>(UGameplayStatics::GetPlayerController(this, 0));
-
-		StopAnimMontage(PC->GetZoomMontage());
-	}
-}
 
 void AOtherPlayerChar::BeginPlay()
 {
@@ -73,7 +57,7 @@ void AOtherPlayerChar::Tick(float DeltaTime)
 			FRotator NowRotation = GetActorRotation();
 			FRotator TargetRotation = FRotator(0, DestInfo->yaw(), 0);
 
-			FRotator NewRotation = FMath::RInterpTo(NowRotation, TargetRotation, DeltaTime, 10.f); // 보간 속도는 5.0f로 설정
+			FRotator NewRotation = FMath::RInterpTo(NowRotation, TargetRotation, DeltaTime, 20.f);
 			SetActorRotation(NewRotation);
 
 			FVector ForwardDirection = FVector(DestInfo->d_x(), DestInfo->d_y(), DestInfo->d_z());
@@ -89,5 +73,22 @@ void AOtherPlayerChar::Tick(float DeltaTime)
 		{
 			SetActorLocation(TargetLocation);
 		}*/
+	}
+}
+
+void AOtherPlayerChar::SetAiming(bool bNewAiming)
+{
+	bIsAiming = bNewAiming;
+	UE_LOG(LogTemp, Log, TEXT("Aiming state set to: %s"), bIsAiming ? TEXT("True") : TEXT("False"));
+
+	UAnimInstanceCustom* AnimInstance = Cast<UAnimInstanceCustom>(GetMesh()->GetAnimInstance());
+	if (AnimInstance)
+	{
+		AnimInstance->SetAiming(bIsAiming);
+		UE_LOG(LogTemp, Log, TEXT("Aiming state updated in animation blueprint to: %s"), bIsAiming ? TEXT("True") : TEXT("False"));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("Failed to cast to UAnimInstanceCustom"));
 	}
 }

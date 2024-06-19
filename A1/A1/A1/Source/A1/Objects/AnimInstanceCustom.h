@@ -19,6 +19,8 @@ public:
     virtual void NativeInitializeAnimation() override;
     virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
+	void SetAiming(bool bNewAiming) { bIsAiming = bNewAiming; }
+
 protected:
 	UPROPERTY(BlueprintReadOnly)
 	TObjectPtr<class ABaseChar> Character;
@@ -39,5 +41,8 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly)
 	bool bIsFalling = false;
+
+	UPROPERTY(BlueprintReadOnly)
+	bool bIsAiming = false;
 
 };

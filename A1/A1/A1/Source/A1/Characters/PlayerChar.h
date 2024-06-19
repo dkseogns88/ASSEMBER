@@ -74,10 +74,6 @@ public:
 
 	virtual void Landed(const FHitResult& Hit) override;
 
-	
-
-	
-
 	bool IsAiming() const { return bIsAiming; }
 	void SetAiming(bool bNewAiming);
 	bool IsMoving() const { return bIsMoving; }
@@ -143,6 +139,5 @@ private:
 	const float MOVE_PACKET_SEND_DELAY = 0.04f;
 	float MovePacketSendTimer = MOVE_PACKET_SEND_DELAY;
 
-
-
+	bool bLastInputJump = false;
 };

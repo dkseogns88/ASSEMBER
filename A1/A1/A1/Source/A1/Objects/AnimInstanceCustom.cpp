@@ -19,8 +19,6 @@ void UAnimInstanceCustom::NativeInitializeAnimation()
 
     if (Character)
         MovementComponent = Character->GetCharacterMovement();
-
-
 }
 
 

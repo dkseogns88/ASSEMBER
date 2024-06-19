@@ -171,7 +171,7 @@ void UA1NetworkManager::HandleZoom(const Protocol::S_ZOOM& ZoomPkt)
 
 	if (ABaseChar* Player = ValidationPlayer(ObjectId))
 	{
-		Cast<AOtherPlayerChar>(Player)->PlayZoom(ZoomPkt.info().b_zoom());
+		Cast<AOtherPlayerChar>(Player)->SetAiming(ZoomPkt.info().b_zoom());
 	}
 }
 

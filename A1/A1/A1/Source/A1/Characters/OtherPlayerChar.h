@@ -18,7 +18,6 @@ public:
 	AOtherPlayerChar();
 	virtual ~AOtherPlayerChar();
 
-	void PlayZoom(bool IsZoom);
 
 protected:
 	virtual void BeginPlay() override;
@@ -26,5 +25,9 @@ protected:
 public:
 	virtual void Tick(float DeltaTime) override;
 
-	
+	void SetAiming(bool bNewAiming);
+
+private:
+	bool bIsAiming = false;
+
 };

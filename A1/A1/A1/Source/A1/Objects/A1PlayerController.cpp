@@ -107,34 +107,29 @@ void AA1PlayerController::AimPressed()
 {
     AimingChange(true);
 
-    if (ZoomMontage) {
-        APlayerChar* MyCharacter = Cast<APlayerChar>(GetPawn());
-        MyCharacter->PlayAnimMontage(ZoomMontage);
-        //Protocol::C_ZOOM ZoomPkt;
-        //
-        //Protocol::ZoomInfo* Info = ZoomPkt.mutable_info();
-        //Info->set_object_id(MyCharacter->GetPlayerInfo()->object_id());
-        //Info->set_b_zoom(true);
-        //
-        //MyCharacter->GetNetworkManager()->SendPacket(ZoomPkt);
-    }
+    APlayerChar* MyCharacter = Cast<APlayerChar>(GetPawn());
+    Protocol::C_ZOOM ZoomPkt;
+    
+    Protocol::ZoomInfo* Info = ZoomPkt.mutable_info();
+    Info->set_object_id(MyCharacter->GetPlayerInfo()->object_id());
+    Info->set_b_zoom(true);
+    
+    MyCharacter->GetNetworkManager()->SendPacket(ZoomPkt);
+    
 }
 
 void AA1PlayerController::AimReleased()
 {
     AimingChange(false);
 
-    if (ZoomMontage) {
-        APlayerChar* MyCharacter = Cast<APlayerChar>(GetPawn());
-        MyCharacter->StopAnimMontage(ZoomMontage);
-        Protocol::C_ZOOM ZoomPkt;
+    APlayerChar* MyCharacter = Cast<APlayerChar>(GetPawn());
+    Protocol::C_ZOOM ZoomPkt;
 
-        Protocol::ZoomInfo* Info = ZoomPkt.mutable_info();
-        Info->set_object_id(MyCharacter->GetPlayerInfo()->object_id());
-        Info->set_b_zoom(false);
+    Protocol::ZoomInfo* Info = ZoomPkt.mutable_info();
+    Info->set_object_id(MyCharacter->GetPlayerInfo()->object_id());
+    Info->set_b_zoom(false);
 
-        MyCharacter->GetNetworkManager()->SendPacket(ZoomPkt);
-    }
+    MyCharacter->GetNetworkManager()->SendPacket(ZoomPkt);
 }
 
 void AA1PlayerController::BeginPlay()
@@ -238,7 +233,6 @@ void AA1PlayerController::AimingChange(bool bIsAiming)
     if (MyCharacter)
     {
         MyCharacter->SetAiming(bIsAiming);
-        UE_LOG(LogTemp, Log, TEXT("Aiming set to: %s"), bIsAiming ? TEXT("True") : TEXT("False"));
 
         if (CrosshairWidgetInstance)
         {
@@ -246,12 +240,10 @@ void AA1PlayerController::AimingChange(bool bIsAiming)
             if (bIsAiming)
             {
                 CrosshairWidgetInstance->ShowCrosshair(bIsAiming);
-               
             }
             else
             {
                 CrosshairWidgetInstance->ShowCrosshair(bIsAiming);
-                
             }
         }
         

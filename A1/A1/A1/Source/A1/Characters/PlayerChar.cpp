@@ -90,8 +90,11 @@ void APlayerChar::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
     if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
     {
         EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &APlayerChar::Move);
-        EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
-        EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
+        EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Completed, this, &APlayerChar::Move);
+
+
+        EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &APlayerChar::Jump);
+        EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &APlayerChar::StopJumping);
        
         
         EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &APlayerChar::Look);
@@ -103,12 +106,34 @@ void APlayerChar::Move(const FInputActionValue& Value)
     // input is a Vector2D
     FVector2D MovementVector = Value.Get<FVector2D>();
 
-    if (Controller != nullptr)
+    // Server
+    FVector ForwardDirection;
+    FVector RightDirection;
+
+    if (MovementVector.X != 0)
     {
-        // add movement 
-        AddMovementInput(GetActorForwardVector(), MovementVector.Y);
-        AddMovementInput(GetActorRightVector(), MovementVector.X);
+        FRotator Rotator = GetControlRotation();
+        ForwardDirection = UKismetMathLibrary::GetForwardVector(FRotator(0, Rotator.Yaw, 0));
+        AddMovementInput(ForwardDirection, MovementVector.X);
     }
+
+    if (MovementVector.Y != 0)
+    {
+        FRotator Rotator = GetControlRotation();
+        RightDirection = UKismetMathLibrary::GetRightVector(FRotator(0, Rotator.Yaw, 0));
+        AddMovementInput(RightDirection, MovementVector.Y);
+    }
+
+    DesiredInput = MovementVector;
+
+    DesiredMoveDirection = FVector::ZeroVector;
+    DesiredMoveDirection += ForwardDirection * MovementVector.X;
+    DesiredMoveDirection += RightDirection * MovementVector.Y;
+    DesiredMoveDirection.Normalize();
+
+    const FVector Location = GetActorLocation();
+    FRotator Rotator = UKismetMathLibrary::FindLookAtRotation(Location, Location + DesiredMoveDirection);
+    //DesiredYaw = GetControlRotation().Yaw;
 }
 
 void APlayerChar::Look(const FInputActionValue& Value)
@@ -121,6 +146,7 @@ void APlayerChar::Look(const FInputActionValue& Value)
         // add yaw and pitch input to controller
         AddControllerYawInput(LookAxisVector.X);
         AddControllerPitchInput(LookAxisVector.Y);
+        DesiredYaw = GetControlRotation().Yaw;
     }
 }
 
@@ -128,24 +154,18 @@ void APlayerChar::Jump()
 {
     Super::Jump();
     bIsJumping = true;
-    UAnimInstanceCustom* AnimInstance = Cast<UAnimInstanceCustom>(GetMesh()->GetAnimInstance());
-    if (AnimInstance)
-    {
 
-        // AnimInstance->bIsJumping = bIsJumping;
 
-    }
+    // Server
+    bLastInputJump = true;
+
 }
 
 void APlayerChar::Landed(const FHitResult& Hit)
 {
     Super::Landed(Hit);
     bIsJumping = false;
-    UAnimInstanceCustom* AnimInstance = Cast<UAnimInstanceCustom>(GetMesh()->GetAnimInstance());
-    if (AnimInstance)
-    {
-        //AnimInstance->bIsJumping = bIsJumping;
-    }
+
 }
 
 void APlayerChar::SetMovementSpeed(float NewSpeed)
@@ -174,11 +194,6 @@ void APlayerChar::UseSkillAnim(bool UsingSkill)
     }
 }
 
-
-
-
-
-
 void APlayerChar::MoveCache()
 {
     FVector ForwardDirection;
@@ -206,29 +221,17 @@ void APlayerChar::MoveCache()
     const FVector Location = GetActorLocation();
     FRotator Rotator = UKismetMathLibrary::FindLookAtRotation(Location, Location + DesiredMoveDirection);
     DesiredYaw = GetControlRotation().Yaw;
-
-    //FRotator MyRotator = GetControlRotation();
-    //GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, FString::Printf(
-    //    TEXT("Actor YAW: %.f"),
-    //    MyRotator.Yaw
-    //    )
-    //);
 }
-
-
 
 void APlayerChar::SetAiming(bool bNewAiming)
 {
     bIsAiming = bNewAiming;
     UE_LOG(LogTemp, Log, TEXT("Aiming state set to: %s"), bIsAiming ? TEXT("True") : TEXT("False"));
 
-
-
     UAnimInstanceCustom* AnimInstance = Cast<UAnimInstanceCustom>(GetMesh()->GetAnimInstance());
     if (AnimInstance)
     {
-
-       // AnimInstance->bIsAiming = bIsAiming;
+        AnimInstance->SetAiming(bIsAiming);
         UE_LOG(LogTemp, Log, TEXT("Aiming state updated in animation blueprint to: %s"), bIsAiming ? TEXT("True") : TEXT("False"));
     }
     else
@@ -303,6 +306,8 @@ void APlayerChar::StateTick()
     {
         SetMoveState(Protocol::MOVE_STATE_RUN);
     }
+
+    if(LastInputJump) SetMoveState(Protocol::MOVE_STATE_JUMP);
 }
 
 void APlayerChar::SendTick(float DeltaTime)
@@ -316,16 +321,30 @@ void APlayerChar::SendTick(float DeltaTime)
         LastDesiredInput = DesiredInput;
     }
 
+    if (LastInputJump) {
+        ForceSendPacket = true;
+		bLastInputJump = false;
+    }
+
     MovePacketSendTimer -= DeltaTime;
 
     if (MovePacketSendTimer <= 0 || ForceSendPacket)
     {
         MovePacketSendTimer = MOVE_PACKET_SEND_DELAY;
 
+        FVector Location = GetActorLocation();
+        PlayerInfo->set_x(Location.X);
+        PlayerInfo->set_y(Location.Y);
+        PlayerInfo->set_z(Location.Z);
+
         if (GetMoveState() == Protocol::MOVE_STATE_RUN
             || GetMoveState() == Protocol::MOVE_STATE_IDLE)
         {
             Send_Idle_Move();
+        }
+        else if (GetMoveState() == Protocol::MOVE_STATE_JUMP)
+        {
+            Send_Jump();
         }
     }
 }
@@ -345,3 +364,17 @@ void APlayerChar::Send_Idle_Move()
     GetNetworkManager()->SendPacket(MovePkt);
 }
 
+void APlayerChar::Send_Jump()
+{
+    Protocol::C_MOVE MovePkt;
+
+    Protocol::PosInfo* Info = MovePkt.mutable_info();
+    Info->CopyFrom(*PlayerInfo);
+    Info->set_yaw(DesiredYaw);
+    Info->set_state(GetMoveState());
+    Info->set_d_x(DesiredMoveDirection.X);
+    Info->set_d_y(DesiredMoveDirection.Y);
+    Info->set_d_z(DesiredMoveDirection.Z);
+
+    GetNetworkManager()->SendPacket(MovePkt);
+}
