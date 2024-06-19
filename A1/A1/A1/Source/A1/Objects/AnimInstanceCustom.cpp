@@ -3,10 +3,24 @@
 
 #include "AnimInstanceCustom.h"
 #include "../Characters/PlayerChar.h"
-#include "../Characters/PlayerChar.h"
+#include "GameFramework/CharacterMovementComponent.h"
+
+UAnimInstanceCustom::UAnimInstanceCustom(const FObjectInitializer& ObjectInitializer)
+    : Super(ObjectInitializer) 
+{
+
+}
+
 void UAnimInstanceCustom::NativeInitializeAnimation()
 {
     Super::NativeInitializeAnimation();
+
+    Character = Cast<ABaseChar>(GetOwningActor());
+
+    if (Character)
+        MovementComponent = Character->GetCharacterMovement();
+
+
 }
 
 
@@ -14,31 +28,15 @@ void UAnimInstanceCustom::NativeUpdateAnimation(float DeltaSeconds)
 {
     Super::NativeUpdateAnimation(DeltaSeconds);
 
-    APlayerChar* OwningCharacter = Cast<APlayerChar>(TryGetPawnOwner());
-    if (OwningCharacter)
-    {
-        bIsMoving = OwningCharacter->IsMoving();
-        MovementInput = OwningCharacter->GetMovementInput();
-        bIsAiming = OwningCharacter->IsAiming();
-       
-        bIsMovingBackward = OwningCharacter->bIsMovingBackward;
-        bIsDamaged = OwningCharacter->bIsDamaged;
-        bIsUsingSkill = OwningCharacter->bIsUsingSkill;
-        bIsJumping = OwningCharacter->bIsJumping;
-    }
-}
+	if (Character == nullptr)
+		return;
 
-void UAnimInstanceCustom::SetAiming(bool bAiming)
-{
-    bIsAiming = bAiming;
-}
+	if (MovementComponent == nullptr)
+		return;
 
+	Velocity = MovementComponent->Velocity;
+	GroundSpeed = Velocity.Size2D();
 
-void UAnimInstanceCustom::SetMovementInput(FVector2D NewMovementInput)
-{
-    MovementInput = NewMovementInput;
-}
-void UAnimInstanceCustom::SetIsMovingBackward(bool bMovingBackward)
-{
-    bIsMovingBackward = bMovingBackward;
+	bShouldMove = (GroundSpeed > 3.f && MovementComponent->GetCurrentAcceleration() != FVector::ZeroVector);
+	bIsFalling = MovementComponent->IsFalling();
 }

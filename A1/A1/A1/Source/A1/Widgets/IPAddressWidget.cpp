@@ -14,7 +14,7 @@ void UIPAddressWidget::OnIPAddressChanged(const FText& Text)
 	FString IPAddress = Text.ToString();
 	if (UA1GameInstance* GameInstance = Cast<UA1GameInstance>(GetGameInstance()))
 	{
-		GameInstance->IpAddress = IPAddress;
+		//GameInstance->IpAddress = IPAddress;
 		IPAddressDisplay->SetText(FText::FromString(IPAddress));
 
 	}
@@ -34,7 +34,7 @@ void UIPAddressWidget::NativeConstruct()
 
 	if (UA1GameInstance* GameInstance = Cast<UA1GameInstance>(GetGameInstance()))
 	{
-		IPAddressDisplay->SetText(FText::FromString(GameInstance->IpAddress));
+		//IPAddressDisplay->SetText(FText::FromString(GameInstance->IpAddress));
 	}
 	if (IPAddressInput)
 	{

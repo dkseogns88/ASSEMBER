@@ -12,47 +12,33 @@ class UAnimInstanceCustom : public UAnimInstance
     GENERATED_BODY()
 
 public:
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-    bool bIsAiming;
-
-    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Movement")
-    bool bIsMoving;
-
-   
-  
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-    bool bIsDamaged;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-    bool bIsUsingSkill;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-    bool bIsJumping;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-    bool bIsMovingBackward;
-   
+    UAnimInstanceCustom(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 
-    UFUNCTION(BlueprintCallable, Category = "Movement")
-    void SetMovementInput(FVector2D NewMovementInput);
-
-    void SetIsMovingBackward(bool bIsMovingBackward);
-
-    void NativeInitializeAnimation() override;
-
-   
-
-    void NativeUpdateAnimation(float DeltaSeconds) override;
-
-    void SetAiming(bool bAiming);
-
-   
-
-    void SetRolling(bool bRolling);
+public:
+    virtual void NativeInitializeAnimation() override;
+    virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
 protected:
-    UPROPERTY(BlueprintReadOnly, Category = "Movement")
-    FVector2D MovementInput;
+	UPROPERTY(BlueprintReadOnly)
+	TObjectPtr<class ABaseChar> Character;
+
+	UPROPERTY(BlueprintReadOnly)
+	TObjectPtr<class UCharacterMovementComponent> MovementComponent;
+
+
+protected:
+	UPROPERTY(BlueprintReadOnly)
+	FVector Velocity = FVector::ZeroVector;
+
+	UPROPERTY(BlueprintReadOnly)
+	float GroundSpeed = 0.f;
+
+	UPROPERTY(BlueprintReadOnly)
+	bool bShouldMove = false;
+
+	UPROPERTY(BlueprintReadOnly)
+	bool bIsFalling = false;
+
 };
 

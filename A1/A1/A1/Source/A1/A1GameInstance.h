@@ -27,24 +27,20 @@ struct FPlayerCharacterChangeInfo
 
 class ABaseChar;
 class APlayerChar;
-
 class AMonster;
+
+
+/////////////////////////////////////
+////////////	서버    /////////////
+/////////////////////////////////////
 
 UCLASS()
 class A1_API UA1GameInstance : public UGameInstance
 {
-
 	GENERATED_BODY()
-
-
-	
 
 public:
 	
-
-	
-
-	// 초기화 함수
 	virtual void Init() override;
 
 	UA1GameInstance();
@@ -60,21 +56,6 @@ private:
 
 
 	FTimerHandle SpawnTimerHandle;
-	void SpawnMonster();
-
-private:
-	APlayerChar* ValidationPlayer(int ObjectId);
-	AMonster* ValidationMonster(int ObjectId);
-
-public:
-	class FSocket* Socket;
-	FString IpAddress = TEXT("127.0.0.1");
-	int16 Port = 7777;
-
-	TSharedPtr<class PacketSession> GameServerSession;
-
-	UPROPERTY(BlueprintReadOnly)
-	bool Connected = false;
 
 public:
 	
@@ -99,5 +80,12 @@ public:
 	ABaseChar* MyPlayer;
 	TMap<uint64, ABaseChar*> Players;
 
+
+public:
+	/////////////////////////////////////
+	////////////	서버    /////////////
+	/////////////////////////////////////
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class AOtherPlayerChar> OtherPlayerClass;
 
 };

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Network/Protocol.pb.h"
 #include "BaseChar.generated.h"
 
 UCLASS()
@@ -13,7 +14,7 @@ class A1_API ABaseChar : public ACharacter
 
 public:
 	ABaseChar();
-	
+    ~ABaseChar();
 
 protected:
 	virtual void BeginPlay() override;
@@ -57,5 +58,18 @@ public:
 
     UPROPERTY(BlueprintReadWrite, Category = "Character State")
     bool IsMoving;
+
+public:
+    bool IsMyPlayer();
+    Protocol::MoveState GetMoveState() { return PlayerInfo->state(); }
+    void SetMoveState(Protocol::MoveState State);
+
+    void SetPlayerInfo(const Protocol::PosInfo& Info);
+    void SetDestInfo(const Protocol::PosInfo& Info);
+    Protocol::PosInfo* GetPlayerInfo() { return PlayerInfo; }
+
+    protected:
+    class Protocol::PosInfo* PlayerInfo;
+    class Protocol::PosInfo* DestInfo;
 
 };
