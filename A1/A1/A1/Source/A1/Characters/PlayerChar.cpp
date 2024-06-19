@@ -101,54 +101,7 @@ void APlayerChar::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
     }
     
 }
-void APlayerChar::Move(const FInputActionValue& Value)
-{
-    // input is a Vector2D
-    FVector2D MovementVector = Value.Get<FVector2D>();
 
-    // Server
-    FVector ForwardDirection;
-    FVector RightDirection;
-
-    if (MovementVector.X != 0)
-    {
-        FRotator Rotator = GetControlRotation();
-        ForwardDirection = UKismetMathLibrary::GetForwardVector(FRotator(0, Rotator.Yaw, 0));
-        AddMovementInput(ForwardDirection, MovementVector.X);
-    }
-
-    if (MovementVector.Y != 0)
-    {
-        FRotator Rotator = GetControlRotation();
-        RightDirection = UKismetMathLibrary::GetRightVector(FRotator(0, Rotator.Yaw, 0));
-        AddMovementInput(RightDirection, MovementVector.Y);
-    }
-
-    DesiredInput = MovementVector;
-
-    DesiredMoveDirection = FVector::ZeroVector;
-    DesiredMoveDirection += ForwardDirection * MovementVector.X;
-    DesiredMoveDirection += RightDirection * MovementVector.Y;
-    DesiredMoveDirection.Normalize();
-
-    const FVector Location = GetActorLocation();
-    FRotator Rotator = UKismetMathLibrary::FindLookAtRotation(Location, Location + DesiredMoveDirection);
-    //DesiredYaw = GetControlRotation().Yaw;
-}
-
-void APlayerChar::Look(const FInputActionValue& Value)
-{
-    // input is a Vector2D
-    FVector2D LookAxisVector = Value.Get<FVector2D>();
-
-    if (Controller != nullptr)
-    {
-        // add yaw and pitch input to controller
-        AddControllerYawInput(LookAxisVector.X);
-        AddControllerPitchInput(LookAxisVector.Y);
-        DesiredYaw = GetControlRotation().Yaw;
-    }
-}
 
 void APlayerChar::Jump()
 {
@@ -296,6 +249,75 @@ FVector2D APlayerChar::GetMovementInput() const
     return FVector2D(InputVector.X, InputVector.Y);
 }
 
+
+
+
+
+
+
+
+
+
+
+void APlayerChar::Move(const FInputActionValue& Value)
+{
+    // input is a Vector2D
+    FVector2D MovementVector = Value.Get<FVector2D>();
+
+    // Server
+    FVector ForwardDirection;
+    FVector RightDirection;
+
+    if (MovementVector.X != 0)
+    {
+        FRotator Rotator = GetControlRotation();
+        ForwardDirection = UKismetMathLibrary::GetForwardVector(FRotator(0, Rotator.Yaw, 0));
+        AddMovementInput(ForwardDirection, MovementVector.X);
+    }
+
+    if (MovementVector.Y != 0)
+    {
+        FRotator Rotator = GetControlRotation();
+        RightDirection = UKismetMathLibrary::GetRightVector(FRotator(0, Rotator.Yaw, 0));
+        AddMovementInput(RightDirection, MovementVector.Y);
+    }
+
+    DesiredInput = MovementVector;
+
+    DesiredMoveDirection = FVector::ZeroVector;
+    DesiredMoveDirection += ForwardDirection * MovementVector.X;
+    DesiredMoveDirection += RightDirection * MovementVector.Y;
+    DesiredMoveDirection.Normalize();
+
+    /*
+    const FVector Location = GetActorLocation();
+    FRotator Rotator = UKismetMathLibrary::FindLookAtRotation(Location, Location + DesiredMoveDirection);
+    DesiredYaw = GetControlRotation().Yaw;
+    */
+    
+
+}
+
+void APlayerChar::Look(const FInputActionValue& Value)
+{
+    // input is a Vector2D
+    FVector2D LookAxisVector = Value.Get<FVector2D>();
+
+    if (Controller != nullptr)
+    {
+        // add yaw and pitch input to controller
+        AddControllerYawInput(LookAxisVector.X);
+        AddControllerPitchInput(LookAxisVector.Y);
+        DesiredYaw = GetControlRotation().Yaw;
+    }
+}
+
+
+
+
+
+
+
 void APlayerChar::StateTick()
 {
     if (DesiredInput == FVector2D::Zero())
@@ -307,7 +329,9 @@ void APlayerChar::StateTick()
         SetMoveState(Protocol::MOVE_STATE_RUN);
     }
 
-    if(LastInputJump) SetMoveState(Protocol::MOVE_STATE_JUMP);
+    if (bLastInputJump) {
+        SetMoveState(Protocol::MOVE_STATE_JUMP);
+    }
 }
 
 void APlayerChar::SendTick(float DeltaTime)
@@ -321,7 +345,7 @@ void APlayerChar::SendTick(float DeltaTime)
         LastDesiredInput = DesiredInput;
     }
 
-    if (LastInputJump) {
+    if (bLastInputJump) {
         ForceSendPacket = true;
 		bLastInputJump = false;
     }

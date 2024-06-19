@@ -30,12 +30,14 @@ void AOtherPlayerChar::Tick(float DeltaTime)
 	{
 		const Protocol::MoveState State = PlayerInfo->state();
 
+		float YawInterpValue = 10.f;
 		if (State == Protocol::MOVE_STATE_IDLE)
 		{
 			FRotator NowRotation = GetActorRotation();
 			FRotator TargetRotation = FRotator(0, DestInfo->yaw(), 0);
 
-			FRotator NewRotation = FMath::RInterpTo(NowRotation, TargetRotation, DeltaTime, 20.f);
+
+			FRotator NewRotation = FMath::RInterpTo(NowRotation, TargetRotation, DeltaTime, YawInterpValue);
 			SetActorRotation(NewRotation);
 		}
 		
@@ -44,11 +46,21 @@ void AOtherPlayerChar::Tick(float DeltaTime)
 			FRotator NowRotation = GetActorRotation();
 			FRotator TargetRotation = FRotator(0, DestInfo->yaw(), 0);
 
-			FRotator NewRotation = FMath::RInterpTo(NowRotation, TargetRotation, DeltaTime, 20.f);
+			FRotator NewRotation = FMath::RInterpTo(NowRotation, TargetRotation, DeltaTime, YawInterpValue);
 			SetActorRotation(NewRotation);
+			
+
+			/*FQuat NowQuat = GetActorRotation().Quaternion();
+			FQuat TargetQuat = FQuat(FRotator(0, DestInfo->yaw(), 0));
+
+			FQuat NewQuat = FQuat::Slerp(NowQuat, TargetQuat, DeltaTime * YawInterpValue);
+
+			FRotator NewRotation = NewQuat.Rotator();
+			SetActorRotation(NewRotation);*/
 
 			FVector ForwardDirection = FVector(DestInfo->d_x(), DestInfo->d_y(), DestInfo->d_z());
 			AddMovementInput(ForwardDirection);
+		
 		}
 		if (State == Protocol::MoveState::MOVE_STATE_JUMP)
 		{
@@ -57,7 +69,7 @@ void AOtherPlayerChar::Tick(float DeltaTime)
 			FRotator NowRotation = GetActorRotation();
 			FRotator TargetRotation = FRotator(0, DestInfo->yaw(), 0);
 
-			FRotator NewRotation = FMath::RInterpTo(NowRotation, TargetRotation, DeltaTime, 20.f);
+			FRotator NewRotation = FMath::RInterpTo(NowRotation, TargetRotation, DeltaTime, YawInterpValue);
 			SetActorRotation(NewRotation);
 
 			FVector ForwardDirection = FVector(DestInfo->d_x(), DestInfo->d_y(), DestInfo->d_z());
@@ -65,14 +77,14 @@ void AOtherPlayerChar::Tick(float DeltaTime)
 		}
 
 
-		/*FVector NowLocation = GetActorLocation();
+		FVector NowLocation = GetActorLocation();
 		FVector TargetLocation = FVector(DestInfo->x(), DestInfo->y(), DestInfo->z());
 
 		float Distance = FVector::Dist(NowLocation, TargetLocation);
-		if (Distance >= 500)
+		if (Distance >= 200.f)
 		{
 			SetActorLocation(TargetLocation);
-		}*/
+		}
 	}
 }
 

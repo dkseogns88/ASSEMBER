@@ -133,9 +133,6 @@ private:
 
 	FVector2D LastDesiredInput;
 
-	bool IsJumping = false;
-	float LastInputJump = false;
-
 	const float MOVE_PACKET_SEND_DELAY = 0.04f;
 	float MovePacketSendTimer = MOVE_PACKET_SEND_DELAY;
 
