@@ -95,10 +95,9 @@ private:
 	/////////////////////////////////////
 	////////////	¼­¹ö    /////////////
 	/////////////////////////////////////
-
-
 public:
 	class UA1NetworkManager* GetNetworkManager() const;
+
 
 private:
 	void MoveCache();
@@ -107,6 +106,7 @@ private:
 	void SendTick(float DeltaTime);
 
 	void Send_Idle_Move();
+	void Send_Jump();
 
 	FVector2D DesiredInput;
 	FVector DesiredMoveDirection;
@@ -114,7 +114,12 @@ private:
 
 	FVector2D LastDesiredInput;
 
-	const float MOVE_PACKET_SEND_DELAY = 0.2f;
+	bool IsJumping = false;
+	float LastInputJump = false;
+
+	const float MOVE_PACKET_SEND_DELAY = 0.04f;
 	float MovePacketSendTimer = MOVE_PACKET_SEND_DELAY;
+
+
 
 };

@@ -96,3 +96,13 @@ bool Handle_S_MOVE(PacketSessionRef& session, Protocol::S_MOVE& pkt)
 
 	return true;
 }
+
+bool Handle_S_ZOOM(PacketSessionRef& session, Protocol::S_ZOOM& pkt)
+{
+	if (UA1NetworkManager* GameNetwork = GetWorldNetwork(session))
+	{
+		GameNetwork->HandleZoom(pkt);
+	}
+
+	return true;
+}

@@ -18,6 +18,8 @@ public:
 	AOtherPlayerChar();
 	virtual ~AOtherPlayerChar();
 
+	void PlayZoom(bool IsZoom);
+
 protected:
 	virtual void BeginPlay() override;
 

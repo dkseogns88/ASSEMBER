@@ -39,4 +39,6 @@ void UAnimInstanceCustom::NativeUpdateAnimation(float DeltaSeconds)
 
 	bShouldMove = (GroundSpeed > 3.f && MovementComponent->GetCurrentAcceleration() != FVector::ZeroVector);
 	bIsFalling = MovementComponent->IsFalling();
+
+
 }

@@ -112,8 +112,6 @@ void APlayerChar::UseSkillAnim(bool UsingSkill)
     }
 }
 
-
-
 void APlayerChar::MoveForward(float Value)
 {
     MovementInput.X = Value;
@@ -127,7 +125,6 @@ void APlayerChar::MoveForward(float Value)
 
 void APlayerChar::MoveRight(float Value)
 {
-   
     MovementInput.Y = Value;
     MoveCache();
     if (Value != 0.0f)
@@ -152,16 +149,16 @@ void APlayerChar::MoveCache()
     FVector ForwardDirection;
     FVector RightDirection;
 
+    FRotator Rotation = GetActorRotation();
+    FRotator YawRotation{ 0, Rotation.Yaw, 0 };
     if (MovementInput.X != 0)
     {
-        FRotator Rotator = GetControlRotation();
-        ForwardDirection = UKismetMathLibrary::GetForwardVector(FRotator(0, Rotator.Yaw, 0));
+        ForwardDirection = UKismetMathLibrary::GetForwardVector(YawRotation);
     }
 
     if (MovementInput.Y != 0)
     {
-        FRotator Rotator = GetControlRotation();
-        RightDirection = UKismetMathLibrary::GetRightVector(FRotator(0, Rotator.Yaw, 0));
+        RightDirection = UKismetMathLibrary::GetRightVector(YawRotation);
     }
 
     DesiredInput = MovementInput;
@@ -171,16 +168,7 @@ void APlayerChar::MoveCache()
     DesiredMoveDirection += RightDirection * MovementInput.Y;
     DesiredMoveDirection.Normalize();
 
-    const FVector Location = GetActorLocation();
-    FRotator Rotator = UKismetMathLibrary::FindLookAtRotation(Location, Location + DesiredMoveDirection);
-    DesiredYaw = GetControlRotation().Yaw;
-
-    //FRotator MyRotator = GetControlRotation();
-    //GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, FString::Printf(
-    //    TEXT("Actor YAW: %.f"),
-    //    MyRotator.Yaw
-    //    )
-    //);
+    DesiredYaw = Rotation.Yaw;
 }
 
 void APlayerChar::Jump()
@@ -194,6 +182,9 @@ void APlayerChar::Jump()
        // AnimInstance->bIsJumping = bIsJumping;
 
     }
+
+
+    LastInputJump = true;
 }
 
 void APlayerChar::Landed(const FHitResult& Hit)
@@ -285,6 +276,11 @@ FVector2D APlayerChar::GetMovementInput() const
 
 void APlayerChar::StateTick()
 {
+   /* if (bPressedJump) IsJumping = true;
+    else IsJumping = false;*/
+
+    
+
     if (DesiredInput == FVector2D::Zero())
     {
         SetMoveState(Protocol::MOVE_STATE_IDLE);
@@ -292,6 +288,10 @@ void APlayerChar::StateTick()
     else if ((DesiredInput != FVector2D::Zero()))
     {
         SetMoveState(Protocol::MOVE_STATE_RUN);
+    }
+
+    if (LastInputJump) {
+        SetMoveState(Protocol::MOVE_STATE_JUMP);
     }
 }
 
@@ -306,16 +306,31 @@ void APlayerChar::SendTick(float DeltaTime)
         LastDesiredInput = DesiredInput;
     }
 
+    if (LastInputJump)
+    {
+        ForceSendPacket = true;
+        LastInputJump = false;
+    }
+
     MovePacketSendTimer -= DeltaTime;
 
     if (MovePacketSendTimer <= 0 || ForceSendPacket)
     {
         MovePacketSendTimer = MOVE_PACKET_SEND_DELAY;
+        
+        FVector Location = GetActorLocation();
+        PlayerInfo->set_x(Location.X);
+        PlayerInfo->set_y(Location.Y);
+        PlayerInfo->set_z(Location.Z);
 
         if (GetMoveState() == Protocol::MOVE_STATE_RUN
             || GetMoveState() == Protocol::MOVE_STATE_IDLE)
         {
             Send_Idle_Move();
+        }
+        else if (GetMoveState() == Protocol::MOVE_STATE_JUMP)
+        {
+            Send_Jump();
         }
     }
 }
@@ -333,5 +348,20 @@ void APlayerChar::Send_Idle_Move()
     Info->set_d_z(DesiredMoveDirection.Z);
 
     GetNetworkManager()->SendPacket(MovePkt);
+}
+
+void APlayerChar::Send_Jump()
+{
+    Protocol::C_MOVE JumpPkt;
+
+    Protocol::PosInfo* Info = JumpPkt.mutable_info();
+    Info->CopyFrom(*PlayerInfo);
+    Info->set_yaw(DesiredYaw);
+    Info->set_state(GetMoveState());
+    Info->set_d_x(DesiredMoveDirection.X);
+    Info->set_d_y(DesiredMoveDirection.Y);
+    Info->set_d_z(DesiredMoveDirection.Z);
+
+    GetNetworkManager()->SendPacket(JumpPkt);
 }
 

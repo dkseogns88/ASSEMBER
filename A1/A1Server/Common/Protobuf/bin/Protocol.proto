@@ -58,3 +58,13 @@ message S_MOVE
 {
 	PosInfo info = 1;
 }
+
+message C_ZOOM
+{
+	ZoomInfo info = 1;
+}
+
+message S_ZOOM
+{
+	ZoomInfo info = 1;
+}

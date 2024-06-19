@@ -11,6 +11,7 @@
 #include "Engine/Engine.h"
 #include "AnimInstanceCustom.h"
 #include "Sound/SoundBase.h"
+#include "Network/A1NetworkManager.h"
 
 AA1PlayerController::AA1PlayerController()
 {
@@ -105,11 +106,35 @@ AA1PlayerController::AA1PlayerController()
 void AA1PlayerController::AimPressed()
 {
     AimingChange(true);
+
+    if (ZoomMontage) {
+        APlayerChar* MyCharacter = Cast<APlayerChar>(GetPawn());
+        MyCharacter->PlayAnimMontage(ZoomMontage);
+        //Protocol::C_ZOOM ZoomPkt;
+        //
+        //Protocol::ZoomInfo* Info = ZoomPkt.mutable_info();
+        //Info->set_object_id(MyCharacter->GetPlayerInfo()->object_id());
+        //Info->set_b_zoom(true);
+        //
+        //MyCharacter->GetNetworkManager()->SendPacket(ZoomPkt);
+    }
 }
 
 void AA1PlayerController::AimReleased()
 {
     AimingChange(false);
+
+    if (ZoomMontage) {
+        APlayerChar* MyCharacter = Cast<APlayerChar>(GetPawn());
+        MyCharacter->StopAnimMontage(ZoomMontage);
+        Protocol::C_ZOOM ZoomPkt;
+
+        Protocol::ZoomInfo* Info = ZoomPkt.mutable_info();
+        Info->set_object_id(MyCharacter->GetPlayerInfo()->object_id());
+        Info->set_b_zoom(false);
+
+        MyCharacter->GetNetworkManager()->SendPacket(ZoomPkt);
+    }
 }
 
 void AA1PlayerController::BeginPlay()
