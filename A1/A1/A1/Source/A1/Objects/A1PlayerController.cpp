@@ -736,7 +736,7 @@ void AA1PlayerController::ThrowBomb()
         GetCamCenLoc(CameraLoc, CameraRot);
 
         FVector LaunchDirection = CameraRot.Vector();
-        FVector LaunchVelocity = LaunchDirection * 1500.0f; // 원하는 속도로 던지기
+        FVector LaunchVelocity = LaunchDirection * 3000.0f; 
 
         CurrentBombSkill->ThrowBomb(LaunchVelocity);
         CurrentBombSkill = nullptr;

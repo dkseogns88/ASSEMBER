@@ -6,6 +6,7 @@
 #include "SKill.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Particles/ParticleSystem.h"
+#include "Sound/SoundCue.h"
 #include "BombSkill.generated.h"
 
 /**
@@ -33,6 +34,9 @@ public:
 
     UPROPERTY(EditAnywhere, Category = "Effects")
     UParticleSystem* ExplosionEffect;
+
+    UPROPERTY(EditAnywhere, Category = "Effects")
+    USoundCue* ExplosionSound;
 
     virtual void InitializeSkill(AActor* SkillCaster, FVector TargetLocation, float SkillRadius, float DamageAmount);
     void ThrowBomb(FVector LaunchVelocity);

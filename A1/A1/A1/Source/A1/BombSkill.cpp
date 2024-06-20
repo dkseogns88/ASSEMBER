@@ -43,7 +43,7 @@ void ABombSkill::InitializeSkill(AActor* SkillCaster, FVector TargetLocation, fl
 
 void ABombSkill::ThrowBomb(FVector LaunchVelocity)
 {
-   
+  
     ProjectileMovement->Velocity = LaunchVelocity; //메쉬는 제대로 날아가지만 스킬은 다른곳에서터짐
     ProjectileMovement->Activate();
     GetWorld()->GetTimerManager().SetTimer(TimerHandle_Damage, this, &ABombSkill::ApplyDamage, 3.0f, false);
@@ -61,6 +61,11 @@ void ABombSkill::ApplyDamage()
     if (ExplosionEffect)
     {
         UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionEffect, ImpactLocation);
+    }
+
+    if (ExplosionSound)
+    {
+        UGameplayStatics::PlaySoundAtLocation(this, ExplosionSound, ImpactLocation);
     }
 
     TArray<AActor*> OverlappingActors;
