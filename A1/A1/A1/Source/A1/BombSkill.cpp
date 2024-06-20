@@ -6,6 +6,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/Pawn.h"
 #include "Characters/PlayerChar.h"
+#include "Particles/ParticleSystemComponent.h"
 #include "Characters/Monster.h"
 
 
@@ -18,6 +19,9 @@ ABombSkill::ABombSkill()
 
     ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovement"));
     ProjectileMovement->bAutoActivate = false;
+    ProjectileMovement->ProjectileGravityScale = 1.0f;
+    ProjectileMovement->UpdatedComponent = BombMesh;
+    BombMesh->SetSimulatePhysics(false);
 }
 
 void ABombSkill::BeginPlay()
@@ -34,13 +38,13 @@ void ABombSkill::InitializeSkill(AActor* SkillCaster, FVector TargetLocation, fl
 
     UE_LOG(LogTemp, Log, TEXT("Bomb skill initialized with Radius: %f, Damage: %f at Location: %s"), Radius, Damage, *ImpactLocation.ToString());
 
-    // 폭탄이 떨어지면 데미지를 적용하도록 타이머 설정
-    GetWorld()->GetTimerManager().SetTimer(TimerHandle_Damage, this, &ABombSkill::ApplyDamage, 0.5f, false);
+   
 }
 
 void ABombSkill::ThrowBomb(FVector LaunchVelocity)
 {
-    ProjectileMovement->SetVelocityInLocalSpace(LaunchVelocity);
+   
+    ProjectileMovement->Velocity = LaunchVelocity; //메쉬는 제대로 날아가지만 스킬은 다른곳에서터짐
     ProjectileMovement->Activate();
     GetWorld()->GetTimerManager().SetTimer(TimerHandle_Damage, this, &ABombSkill::ApplyDamage, 3.0f, false);
 }
@@ -52,6 +56,11 @@ void ABombSkill::ApplyDamage()
     if (!Caster) {
         UE_LOG(LogTemp, Error, TEXT("Invalid Caster reference"));
         return;
+    }
+
+    if (ExplosionEffect)
+    {
+        UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionEffect, ImpactLocation);
     }
 
     TArray<AActor*> OverlappingActors;

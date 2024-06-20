@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "SKill.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "Particles/ParticleSystem.h"
 #include "BombSkill.generated.h"
 
 /**
@@ -21,12 +22,17 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
     FVector ImpactLocation;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
+    float InitialSpeed = 1000.0f;
+
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Skill")
     UStaticMeshComponent* BombMesh;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Skill")
     UProjectileMovementComponent* ProjectileMovement;
-   
+
+    UPROPERTY(EditAnywhere, Category = "Effects")
+    UParticleSystem* ExplosionEffect;
 
     virtual void InitializeSkill(AActor* SkillCaster, FVector TargetLocation, float SkillRadius, float DamageAmount);
     void ThrowBomb(FVector LaunchVelocity);

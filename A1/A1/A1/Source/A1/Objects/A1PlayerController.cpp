@@ -23,7 +23,7 @@ AA1PlayerController::AA1PlayerController()
     PlayerMaxHealth = 100.0f;
     MovementSpeed = 500.0f;
     SkillPower = 100.0f;
-    SkillRange = 500.0f;
+    SkillRange = 1000.0f;
 
     
     static ConstructorHelpers::FClassFinder<UHealthBarWidget> HealthBarBPClass(TEXT("/Game/MyBP/Widgets/HealthBarWidget.HealthBarWidget_C"));
@@ -256,7 +256,7 @@ FVector AA1PlayerController::GetCamCenLoc(FVector& CameraLocation, FRotator& Cam
 {
     GetPlayerViewPoint(CameraLocation, CameraRotation);
 
-    FVector Start = CameraLocation + CameraRotation.Vector() * 400.0f;
+    FVector Start = CameraLocation + CameraRotation.Vector();
     FVector End = CameraLocation + CameraRotation.Vector() * 10000.0f; 
 
     DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 1.0f, 0, 1.0f);
@@ -712,7 +712,7 @@ void AA1PlayerController::UseBombSkill()
             if (CurrentBombSkill)
             {
                 CurrentBombSkill->OnSkillEnd.AddDynamic(this, &AA1PlayerController::OnSkillEnd);
-                CurrentBombSkill->InitializeSkill(GetPawn(), TargetLocation, SkillRange, SkillPower);  
+                CurrentBombSkill->InitializeSkill(GetPawn(), TargetLocation, SkillRange, SkillPower);  // 폭탄 스킬 설정
                 UE_LOG(LogTemp, Log, TEXT("Bomb skill spawned and initialized"));
             }
             else
@@ -735,8 +735,10 @@ void AA1PlayerController::ThrowBomb()
         FRotator CameraRot;
         GetCamCenLoc(CameraLoc, CameraRot);
 
-        FVector LaunchVelocity = CameraRot.Vector() * 1000.0f; 
+        FVector LaunchDirection = CameraRot.Vector();
+        FVector LaunchVelocity = LaunchDirection * 1500.0f; // 원하는 속도로 던지기
+
         CurrentBombSkill->ThrowBomb(LaunchVelocity);
-        CurrentBombSkill = nullptr; 
+        CurrentBombSkill = nullptr;
     }
 }
