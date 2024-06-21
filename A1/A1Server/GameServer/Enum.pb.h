@@ -101,13 +101,14 @@ inline bool PlayerType_Parse(
 }
 enum MonsterType : int {
   MONSTER_TYPE_NONE = 0,
-  MONSTER_TYPE_TEST = 1,
+  MONSTER_TYPE_FANATIC = 1,
+  MONSTER_TYPE_MONK = 2,
   MonsterType_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
   MonsterType_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
 };
 bool MonsterType_IsValid(int value);
 constexpr MonsterType MonsterType_MIN = MONSTER_TYPE_NONE;
-constexpr MonsterType MonsterType_MAX = MONSTER_TYPE_TEST;
+constexpr MonsterType MonsterType_MAX = MONSTER_TYPE_MONK;
 constexpr int MonsterType_ARRAYSIZE = MonsterType_MAX + 1;
 
 const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* MonsterType_descriptor();
@@ -123,6 +124,57 @@ inline bool MonsterType_Parse(
     ::PROTOBUF_NAMESPACE_ID::ConstStringParam name, MonsterType* value) {
   return ::PROTOBUF_NAMESPACE_ID::internal::ParseNamedEnum<MonsterType>(
     MonsterType_descriptor(), name, value);
+}
+enum AttackType : int {
+  ATTACK_TYPE_NONE = 0,
+  ATTACK_TYPE_BASIC = 1,
+  ATTACK_TYPE_SKILL = 2,
+  AttackType_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
+  AttackType_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
+};
+bool AttackType_IsValid(int value);
+constexpr AttackType AttackType_MIN = ATTACK_TYPE_NONE;
+constexpr AttackType AttackType_MAX = ATTACK_TYPE_SKILL;
+constexpr int AttackType_ARRAYSIZE = AttackType_MAX + 1;
+
+const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* AttackType_descriptor();
+template<typename T>
+inline const std::string& AttackType_Name(T enum_t_value) {
+  static_assert(::std::is_same<T, AttackType>::value ||
+    ::std::is_integral<T>::value,
+    "Incorrect type passed to function AttackType_Name.");
+  return ::PROTOBUF_NAMESPACE_ID::internal::NameOfEnum(
+    AttackType_descriptor(), enum_t_value);
+}
+inline bool AttackType_Parse(
+    ::PROTOBUF_NAMESPACE_ID::ConstStringParam name, AttackType* value) {
+  return ::PROTOBUF_NAMESPACE_ID::internal::ParseNamedEnum<AttackType>(
+    AttackType_descriptor(), name, value);
+}
+enum SkillType : int {
+  SKILL_TYPE_NONE = 0,
+  SKILL_TYPE_BOMB = 1,
+  SkillType_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
+  SkillType_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
+};
+bool SkillType_IsValid(int value);
+constexpr SkillType SkillType_MIN = SKILL_TYPE_NONE;
+constexpr SkillType SkillType_MAX = SKILL_TYPE_BOMB;
+constexpr int SkillType_ARRAYSIZE = SkillType_MAX + 1;
+
+const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* SkillType_descriptor();
+template<typename T>
+inline const std::string& SkillType_Name(T enum_t_value) {
+  static_assert(::std::is_same<T, SkillType>::value ||
+    ::std::is_integral<T>::value,
+    "Incorrect type passed to function SkillType_Name.");
+  return ::PROTOBUF_NAMESPACE_ID::internal::NameOfEnum(
+    SkillType_descriptor(), enum_t_value);
+}
+inline bool SkillType_Parse(
+    ::PROTOBUF_NAMESPACE_ID::ConstStringParam name, SkillType* value) {
+  return ::PROTOBUF_NAMESPACE_ID::internal::ParseNamedEnum<SkillType>(
+    SkillType_descriptor(), name, value);
 }
 enum MoveState : int {
   MOVE_STATE_NONE = 0,
@@ -187,6 +239,16 @@ template <> struct is_proto_enum< ::Protocol::MonsterType> : ::std::true_type {}
 template <>
 inline const EnumDescriptor* GetEnumDescriptor< ::Protocol::MonsterType>() {
   return ::Protocol::MonsterType_descriptor();
+}
+template <> struct is_proto_enum< ::Protocol::AttackType> : ::std::true_type {};
+template <>
+inline const EnumDescriptor* GetEnumDescriptor< ::Protocol::AttackType>() {
+  return ::Protocol::AttackType_descriptor();
+}
+template <> struct is_proto_enum< ::Protocol::SkillType> : ::std::true_type {};
+template <>
+inline const EnumDescriptor* GetEnumDescriptor< ::Protocol::SkillType>() {
+  return ::Protocol::SkillType_descriptor();
 }
 template <> struct is_proto_enum< ::Protocol::MoveState> : ::std::true_type {};
 template <>

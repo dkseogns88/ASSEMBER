@@ -8,6 +8,8 @@
 #include "Characters/PlayerChar.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "Characters/Monster.h"
+#include "Objects/A1PlayerController.h"
+#include "Network/A1NetworkManager.h"
 
 
 ABombSkill::ABombSkill()
@@ -80,7 +82,18 @@ void ABombSkill::ApplyDamage()
             if (HitMonster)
             {
                 HitMonster->TakeDMG(Damage);
-                UE_LOG(LogTemp, Log, TEXT("Damage applied to %s"), *HitMonster->GetName());
+
+                
+                APlayerChar* MyCharacter = Cast<APlayerChar>(UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetPawn());
+
+                Protocol::C_ATTACK AttackPkt;
+                Protocol::AttackInfo* Info = AttackPkt.mutable_info();
+                Info->set_attack_object_id(MyCharacter->GetPosInfo()->object_id());
+                Info->set_hit_object_id(HitMonster->GetPosInfo()->object_id());
+                Info->set_attack_type(Protocol::AttackType::ATTACK_TYPE_SKILL);
+                Info->set_skill_type(Protocol::SkillType::SKILL_TYPE_BOMB);
+                
+                MyCharacter->GetNetworkManager()->SendPacket(AttackPkt);
             }
         }
     }

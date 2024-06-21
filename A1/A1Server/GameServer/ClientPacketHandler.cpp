@@ -28,6 +28,14 @@ bool Handle_C_LOGIN(PacketSessionRef& session, Protocol::C_LOGIN& pkt)
 bool Handle_C_ENTER_GAME(PacketSessionRef& session, Protocol::C_ENTER_GAME& pkt)
 {
 	PlayerRef player = ObjectUtils::CreatePlayer(static_pointer_cast<GameSession>(session));
+	
+	// TODO: 플레이어 타입 정의
+	player->objectInfo->set_player_type(Protocol::PLAYER_TYPE_RINTY);
+
+	// TODO: 플레이어 스탯 정의
+	player->statInfo->set_hp(1000);
+	player->statInfo->set_max_hp(1000);
+	player->statInfo->set_damage(100);
 
 	GRoom->DoAsync(&Room::HandleEnterPlayer, player);
 
@@ -86,4 +94,22 @@ bool Handle_C_ZOOM(PacketSessionRef& session, Protocol::C_ZOOM& pkt)
 
 	return true;
 
+}
+
+bool Handle_C_ATTACK(PacketSessionRef& session, Protocol::C_ATTACK& pkt)
+{
+	auto gameSession = static_pointer_cast<GameSession>(session);
+
+	PlayerRef player = gameSession->player.load();
+	if (player == nullptr)
+		return false;
+
+	RoomRef room = player->room.load().lock();
+	if (room == nullptr)
+		return false;
+
+	room->DoAsync(&Room::HandleAttack, pkt);
+
+
+	return true;
 }

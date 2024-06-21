@@ -69,12 +69,12 @@ void UA1GameInstance::Init()
 void UA1GameInstance::SpawnMonsters()
 {
 	
-	GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, [this]()
+	/*GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, [this]()
 		{
 			
 			SpawnMonster(BPClassMonk);
 			SpawnMonster(BPClassFanatic);
-		}, 3.0f, true);
+		}, 3.0f, true);*/
 }
 
 //몬스터스폰 충돌검사

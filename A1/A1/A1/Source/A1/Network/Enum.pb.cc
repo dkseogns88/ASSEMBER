@@ -22,7 +22,7 @@ namespace _pbi = _pb::internal;
 
 namespace Protocol {
 }  // namespace Protocol
-static const ::_pb::EnumDescriptor* file_level_enum_descriptors_Enum_2eproto[4];
+static const ::_pb::EnumDescriptor* file_level_enum_descriptors_Enum_2eproto[6];
 static constexpr ::_pb::ServiceDescriptor const** file_level_service_descriptors_Enum_2eproto = nullptr;
 const uint32_t TableStruct_Enum_2eproto::offsets[1] = {};
 static constexpr ::_pbi::MigrationSchema* schemas = nullptr;
@@ -33,15 +33,19 @@ const char descriptor_table_protodef_Enum_2eproto[] PROTOBUF_SECTION_VARIABLE(pr
   "OBJECT_TYPE_NONE\020\000\022\026\n\022OBJECT_TYPE_PLAYER"
   "\020\001\022\027\n\023OBJECT_TYPE_MONSTER\020\002*O\n\nPlayerTyp"
   "e\022\024\n\020PLAYER_TYPE_NONE\020\000\022\025\n\021PLAYER_TYPE_R"
-  "INTY\020\001\022\024\n\020PLAYER_TYPE_SIDA\020\002*;\n\013MonsterT"
-  "ype\022\025\n\021MONSTER_TYPE_NONE\020\000\022\025\n\021MONSTER_TY"
-  "PE_TEST\020\001*^\n\tMoveState\022\023\n\017MOVE_STATE_NON"
-  "E\020\000\022\023\n\017MOVE_STATE_IDLE\020\001\022\022\n\016MOVE_STATE_R"
-  "UN\020\002\022\023\n\017MOVE_STATE_JUMP\020\003b\006proto3"
+  "INTY\020\001\022\024\n\020PLAYER_TYPE_SIDA\020\002*U\n\013MonsterT"
+  "ype\022\025\n\021MONSTER_TYPE_NONE\020\000\022\030\n\024MONSTER_TY"
+  "PE_FANATIC\020\001\022\025\n\021MONSTER_TYPE_MONK\020\002*P\n\nA"
+  "ttackType\022\024\n\020ATTACK_TYPE_NONE\020\000\022\025\n\021ATTAC"
+  "K_TYPE_BASIC\020\001\022\025\n\021ATTACK_TYPE_SKILL\020\002*5\n"
+  "\tSkillType\022\023\n\017SKILL_TYPE_NONE\020\000\022\023\n\017SKILL"
+  "_TYPE_BOMB\020\001*^\n\tMoveState\022\023\n\017MOVE_STATE_"
+  "NONE\020\000\022\023\n\017MOVE_STATE_IDLE\020\001\022\022\n\016MOVE_STAT"
+  "E_RUN\020\002\022\023\n\017MOVE_STATE_JUMP\020\003b\006proto3"
   ;
 static ::_pbi::once_flag descriptor_table_Enum_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_Enum_2eproto = {
-    false, false, 353, descriptor_table_protodef_Enum_2eproto,
+    false, false, 516, descriptor_table_protodef_Enum_2eproto,
     "Enum.proto",
     &descriptor_table_Enum_2eproto_once, nullptr, 0, 0,
     schemas, file_default_instances, TableStruct_Enum_2eproto::offsets,
@@ -93,6 +97,36 @@ bool MonsterType_IsValid(int value) {
   switch (value) {
     case 0:
     case 1:
+    case 2:
+      return true;
+    default:
+      return false;
+  }
+}
+
+const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* AttackType_descriptor() {
+  ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(&descriptor_table_Enum_2eproto);
+  return file_level_enum_descriptors_Enum_2eproto[3];
+}
+bool AttackType_IsValid(int value) {
+  switch (value) {
+    case 0:
+    case 1:
+    case 2:
+      return true;
+    default:
+      return false;
+  }
+}
+
+const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* SkillType_descriptor() {
+  ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(&descriptor_table_Enum_2eproto);
+  return file_level_enum_descriptors_Enum_2eproto[4];
+}
+bool SkillType_IsValid(int value) {
+  switch (value) {
+    case 0:
+    case 1:
       return true;
     default:
       return false;
@@ -101,7 +135,7 @@ bool MonsterType_IsValid(int value) {
 
 const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* MoveState_descriptor() {
   ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(&descriptor_table_Enum_2eproto);
-  return file_level_enum_descriptors_Enum_2eproto[3];
+  return file_level_enum_descriptors_Enum_2eproto[5];
 }
 bool MoveState_IsValid(int value) {
   switch (value) {

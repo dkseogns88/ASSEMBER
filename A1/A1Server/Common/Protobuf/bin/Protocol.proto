@@ -41,7 +41,7 @@ message S_LEAVE_GAME
 
 message S_SPAWN
 {
-	repeated ObjectInfo players = 1;
+	repeated ObjectInfo objects = 1;
 }
 
 message S_DESPAWN
@@ -67,4 +67,16 @@ message C_ZOOM
 message S_ZOOM
 {
 	ZoomInfo info = 1;
+}
+
+message C_ATTACK
+{
+	// TODO: 서버에서 충돌처리 할 시, StatInfo를 보내서 처리
+	AttackInfo info = 1;
+}
+
+message S_ATTACK
+{
+	AttackInfo attack_info	= 1;
+	StatInfo stat_info		= 2;
 }

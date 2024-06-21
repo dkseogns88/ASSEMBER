@@ -43,8 +43,8 @@ int main()
 		100);
 
 	ASSERT_CRASH(service->Start());
+	ASSERT_CRASH(GRoom->InitializationRoom());
 
-	cout << "Server Initial Finish!\n";
 
 	for (int32 i = 0; i < 3; i++)
 	{
@@ -54,6 +54,9 @@ int main()
 			});
 	}
 
+
+	cout << "Server Initial Finish!\n";
+	
 	// Main Thread
 	DoWorkerJob(service);
 

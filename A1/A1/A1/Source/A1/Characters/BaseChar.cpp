@@ -11,16 +11,19 @@ ABaseChar::ABaseChar()
     IsMoving = false;
 
     GetCharacterMovement()->bRunPhysicsWithNoController = true;
-    PlayerInfo = new Protocol::PosInfo();
+    PosInfo = new Protocol::PosInfo();
     DestInfo = new Protocol::PosInfo();
+    StatInfo = new Protocol::StatInfo();
 }
 
 ABaseChar::~ABaseChar()
 {
-    delete PlayerInfo;
+    delete PosInfo;
     delete DestInfo;
-    PlayerInfo = nullptr;
+    delete StatInfo;
+    PosInfo = nullptr;
     DestInfo = nullptr;
+    StatInfo = nullptr;
 }
 
 void ABaseChar::BeginPlay()
@@ -119,20 +122,20 @@ bool ABaseChar::IsMyPlayer()
 
 void ABaseChar::SetMoveState(Protocol::MoveState State)
 {
-    if (PlayerInfo->state() == State)
+    if (PosInfo->state() == State)
         return;
 
-    PlayerInfo->set_state(State);
+    PosInfo->set_state(State);
 }
 
-void ABaseChar::SetPlayerInfo(const Protocol::PosInfo& Info)
+void ABaseChar::SetPosInfo(const Protocol::PosInfo& Info)
 {
-    if (PlayerInfo->object_id() != 0)
+    if (PosInfo->object_id() != 0)
     {
-        assert(PlayerInfo->object_id() == Info.object_id());
+        assert(PosInfo->object_id() == Info.object_id());
     }
 
-    PlayerInfo->CopyFrom(Info);
+    PosInfo->CopyFrom(Info);
 
     FVector Location(Info.x(), Info.y(), Info.z());
     SetActorLocation(Location);
@@ -140,12 +143,22 @@ void ABaseChar::SetPlayerInfo(const Protocol::PosInfo& Info)
 
 void ABaseChar::SetDestInfo(const Protocol::PosInfo& Info)
 {
-    if (PlayerInfo->object_id() != 0)
+    if (PosInfo->object_id() != 0)
     {
-        assert(PlayerInfo->object_id() == Info.object_id());
+        assert(PosInfo->object_id() == Info.object_id());
     }
 
     DestInfo->CopyFrom(Info);
 
     SetMoveState(Info.state());
+}
+
+void ABaseChar::SetStatInfo(const Protocol::StatInfo& Info)
+{
+    if (StatInfo->object_id() != 0)
+    {
+        assert(StatInfo->object_id() == Info.object_id());
+    }
+
+    StatInfo->CopyFrom(Info);
 }

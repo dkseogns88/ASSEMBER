@@ -111,7 +111,7 @@ void AA1PlayerController::AimPressed()
     Protocol::C_ZOOM ZoomPkt;
     
     Protocol::ZoomInfo* Info = ZoomPkt.mutable_info();
-    Info->set_object_id(MyCharacter->GetPlayerInfo()->object_id());
+    Info->set_object_id(MyCharacter->GetPosInfo()->object_id());
     Info->set_b_zoom(true);
     
     MyCharacter->GetNetworkManager()->SendPacket(ZoomPkt);
@@ -126,7 +126,7 @@ void AA1PlayerController::AimReleased()
     Protocol::C_ZOOM ZoomPkt;
 
     Protocol::ZoomInfo* Info = ZoomPkt.mutable_info();
-    Info->set_object_id(MyCharacter->GetPlayerInfo()->object_id());
+    Info->set_object_id(MyCharacter->GetPosInfo()->object_id());
     Info->set_b_zoom(false);
 
     MyCharacter->GetNetworkManager()->SendPacket(ZoomPkt);
@@ -319,7 +319,17 @@ void AA1PlayerController::FireWeapon()
         if (HitMonster)
         {
             // Dealing Monster
-            HitMonster->TakeDMG(AttackPower); 
+            HitMonster->TakeDMG(AttackPower);
+            
+            APlayerChar* MyCharacter = Cast<APlayerChar>(GetPawn());
+            
+            Protocol::C_ATTACK AttackPkt;
+            Protocol::AttackInfo* Info = AttackPkt.mutable_info();
+            Info->set_attack_object_id(MyCharacter->GetPosInfo()->object_id());
+            Info->set_hit_object_id(HitMonster->PosInfo->object_id());
+            Info->set_attack_type(Protocol::AttackType::ATTACK_TYPE_BASIC);
+
+            GetGameInstance()->GetSubsystem<UA1NetworkManager>()->SendPacket(AttackPkt);
         }
         
     }

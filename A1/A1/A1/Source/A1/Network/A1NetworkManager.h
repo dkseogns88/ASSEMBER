@@ -30,7 +30,7 @@ public:
 	void SendPacket(T packet) const;
 
 public:
-	void HandleSpawn(const Protocol::ObjectInfo& PlayerInfo, bool IsMine);
+	void HandleSpawn(const Protocol::ObjectInfo& ObjectInfo, bool IsMine);
 	void HandleSpawn(const Protocol::S_ENTER_GAME& EnterGamePkt);
 	void HandleSpawn(const Protocol::S_SPAWN& SpawnPkt);
 
@@ -38,14 +38,19 @@ public:
 	void HandleDespawn(const Protocol::S_DESPAWN& DespawnPkt);
 
 	void HandleLeave(const Protocol::S_LEAVE_GAME& LeavePkt);
-
+	
 	void HandleMove(const Protocol::S_MOVE& MovePkt);
-
 	void HandleZoom(const Protocol::S_ZOOM& ZoomPkt);
+	void HandleAttack(const Protocol::S_ATTACK& AttackPkt);
+
 
 
 private:
 	ABaseChar* ValidationPlayer(int ObjectId);
+
+	void SpawnPlayer(const Protocol::ObjectInfo& ObjectInfo, bool IsMine);
+	void SpawnMonster(const Protocol::ObjectInfo& ObjectInfo);
+
 
 public:
 	class FSocket* Socket;
@@ -55,7 +60,7 @@ public:
 	TSharedPtr<class PacketSession> GameServerSession;
 public:
 	UPROPERTY()
-	TMap<uint64, ABaseChar*> Players;
+	TMap<uint64, ABaseChar*> Objects;
 
 	UPROPERTY()
 	TObjectPtr<ABaseChar> MyPlayer;

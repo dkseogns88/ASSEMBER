@@ -17,8 +17,22 @@ enum PlayerType
 
 enum MonsterType
 {
-	MONSTER_TYPE_NONE	= 0;
-	MONSTER_TYPE_TEST	= 1;
+	MONSTER_TYPE_NONE		= 0;
+	MONSTER_TYPE_FANATIC	= 1;
+	MONSTER_TYPE_MONK		= 2;
+}
+
+enum AttackType
+{
+	ATTACK_TYPE_NONE	= 0;
+	ATTACK_TYPE_BASIC	= 1;
+	ATTACK_TYPE_SKILL	= 2;
+}
+
+enum SkillType
+{
+	SKILL_TYPE_NONE = 0;
+	SKILL_TYPE_BOMB = 1;
 }
 
 enum MoveState
@@ -28,4 +42,3 @@ enum MoveState
 	MOVE_STATE_RUN	= 2;
 	MOVE_STATE_JUMP	= 3;
 }
-

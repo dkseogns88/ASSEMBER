@@ -106,3 +106,13 @@ bool Handle_S_ZOOM(PacketSessionRef& session, Protocol::S_ZOOM& pkt)
 
 	return true;
 }
+
+bool Handle_S_ATTACK(PacketSessionRef& session, Protocol::S_ATTACK& pkt)
+{
+	if (UA1NetworkManager* GameNetwork = GetWorldNetwork(session))
+	{
+		GameNetwork->HandleAttack(pkt);
+	}
+
+	return true;
+}

@@ -64,15 +64,19 @@ public:
 
 public:
     bool IsMyPlayer();
-    Protocol::MoveState GetMoveState() { return PlayerInfo->state(); }
+    Protocol::MoveState GetMoveState() { return PosInfo->state(); }
     void SetMoveState(Protocol::MoveState State);
 
-    void SetPlayerInfo(const Protocol::PosInfo& Info);
+    void SetPosInfo(const Protocol::PosInfo& Info);
     void SetDestInfo(const Protocol::PosInfo& Info);
-    Protocol::PosInfo* GetPlayerInfo() { return PlayerInfo; }
+    Protocol::PosInfo* GetPosInfo() { return PosInfo; }
+
+    void SetStatInfo(const Protocol::StatInfo& Info);
+    Protocol::StatInfo* GetStatInfo() { return StatInfo; }
 
 protected:
-    class Protocol::PosInfo* PlayerInfo;
+    class Protocol::PosInfo* PosInfo;
     class Protocol::PosInfo* DestInfo;
+    class Protocol::StatInfo* StatInfo;
 
 };

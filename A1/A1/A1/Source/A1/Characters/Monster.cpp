@@ -103,9 +103,6 @@ void AMonster::Attack(bool canattack)
 }
 
 
-   
-
-
 void AMonster::TakeDMG(float DMG)
 {
     if (!bIsDamaged)

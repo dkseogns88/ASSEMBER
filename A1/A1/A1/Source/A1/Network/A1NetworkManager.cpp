@@ -53,7 +53,7 @@ void UA1NetworkManager::DisconnectFromGameServer()
 
 	Protocol::C_LEAVE_GAME LeavePkt;
 	Protocol::PosInfo* Info = LeavePkt.mutable_info();
-	Info->CopyFrom(*MyPlayer->GetPlayerInfo());
+	Info->CopyFrom(*MyPlayer->GetPosInfo());
 	SendPacket(LeavePkt);
 
 }
@@ -74,41 +74,27 @@ void UA1NetworkManager::SendPacket(SendBufferRef SendBuffer)
 	GameServerSession->SendPacket(SendBuffer);
 }
 
-void UA1NetworkManager::HandleSpawn(const Protocol::ObjectInfo& PlayerInfo, bool IsMine)
+void UA1NetworkManager::HandleSpawn(const Protocol::ObjectInfo& ObjectInfo, bool IsMine)
 {
 	if (Socket == nullptr || GameServerSession == nullptr)
 		return;
 
-	auto* World = GetWorld();
-	if (World == nullptr)
+	const uint64 ObjectId = ObjectInfo.object_id();
+	if (Objects.Find(ObjectId) != nullptr)
 		return;
-
-	const uint64 ObjectId = PlayerInfo.object_id();
-	if (Players.Find(ObjectId) != nullptr)
-		return;
-
-	FVector SpawnLocation(PlayerInfo.pos_info().x(), PlayerInfo.pos_info().y(), PlayerInfo.pos_info().z());
-
-	if (IsMine)
+	
+	switch (ObjectInfo.object_type())
 	{
-		auto* PC = UGameplayStatics::GetPlayerController(this, 0);
-		ABaseChar* Player = Cast<APlayerChar>(PC->GetPawn());
-		if (Player == nullptr)
-			return;
-
-		Player->SetPlayerInfo(PlayerInfo.pos_info());
-		MyPlayer = Player;
-		Players.Add(PlayerInfo.object_id(), Player);
+	case Protocol::ObjectType::OBJECT_TYPE_PLAYER:
+		SpawnPlayer(ObjectInfo, IsMine);
+		break;
+	case Protocol::ObjectType::OBJECT_TYPE_MONSTER:
+		SpawnMonster(ObjectInfo);
+		break;
+	default:
+		break;
 	}
-	else
-	{
-		AOtherPlayerChar* Player = Cast<AOtherPlayerChar>(World->SpawnActor(Cast<UA1GameInstance>(GetGameInstance())->OtherPlayerClass, &SpawnLocation));
-		if (Player != nullptr) {
 
-			Player->SetPlayerInfo(PlayerInfo.pos_info());
-			Players.Add(PlayerInfo.object_id(), Player);
-		}
-	}
 }
 
 void UA1NetworkManager::HandleSpawn(const Protocol::S_ENTER_GAME& EnterGamePkt)
@@ -118,9 +104,9 @@ void UA1NetworkManager::HandleSpawn(const Protocol::S_ENTER_GAME& EnterGamePkt)
 
 void UA1NetworkManager::HandleSpawn(const Protocol::S_SPAWN& SpawnPkt)
 {
-	for (auto& Player : SpawnPkt.players())
+	for (auto& object : SpawnPkt.objects())
 	{
-		HandleSpawn(Player, false);
+		HandleSpawn(object, false);
 	}
 }
 
@@ -133,12 +119,12 @@ void UA1NetworkManager::HandleDespawn(uint64 ObjectId)
 	if (World == nullptr)
 		return;
 
-	ABaseChar** FindActor = Players.Find(ObjectId);
+	ABaseChar** FindActor = Objects.Find(ObjectId);
 	if (FindActor == nullptr)
 		return;
 
 	World->DestroyActor(*FindActor);
-	Players.Remove(ObjectId);
+	Objects.Remove(ObjectId);
 }
 
 void UA1NetworkManager::HandleDespawn(const Protocol::S_DESPAWN& DespawnPkt)
@@ -175,6 +161,24 @@ void UA1NetworkManager::HandleZoom(const Protocol::S_ZOOM& ZoomPkt)
 	}
 }
 
+void UA1NetworkManager::HandleAttack(const Protocol::S_ATTACK& AttackPkt)
+{
+	if (Socket == nullptr || GameServerSession == nullptr)
+		return;
+
+	// TODO: 다른 플레이어의 스킬 애니메이션 보여주기
+	AttackPkt.attack_info();
+
+	{
+		const uint64 ObjectId = AttackPkt.stat_info().object_id();
+		ABaseChar** FindActor = Objects.Find(ObjectId);
+		if (FindActor == nullptr) return;
+
+		ABaseChar* Object = *FindActor;
+		Object->SetStatInfo(AttackPkt.stat_info());
+	}
+}
+
 ABaseChar* UA1NetworkManager::ValidationPlayer(int ObjectId)
 {
 	if (Socket == nullptr || GameServerSession == nullptr)
@@ -184,7 +188,7 @@ ABaseChar* UA1NetworkManager::ValidationPlayer(int ObjectId)
 	if (World == nullptr)
 		return nullptr;
 
-	ABaseChar** FindActor = Players.Find(ObjectId);
+	ABaseChar** FindActor = Objects.Find(ObjectId);
 	if (FindActor == nullptr)
 		return nullptr;
 
@@ -195,4 +199,58 @@ ABaseChar* UA1NetworkManager::ValidationPlayer(int ObjectId)
 	return Player;
 }
 
+void UA1NetworkManager::SpawnPlayer(const Protocol::ObjectInfo& ObjectInfo, bool IsMine)
+{
+	auto* World = GetWorld();
+	if (World == nullptr)
+		return; 
+	
+	FVector SpawnLocation(ObjectInfo.pos_info().x(), ObjectInfo.pos_info().y(), ObjectInfo.pos_info().z());
 
+	if (IsMine)
+	{
+		auto* PC = UGameplayStatics::GetPlayerController(this, 0);
+		ABaseChar* Player = Cast<APlayerChar>(PC->GetPawn());
+		if (Player == nullptr)
+			return;
+
+		Player->SetPosInfo(ObjectInfo.pos_info());
+		Player->SetStatInfo(ObjectInfo.stat_info());
+		MyPlayer = Player;
+		Objects.Add(ObjectInfo.object_id(), Player);
+	}
+	else
+	{
+		AOtherPlayerChar* Player = Cast<AOtherPlayerChar>(World->SpawnActor(Cast<UA1GameInstance>(GetGameInstance())->OtherPlayerClass, &SpawnLocation));
+		if (Player != nullptr) {
+
+			Player->SetPosInfo(ObjectInfo.pos_info());
+			Player->SetStatInfo(ObjectInfo.stat_info());
+			Objects.Add(ObjectInfo.object_id(), Player);
+		}
+	}
+}
+
+void UA1NetworkManager::SpawnMonster(const Protocol::ObjectInfo& ObjectInfo)
+{
+	auto* World = GetWorld();
+	if (World == nullptr)
+		return;
+
+	FVector SpawnLocation(ObjectInfo.pos_info().x(), ObjectInfo.pos_info().y(), ObjectInfo.pos_info().z());
+	TSubclassOf<AMonster> MonsterClass;
+
+	if (ObjectInfo.monster_type() == Protocol::MonsterType::MONSTER_TYPE_FANATIC)
+		MonsterClass = Cast<UA1GameInstance>(GetGameInstance())->BPClassFanatic;
+	else if (ObjectInfo.monster_type() == Protocol::MonsterType::MONSTER_TYPE_MONK)
+		MonsterClass = Cast<UA1GameInstance>(GetGameInstance())->BPClassMonk;
+
+	AMonster* Monster = Cast<AMonster>(World->SpawnActor(MonsterClass, &SpawnLocation));
+	if (Monster)
+	{
+		Monster->SetPosInfo(ObjectInfo.pos_info());
+		Monster->SetStatInfo(ObjectInfo.stat_info());
+		Objects.Add(ObjectInfo.object_id(), Monster);
+	}
+
+}

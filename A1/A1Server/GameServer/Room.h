@@ -7,12 +7,14 @@ public:
 	Room();
 	virtual ~Room();
 
+	bool InitializationRoom();
+
 	bool HandleEnterPlayer(PlayerRef player);
 	bool HandleLeavePlayer(PlayerRef player);
 
 	void HandleMove(Protocol::C_MOVE pkt);
-
 	void HandleZoom(Protocol::C_ZOOM pkt);
+	void HandleAttack(Protocol::C_ATTACK pkt);
 
 public:
 

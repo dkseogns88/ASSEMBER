@@ -14,6 +14,7 @@ public:
 public:
 	Protocol::ObjectInfo* objectInfo;
 	Protocol::PosInfo* posInfo;
+	Protocol::StatInfo* statInfo;
 
 public:
 	atomic<weak_ptr<Room>> room;

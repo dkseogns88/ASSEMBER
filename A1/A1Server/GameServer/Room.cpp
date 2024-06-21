@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Room.h"
 #include "Player.h"
+#include "Monster.h"
 #include "GameSession.h"
 #include "ObjectUtils.h"
 
@@ -16,6 +17,27 @@ Room::~Room()
 
 }
 
+bool Room::InitializationRoom()
+{
+	MonsterRef monster = ObjectUtils::CreateMonster();
+	
+	// TODO: 몬스터 타입 정의
+	monster->objectInfo->set_monster_type(Protocol::MONSTER_TYPE_FANATIC);
+	monster->posInfo->set_x(Utils::GetRandom(0.f, 500.f));
+	monster->posInfo->set_y(Utils::GetRandom(0.f, 500.f));
+	monster->posInfo->set_z(40.f);
+	monster->posInfo->set_state(Protocol::MOVE_STATE_IDLE);
+
+	// TODO: 몬스터 스탯 정의
+	monster->statInfo->set_hp(400);
+	monster->statInfo->set_max_hp(400);
+	monster->statInfo->set_damage(50);;
+
+	if (!AddMonster(monster)) return false;
+
+	cout << "Room Initial\n";
+	return true;
+}
 
 
 bool Room::HandleEnterPlayer(PlayerRef player)
@@ -51,7 +73,7 @@ bool Room::HandleEnterPlayer(PlayerRef player)
 	{
 		Protocol::S_SPAWN spawnPkt;
 
-		Protocol::ObjectInfo* objectInfo = spawnPkt.add_players();
+		Protocol::ObjectInfo* objectInfo = spawnPkt.add_objects();
 		objectInfo->CopyFrom(*player->objectInfo);
 
 		// TODO: Sector 관리 
@@ -68,7 +90,22 @@ bool Room::HandleEnterPlayer(PlayerRef player)
 			if (item.second->IsPlayer() == false)
 				continue;
 
-			Protocol::ObjectInfo* objectInfo = spawnPkt.add_players();
+			Protocol::ObjectInfo* objectInfo = spawnPkt.add_objects();
+			objectInfo->CopyFrom(*item.second->objectInfo);
+		}
+
+		SendBufferRef sendBuffer = ClientPacketHandler::MakeSendBuffer(spawnPkt);
+		if (auto session = player->session.lock())
+			session->Send(sendBuffer);
+	}
+
+	// 입장한 플레이어 모두에게 기존 몬스터들을 알리자.
+	{
+		Protocol::S_SPAWN spawnPkt;
+
+		for (auto& item : _monsters)
+		{
+			Protocol::ObjectInfo* objectInfo = spawnPkt.add_objects();
 			objectInfo->CopyFrom(*item.second->objectInfo);
 		}
 
@@ -152,6 +189,112 @@ void Room::HandleZoom(Protocol::C_ZOOM pkt)
 
 		SendBufferRef sendBuffer = ClientPacketHandler::MakeSendBuffer(zoomPkt);
 		Broadcast(sendBuffer);
+	}
+
+}
+
+void Room::HandleAttack(Protocol::C_ATTACK pkt)
+{
+	const uint64 attackId = pkt.info().attack_object_id();
+	const uint64 hitId = pkt.info().hit_object_id();
+
+	if (_objects.find(attackId) == _objects.end())
+		return;
+	if (_objects.find(hitId) == _objects.end())
+		return;
+	
+	if (pkt.info().attack_type() ==  Protocol::AttackType::ATTACK_TYPE_BASIC)
+	{
+		ObjectRef attackObject = _objects[attackId];
+		ObjectRef HitObject = _objects[hitId];
+
+		const uint32 damage = attackObject->statInfo->damage();
+		uint32 hp = HitObject->statInfo->hp();
+
+		hp -= damage;
+		if (hp <= 0)
+		{
+			Protocol::S_DESPAWN despawnPkt;
+			despawnPkt.add_object_ids(hitId);
+
+			SendBufferRef sendBuffer = ClientPacketHandler::MakeSendBuffer(despawnPkt);
+			Broadcast(sendBuffer);
+
+			if (HitObject->objectInfo->object_type() == Protocol::ObjectType::OBJECT_TYPE_PLAYER)
+			{
+				// TODO: 플레이어는 추후 관리!
+				
+			}
+			else if (HitObject->objectInfo->object_type() == Protocol::ObjectType::OBJECT_TYPE_PLAYER)
+			{
+				RemoveMonster(hitId);
+			}
+			cout << "삭제 ID: " << hitId << endl;
+			return;
+		}
+
+		HitObject->statInfo->set_hp(hp);
+
+		Protocol::S_ATTACK attackPkt;
+		Protocol::AttackInfo* attack_info = attackPkt.mutable_attack_info();
+		Protocol::StatInfo* stat_info = attackPkt.mutable_stat_info();
+
+		attack_info->CopyFrom(pkt.info());
+		stat_info->CopyFrom(*(HitObject->statInfo));
+
+		SendBufferRef sendBuffer = ClientPacketHandler::MakeSendBuffer(attackPkt);
+		Broadcast(sendBuffer);
+
+		cout << "공격 ID: " << attackId << ", 데미지: " << damage << endl;
+		cout << "피격 ID: " << hitId << ", 체력: " << hp << endl;
+
+	}
+	else if (pkt.info().attack_type() == Protocol::AttackType::ATTACK_TYPE_BASIC)
+	{
+		ObjectRef attackObject = _objects[attackId];
+		ObjectRef HitObject = _objects[hitId];
+
+		const uint32 damage = attackObject->statInfo->damage();
+		uint32 hp = HitObject->statInfo->hp();
+
+		hp -= damage;
+		if (hp <= 0)
+		{
+			Protocol::S_DESPAWN despawnPkt;
+			despawnPkt.add_object_ids(hitId);
+
+			SendBufferRef sendBuffer = ClientPacketHandler::MakeSendBuffer(despawnPkt);
+			Broadcast(sendBuffer);
+
+			if (HitObject->objectInfo->object_type() == Protocol::ObjectType::OBJECT_TYPE_PLAYER)
+			{
+				// TODO: 플레이어는 추후 관리!
+
+			}
+			else if (HitObject->objectInfo->object_type() == Protocol::ObjectType::OBJECT_TYPE_PLAYER)
+			{
+				RemoveMonster(hitId);
+			}
+
+			cout << "삭제 ID: " << hitId << endl;
+			return;
+		}
+
+		HitObject->statInfo->set_hp(hp);
+
+		Protocol::S_ATTACK attackPkt;
+		Protocol::AttackInfo* attack_info = attackPkt.mutable_attack_info();
+		Protocol::StatInfo* stat_info = attackPkt.mutable_stat_info();
+
+		attack_info->CopyFrom(pkt.info());
+		stat_info->CopyFrom(*(HitObject->statInfo));
+
+		SendBufferRef sendBuffer = ClientPacketHandler::MakeSendBuffer(attackPkt);
+		Broadcast(sendBuffer);
+
+		cout << "공격 ID: " << attackId << ", 데미지: " << damage << endl;
+		cout << "피격 ID: " << hitId << ", 체력: " << hp << endl;
+		
 	}
 
 }

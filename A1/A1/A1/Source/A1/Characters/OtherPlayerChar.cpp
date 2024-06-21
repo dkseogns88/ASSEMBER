@@ -28,7 +28,7 @@ void AOtherPlayerChar::Tick(float DeltaTime)
 
 	if (IsMyPlayer() == false)
 	{
-		const Protocol::MoveState State = PlayerInfo->state();
+		const Protocol::MoveState State = PosInfo->state();
 
 		float YawInterpValue = 10.f;
 		if (State == Protocol::MOVE_STATE_IDLE)

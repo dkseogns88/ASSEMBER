@@ -17,7 +17,6 @@
 UA1NetworkManager* APlayerChar::GetNetworkManager() const
 {
     return GetGameInstance()->GetSubsystem<UA1NetworkManager>();
-
 }
 
 APlayerChar::APlayerChar()
@@ -349,9 +348,9 @@ void APlayerChar::SendTick(float DeltaTime)
         MovePacketSendTimer = MOVE_PACKET_SEND_DELAY;
 
         FVector Location = GetActorLocation();
-        PlayerInfo->set_x(Location.X);
-        PlayerInfo->set_y(Location.Y);
-        PlayerInfo->set_z(Location.Z);
+        PosInfo->set_x(Location.X);
+        PosInfo->set_y(Location.Y);
+        PosInfo->set_z(Location.Z);
 
         if (GetMoveState() == Protocol::MOVE_STATE_RUN
             || GetMoveState() == Protocol::MOVE_STATE_IDLE)
@@ -370,7 +369,7 @@ void APlayerChar::Send_Idle_Move()
     Protocol::C_MOVE MovePkt;
 
     Protocol::PosInfo* Info = MovePkt.mutable_info();
-    Info->CopyFrom(*PlayerInfo);
+    Info->CopyFrom(*PosInfo);
     Info->set_yaw(DesiredYaw);
     Info->set_state(GetMoveState());
     Info->set_d_x(DesiredMoveDirection.X);
@@ -385,7 +384,7 @@ void APlayerChar::Send_Jump()
     Protocol::C_MOVE MovePkt;
 
     Protocol::PosInfo* Info = MovePkt.mutable_info();
-    Info->CopyFrom(*PlayerInfo);
+    Info->CopyFrom(*PosInfo);
     Info->set_yaw(DesiredYaw);
     Info->set_state(GetMoveState());
     Info->set_d_x(DesiredMoveDirection.X);
