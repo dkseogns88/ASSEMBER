@@ -127,15 +127,7 @@ void APlayerChar::SetMovementSpeed(float NewSpeed)
     GetCharacterMovement()->MaxWalkSpeed = Speed;
 }
 
-void APlayerChar::StartRoll()
-{
-    
-}
 
-void APlayerChar::EndRoll()
-{
-    
-}
 
 void APlayerChar::UseSkillAnim(bool UsingSkill)
 {

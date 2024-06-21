@@ -29,11 +29,7 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 
-	UFUNCTION(BlueprintCallable, Category = "Character Actions")
-	void StartRoll();
 
-	UFUNCTION(BlueprintCallable, Category = "Character Actions")
-	void EndRoll();
 
 	UFUNCTION(BlueprintCallable, Category = "Character Actions")
 	void UseSkillAnim(bool UsingSkill);
