@@ -314,6 +314,7 @@ void AA1PlayerController::FireWeapon()
    
     if (GetWorld()->LineTraceSingleByChannel(HitResult, CameraLoc, TargetLocation, ECC_Pawn, Params))
     {
+        //서버충돌처리
         AMonster* HitMonster = Cast<AMonster>(HitResult.GetActor());
         if (HitMonster)
         {
@@ -493,15 +494,25 @@ void AA1PlayerController::ShowEnemyInfo(AMonster* Enemy)
 
 void AA1PlayerController::ReloadWeapon()
 {
-    CurrentAmmo = MaxAmmo;
-    if (AmmoWidget)
+    if (!GetWorld()->GetTimerManager().IsTimerActive(ReloadCooldownTimerHandle))
     {
-        AmmoWidget->UpdateAmmoCount(CurrentAmmo, MaxAmmo);
-    }
+        
+        GetWorld()->GetTimerManager().SetTimer(ReloadCooldownTimerHandle, [this]()
+            {
+                //서버 장전처리
+                CurrentAmmo = MaxAmmo;
+                if (AmmoWidget)
+                {
+                    AmmoWidget->UpdateAmmoCount(CurrentAmmo, MaxAmmo);
+                }
+                
+                GetWorld()->GetTimerManager().ClearTimer(ReloadCooldownTimerHandle);
 
-    if (ReloadSound)
-    {
-        UGameplayStatics::PlaySoundAtLocation(this, ReloadSound, GetPawn()->GetActorLocation());
+            }, 1.0f, false);
+        if (ReloadSound)
+        {
+            UGameplayStatics::PlaySoundAtLocation(this, ReloadSound, GetPawn()->GetActorLocation());
+        }
     }
 }
 

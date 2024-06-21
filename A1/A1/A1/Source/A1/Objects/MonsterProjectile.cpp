@@ -57,6 +57,7 @@ void AMonsterProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor,
     
     if (OtherActor && OtherActor != this && OtherComp)
     {
+        //서버충돌처리
         if (OtherActor->IsA(APlayerChar::StaticClass()))
         {
             APlayerChar* HitCharacter = Cast<APlayerChar>(OtherActor);

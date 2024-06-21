@@ -226,6 +226,7 @@ void AMonster::CheckSwordHit()
         for (FHitResult HitResult : HitResults)
         {
             AActor* HitActor = HitResult.GetActor();
+            //서버충돌처리
             if (HitActor && HitActor->IsA(APlayerChar::StaticClass()))
             {
                 APlayerChar* HitCharacter = Cast<APlayerChar>(HitActor);

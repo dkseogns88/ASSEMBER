@@ -82,6 +82,8 @@ public:
 	
 	FTimerHandle FireCooldownTimerHandle;
 
+	FTimerHandle ReloadCooldownTimerHandle;
+
 
 	UFUNCTION(BlueprintCallable, Category = "LevelUp")
 	void HandleLevelUpOption(int OptionIndex);

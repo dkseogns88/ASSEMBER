@@ -48,6 +48,7 @@ void ASKill::ApplyDamage()
     TArray<AActor*> OverlappingActors;
     UGameplayStatics::GetAllActorsOfClass(GetWorld(), AMonster::StaticClass(), OverlappingActors);
 
+    //서버충돌처리
     for (AActor* Actor : OverlappingActors)
     {
         if (Actor != Caster && (Actor->GetActorLocation() - Caster->GetActorLocation()).Size() <= Radius)
