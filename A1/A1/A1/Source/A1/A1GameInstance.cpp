@@ -5,12 +5,14 @@
 #include "Sockets.h"
 #include "Engine/World.h"
 #include "Characters/Monster.h"
+#include "TimerManager.h"
 #include "Common/TcpSocketBuilder.h"
 #include "Serialization/ArrayWriter.h"
 #include "SocketSubsystem.h"
 #include "Characters/PlayerChar.h"
 #include "GameFramework/PlayerController.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "GameFramework/Pawn.h"
 #include "Characters/BaseChar.h"
 #include "Characters/OtherPlayerChar.h"
@@ -26,33 +28,107 @@
 
 UA1GameInstance::UA1GameInstance()
 {
+	NextSpawnLocation = FVector(1350.0f, 1900.0f, 100.0f);
+
 	ConstructorHelpers::FClassFinder<AOtherPlayerChar> FindOtherPlayerClass(TEXT("/Script/Engine.Blueprint'/Game/MyBP/BP_OtherPlayer.BP_OtherPlayer_C'"));
 	
 	if (FindOtherPlayerClass.Succeeded())
 	{
 		OtherPlayerClass = FindOtherPlayerClass.Class;
 	}
+
+	ConstructorHelpers::FClassFinder<AMonster> FindMonkClass(TEXT("/Script/Engine.Blueprint'/Game/MyBP/BP_Monk.BP_Monk_C'"));
+
+	if (FindMonkClass.Succeeded())
+	{
+		BPClassMonk = FindMonkClass.Class;
+	}
+
+	ConstructorHelpers::FClassFinder<AMonster> FindFanaticClass(TEXT("/Script/Engine.Blueprint'/Game/MyBP/BP_Fanatic.BP_Fanatic_C'"));
+
+	if (FindFanaticClass.Succeeded())
+	{
+		BPClassFanatic = FindFanaticClass.Class;
+	}
+
 }
 
 void UA1GameInstance::Init()
 {
 	Super::Init();
 
-
-	//MonsterClass = AEnemy1::StaticClass();
-
-
 	// 캐릭터 클래스 매핑 초기화
 	CharacterBlueprintPaths.Add("Rinty", "Blueprint'/Game/BP/BP_Rinty.BP_Rinty_C'");
 	
-
-	//스폰안정화를위해 월드 완전히생성후 텀을두어 몬스터소환
-	//GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, this, &UMyProjectGameInstance::SpawnNPC, 1.0f, false);
-
-
+	
+	GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, this, &UA1GameInstance::SpawnMonsters, 1.0f, false);
 }
 
 
+
+void UA1GameInstance::SpawnMonsters()
+{
+	
+	GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, [this]()
+		{
+			
+			SpawnMonster(BPClassMonk);
+			SpawnMonster(BPClassFanatic);
+		}, 3.0f, true);
+}
+
+//몬스터스폰 충돌검사
+bool UA1GameInstance::SpawnLocationValid(FVector Location, FRotator Rotation, FVector BoxExtent)
+{
+	FHitResult HitResult;
+	return !UKismetSystemLibrary::BoxTraceSingle(
+		this,
+		Location,
+		Location,
+		BoxExtent,
+		Rotation,
+		ETraceTypeQuery::TraceTypeQuery1,
+		false,
+		TArray<AActor*>(),
+		EDrawDebugTrace::None,
+		HitResult,
+		true
+	);
+}
+
+void UA1GameInstance::SpawnMonster(TSubclassOf<AMonster> MonsterClass)
+{
+	if (!MonsterClass) return;
+
+	UWorld* World = GetWorld();
+	if (!World) return;
+
+	FVector Location = NextSpawnLocation;
+	FRotator Rotation = FRotator::ZeroRotator; 
+	FVector BoxExtent(50.0f, 50.0f, 50.0f); 
+
+	// 충돌 검사
+	while (!SpawnLocationValid(Location, Rotation, BoxExtent))
+	{
+		Location.X += 10.0f;
+		Location.Y += 10.0f;
+	}
+
+	FActorSpawnParameters SpawnParams;
+	AMonster* SpawnedMonster = World->SpawnActor<AMonster>(MonsterClass, Location, Rotation, SpawnParams);
+	if (SpawnedMonster)
+	{
+
+		uint64 MonsterID = FGuid::NewGuid().A; // 고유 ID 생성
+		Monsters.Add(MonsterID, SpawnedMonster);
+		UE_LOG(LogTemp, Log, TEXT("Spawned Monster: %s at Location: %s"), *MonsterClass->GetName(), *Location.ToString());
+
+		NextSpawnLocation.X += 10.0f;
+		NextSpawnLocation.Y += 10.0f;
+	}
+	
+	
+}
 
 UClass* UA1GameInstance::GetCharacterClass(const FString& CharacterName) const
 {

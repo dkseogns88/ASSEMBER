@@ -56,12 +56,18 @@ private:
 
 
 	FTimerHandle SpawnTimerHandle;
+	FVector NextSpawnLocation;
+	void SpawnMonster(TSubclassOf<class AMonster> MonsterClass);
+	bool SpawnLocationValid(FVector Location, FRotator Rotation, FVector BoxExtent);
 
 public:
 	
 	// 몬스터 클래스 참조
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawn")
-	TSubclassOf<AMonster> MonsterClass;
+	TSubclassOf<AMonster> BPClassMonk;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawn")
+	TSubclassOf<AMonster> BPClassFanatic;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawn")
 	TSubclassOf<APlayerChar> OtherPlayerClassRinty;
@@ -80,6 +86,8 @@ public:
 	ABaseChar* MyPlayer;
 	TMap<uint64, ABaseChar*> Players;
 
+	UFUNCTION(BlueprintCallable)
+	void SpawnMonsters();
 
 public:
 	/////////////////////////////////////
