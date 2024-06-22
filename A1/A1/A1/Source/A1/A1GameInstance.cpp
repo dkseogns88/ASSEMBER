@@ -195,16 +195,20 @@ void UA1GameInstance::LogNavMeshPolygons()
 
 	const FBox NavBounds = NavMesh->GetNavMeshBounds();
 
-	// Get the tile size directly from the NavMesh's properties
+	
 	const float TileSize = NavMesh->TileSizeUU;
 	const FIntPoint TileCount = FIntPoint(
 		FMath::CeilToInt(NavBounds.GetSize().X / TileSize),
 		FMath::CeilToInt(NavBounds.GetSize().Y / TileSize)
 	);
 
-	for (int32 TileX = 0; TileX < TileCount.X; ++TileX)
+	
+	TArray<FVector> TileCenters;
+
+	
+	for (int32 TileY = 0; TileY < TileCount.Y; ++TileY)
 	{
-		for (int32 TileY = 0; TileY < TileCount.Y; ++TileY)
+		for (int32 TileX = 0; TileX < TileCount.X; ++TileX)
 		{
 			FVector TileCenter = FVector(
 				NavBounds.Min.X + TileX * TileSize + TileSize / 2,
@@ -212,8 +216,44 @@ void UA1GameInstance::LogNavMeshPolygons()
 				NavBounds.GetCenter().Z
 			);
 
-			UE_LOG(LogTemp, Log, TEXT("Tile (%d, %d): Center = %s"), TileX, TileY, *TileCenter.ToString());
+			TileCenters.Add(TileCenter);
+		}
+	}
+
+	
+	for (int32 TileX = 0; TileX < TileCount.X - 1; ++TileX)
+	{
+		for (int32 TileY = 0; TileY < TileCount.Y - 1; ++TileY)
+		{
+			//»ó´ëÁÂÇ¥
+			FVector Triangle1[] = {
+				FVector(TileX, TileY, 0),
+				FVector(TileX + 1, TileY, 0),
+				FVector(TileX, TileY + 1, 0)
+			};
+
+			FVector Triangle2[] = {
+				FVector(TileX + 1, TileY, 0),
+				FVector(TileX, TileY + 1, 0),
+				FVector(TileX + 1, TileY + 1, 0)
+			};
+
+			//Àý´ëÁÂÇ¥
+			FVector WorldTriangle1[] = {
+				TileCenters[TileX + TileY * TileCount.X],
+				TileCenters[(TileX + 1) + TileY * TileCount.X],
+				TileCenters[TileX + (TileY + 1) * TileCount.X]
+			};
+
+			FVector WorldTriangle2[] = {
+				TileCenters[(TileX + 1) + TileY * TileCount.X],
+				TileCenters[TileX + (TileY + 1) * TileCount.X],
+				TileCenters[(TileX + 1) + (TileY + 1) * TileCount.X]
+			};
+
+			
+			UE_LOG(LogTemp, Log, TEXT("Triangle %s -> %s, %s, %s"), *FString::Printf(TEXT("{(%.0f,%.0f),(%.0f,%.0f),(%.0f,%.0f)}"), Triangle1[0].X, Triangle1[0].Y, Triangle1[1].X, Triangle1[1].Y, Triangle1[2].X, Triangle1[2].Y), *WorldTriangle1[0].ToString(), *WorldTriangle1[1].ToString(), *WorldTriangle1[2].ToString());
+			UE_LOG(LogTemp, Log, TEXT("Triangle %s -> %s, %s, %s"), *FString::Printf(TEXT("{(%.0f,%.0f),(%.0f,%.0f),(%.0f,%.0f)}"), Triangle2[0].X, Triangle2[0].Y, Triangle2[1].X, Triangle2[1].Y, Triangle2[2].X, Triangle2[2].Y), *WorldTriangle2[0].ToString(), *WorldTriangle2[1].ToString(), *WorldTriangle2[2].ToString());
 		}
 	}
 }
-
