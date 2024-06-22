@@ -37,6 +37,16 @@ AA1PlayerController::AA1PlayerController()
     {
         AmmoWidgetClass = AmmoWidgetBPClass.Class;
     }
+    static ConstructorHelpers::FClassFinder<USkillCooldownWidget> GunSkillCooldownWidgetBPClass(TEXT("/Game/MyBP/Widgets/GunSkillCooldownWidget.GunSkillCooldownWidget_C"));
+    if (GunSkillCooldownWidgetBPClass.Succeeded())
+    {
+        GunSkillCooldownWidgetClass = GunSkillCooldownWidgetBPClass.Class;
+    }
+    static ConstructorHelpers::FClassFinder<USkillCooldownWidget> BombSkillCooldownWidgetBPClass(TEXT("/Game/MyBP/Widgets/BombSkillCooldownWidget.BombSkillCooldownWidget_C"));
+    if (BombSkillCooldownWidgetBPClass.Succeeded())
+    {
+        BombSkillCooldownWidgetClass = BombSkillCooldownWidgetBPClass.Class;
+    }
 
     static ConstructorHelpers::FObjectFinder<USoundBase> FireSoundObj(TEXT("/Game/Sound/pistol.pistol"));
     if (FireSoundObj.Succeeded())
@@ -91,16 +101,18 @@ AA1PlayerController::AA1PlayerController()
         PlayerStatWidgetClass = PlayerStatBPClass.Class;
     }
 
-    static ConstructorHelpers::FClassFinder<ASKill> SkillBPClass(TEXT("/Game/MyBP/BP_Skill.BP_Skill_C"));
+    static ConstructorHelpers::FClassFinder<ASKill> SkillBPClass(TEXT("/Game/MyBP/Attack/BP_Skill.BP_Skill_C"));
     if (SkillBPClass.Succeeded())
     {
         SkillClass = SkillBPClass.Class;
     }
-    static ConstructorHelpers::FClassFinder<ABombSkill> BombSkillBPClass(TEXT("/Game/MyBP/BP_BombSkill.BP_BombSkill_C"));
+    static ConstructorHelpers::FClassFinder<ABombSkill> BombSkillBPClass(TEXT("/Game/MyBP/Attack/BP_BombSkill.BP_BombSkill_C"));
     if (BombSkillBPClass.Succeeded())
     {
         BombSkillClass = BombSkillBPClass.Class;
     }
+
+   
 }
 
 void AA1PlayerController::AimPressed()
@@ -134,9 +146,9 @@ void AA1PlayerController::AimReleased()
 
 void AA1PlayerController::BeginPlay()
 {
-	Super::BeginPlay();
-    
-    
+    Super::BeginPlay();
+
+
 
     //Set Player Stat
     InitializeStats(PlayerHealth, MovementSpeed, AttackPower);
@@ -162,7 +174,7 @@ void AA1PlayerController::BeginPlay()
             PlayerStatWidget->SetVisibility(ESlateVisibility::Hidden);
         }
     }
-    
+
     if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
     {
         Subsystem->AddMappingContext(InputMappingContext, 0);
@@ -196,10 +208,55 @@ void AA1PlayerController::BeginPlay()
         //Create LevelUpWidget
         LevelUpWidgetInstance = CreateWidget<ULevelUpWidget>(this, LevelUpWidgetClass);
 
+      
+
+        if (GetPawn())
+        {
+            CharacterBlueprintClass = GetPawn()->GetClass();
+            UE_LOG(LogTemp, Log, TEXT("Character Blueprint Class: %s"), *CharacterBlueprintClass->GetName());
+
+
+            if (CharacterBlueprintClass->GetName() == "BP_Rinty_C")
+            {
+                PlayingRinty = true;
+                UE_LOG(LogTemp, Log, TEXT("Character is BP_Rinty"));
+
+            }
+            else if (CharacterBlueprintClass->GetName() == "BP_Sida_C")
+            {
+                PlayingSida = true;
+                UE_LOG(LogTemp, Log, TEXT("Character is BP_Sida"));
+
+            }
+        }
+        if (PlayingRinty && !PlayingSida)
+        {
+            if (GunSkillCooldownWidgetClass)
+            {
+                GunSkillCooldownWidgetInstance = CreateWidget<USkillCooldownWidget>(this, GunSkillCooldownWidgetClass);
+                if (GunSkillCooldownWidgetInstance)
+                {
+                    GunSkillCooldownWidgetInstance->AddToViewport();
+                    GunSkillCooldownWidgetInstance->InitializeCooldown(10.0f); // Cooldown duration set to 10 seconds
+                }
+            }
+        }
+        if (PlayingSida && !PlayingRinty)
+        {
+            if (BombSkillCooldownWidgetClass)
+            {
+                BombSkillCooldownWidgetInstance = CreateWidget<USkillCooldownWidget>(this, BombSkillCooldownWidgetClass);
+                if (BombSkillCooldownWidgetInstance)
+                {
+                    BombSkillCooldownWidgetInstance->AddToViewport();
+                    BombSkillCooldownWidgetInstance->InitializeCooldown(10.0f); // Cooldown duration set to 10 seconds
+                }
+            }
+        }
+
+
+
     }
-
-   
-
 }
 
 void AA1PlayerController::SetupInputComponent()
@@ -673,7 +730,7 @@ void AA1PlayerController::Interact()
 
 void AA1PlayerController::UseSkill()
 {
-    if (SkillClass)
+    if (SkillClass && PlayingRinty && !bIsSkillOnCooldown)
     {
         APlayerChar* PlayerChar = Cast<APlayerChar>(GetPawn());
         if (PlayerChar && !(PlayerChar->bIsJumping))
@@ -695,7 +752,18 @@ void AA1PlayerController::UseSkill()
                         UE_LOG(LogTemp, Log, TEXT("Skill spawned and initialized"));
                     }
                    
-                }, 1.0f, false); // Use Skill,Animation time
+                }, 1.0f, false); 
+
+            
+            bIsSkillOnCooldown = true;
+            GunSkillCooldownWidgetInstance->StartCooldown();
+            GetWorld()->GetTimerManager().SetTimer(SkillCooldownTimerHandle, [this]()
+                {
+                    bIsSkillOnCooldown = false;
+                    GunSkillCooldownWidgetInstance->ResetCooldown();
+                    UE_LOG(LogTemp, Log, TEXT("Skill cooldown finished, skill is ready to use again."));
+                }, 10.0f, false); 
+
         }
     }
    
@@ -712,7 +780,7 @@ void AA1PlayerController::OnSkillEnd()
 
 void AA1PlayerController::UseBombSkill()
 {
-    if (BombSkillClass)
+    if (BombSkillClass && PlayingSida && !bIsBombSkillOnCooldown)
     {
         FVector CameraLoc;
         FRotator CameraRot;
@@ -740,6 +808,16 @@ void AA1PlayerController::UseBombSkill()
             {
                 UE_LOG(LogTemp, Warning, TEXT("Failed to spawn bomb skill"));
             }
+
+            
+            bIsBombSkillOnCooldown = true;
+            BombSkillCooldownWidgetInstance->StartCooldown();
+            GetWorld()->GetTimerManager().SetTimer(SkillCooldownTimerHandle, [this]()
+                {
+                    bIsBombSkillOnCooldown = false;
+                    BombSkillCooldownWidgetInstance->ResetCooldown();
+                    UE_LOG(LogTemp, Log, TEXT("Bomb skill cooldown finished, skill is ready to use again."));
+                }, 10.0f, false); 
         }
     }
     else

@@ -13,6 +13,7 @@
 #include "../Characters/Monster.h"
 #include "../Widgets/HealthBarWidget.h"
 #include "../Widgets/PlayerStatWidget.h"
+#include "../Widgets/SkillCooldownWidget.h"
 #include "../SKill.h"
 #include "../BombSkill.h"
 #include "A1PlayerController.generated.h"
@@ -84,6 +85,9 @@ public:
 
 	FTimerHandle ReloadCooldownTimerHandle;
 
+	FTimerHandle SkillCooldownTimerHandle;
+	bool bIsSkillOnCooldown = false;
+	bool bIsBombSkillOnCooldown = false;
 
 	UFUNCTION(BlueprintCallable, Category = "LevelUp")
 	void HandleLevelUpOption(int OptionIndex);
@@ -104,6 +108,15 @@ public:
 	UPROPERTY()
 	ABombSkill* CurrentBombSkill;
 
+	UPROPERTY()
+	USkillCooldownWidget* GunSkillCooldownWidgetInstance;
+
+	TSubclassOf<USkillCooldownWidget> GunSkillCooldownWidgetClass;
+
+	UPROPERTY()
+	USkillCooldownWidget* BombSkillCooldownWidgetInstance;
+
+	TSubclassOf<USkillCooldownWidget> BombSkillCooldownWidgetClass;
 	
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
@@ -112,8 +125,12 @@ public:
 	UPROPERTY()
 	UEnemyInfoWidget* CurrentEnemyInfoWidget;
 
-private:
+	TSubclassOf<ACharacter> CharacterBlueprintClass;
 
+	
+private:
+	bool PlayingRinty = false;
+	bool PlayingSida = false;
 	
 
 	// Level Up UI
