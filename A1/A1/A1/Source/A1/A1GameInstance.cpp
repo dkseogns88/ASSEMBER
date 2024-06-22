@@ -25,6 +25,9 @@
 #include "Engine/StaticMeshActor.h"
 #include "NavigationSystem.h"
 #include "NavMesh/RecastNavMesh.h"
+#include "NavMesh/RecastHelpers.h"
+#include "NavMesh/RecastNavMeshDataChunk.h"
+#include "DrawDebugHelpers.h"
 #include "NavFilters/NavigationQueryFilter.h"
 #include "EngineUtils.h"
 
@@ -66,7 +69,7 @@ void UA1GameInstance::Init()
 	
 	GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, this, &UA1GameInstance::SpawnMonsters, 1.0f, false);
 
-	LogNavMeshPolygonsForAllActors();
+	LogNavMeshPolygons();
 	
 }
 
@@ -132,7 +135,7 @@ void UA1GameInstance::SpawnMonster(TSubclassOf<AMonster> MonsterClass)
 		NextSpawnLocation.X += 10.0f;
 		NextSpawnLocation.Y += 10.0f;
 
-		LogNavMeshPolygonsForAllActors();
+		LogNavMeshPolygons();
 	}
 	
 	
@@ -177,47 +180,40 @@ void UA1GameInstance::LogCharacterChange(int32 PlayerIndex, const FString& NewCh
 	}
 }
 
-void UA1GameInstance::LogNavMeshPolygonsForAllActors() {
-	UWorld* World = GetWorld();
-	if (!World) return;
+FVector Recast2UnrVector(const float* RecastCoords)
+{
+	return FVector(RecastCoords[0], RecastCoords[1], RecastCoords[2]);
+}
 
-	UNavigationSystemV1* NavSys = UNavigationSystemV1::GetCurrent(World);
-	if (!NavSys) return;
+void UA1GameInstance::LogNavMeshPolygons()
+{
+	UNavigationSystemV1* NavSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
+	if (NavSys == nullptr) return;
 
-	// Retrieve the default navigation data
-	const ANavigationData* NavData = NavSys->GetDefaultNavDataInstance(FNavigationSystem::DontCreate);
-	if (!NavData) return;
+	ARecastNavMesh* NavMesh = Cast<ARecastNavMesh>(NavSys->GetMainNavData());
+	if (NavMesh == nullptr) return;
 
-	// Create a default query filter
-	FSharedConstNavQueryFilter QueryFilter = NavData->GetDefaultQueryFilter();
+	const FBox NavBounds = NavMesh->GetNavMeshBounds();
 
-	for (TActorIterator<APawn> It(World); It; ++It)
+	// Get the tile size directly from the NavMesh's properties
+	const float TileSize = NavMesh->TileSizeUU;
+	const FIntPoint TileCount = FIntPoint(
+		FMath::CeilToInt(NavBounds.GetSize().X / TileSize),
+		FMath::CeilToInt(NavBounds.GetSize().Y / TileSize)
+	);
+
+	for (int32 TileX = 0; TileX < TileCount.X; ++TileX)
 	{
-		APawn* Pawn = *It;
-		if (!Pawn) continue;
-
-		FVector PawnLocation = Pawn->GetActorLocation();
-		FNavLocation NavLocation;  // Use FNavLocation instead of FVector
-
-		bool bProjected = NavSys->ProjectPointToNavigation(
-			PawnLocation,  // The point to project
-			NavLocation,    // Out parameter for the projected location
-			FVector(100.0f, 100.0f, 100.0f),  // The extent to use for projection
-			nullptr,        // Use nullptr for ANavigationData to use default
-			QueryFilter     // Use default query filter
-		);
-
-		if (bProjected)
+		for (int32 TileY = 0; TileY < TileCount.Y; ++TileY)
 		{
-			FString LogMessage = FString::Printf(TEXT("Pawn: %s, NavMesh Location: %s"), *Pawn->GetName(), *NavLocation.Location.ToString());
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, LogMessage);
-			UE_LOG(LogTemp, Log, TEXT("%s"), *LogMessage);
-		}
-		else
-		{
-			FString LogMessage = FString::Printf(TEXT("Failed to project point to NavMesh for Pawn: %s"), *Pawn->GetName());
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, LogMessage);
-			UE_LOG(LogTemp, Warning, TEXT("%s"), *LogMessage);
+			FVector TileCenter = FVector(
+				NavBounds.Min.X + TileX * TileSize + TileSize / 2,
+				NavBounds.Min.Y + TileY * TileSize + TileSize / 2,
+				NavBounds.GetCenter().Z
+			);
+
+			UE_LOG(LogTemp, Log, TEXT("Tile (%d, %d): Center = %s"), TileX, TileY, *TileCenter.ToString());
 		}
 	}
 }
+

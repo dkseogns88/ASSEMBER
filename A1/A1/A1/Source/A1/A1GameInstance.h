@@ -50,7 +50,7 @@ public:
 	UClass* GetCharacterClass(const FString& CharacterName) const;
 	void LogCharacterChange(int32 PlayerIndex, const FString& NewCharacterName);
 
-	void LogNavMeshPolygonsForAllActors();
+	void LogNavMeshPolygons();
 
 	
 
