@@ -23,7 +23,10 @@
 #include "GameFramework/DamageType.h"
 #include "UObject/UObjectGlobals.h"
 #include "Engine/StaticMeshActor.h"
-
+#include "NavigationSystem.h"
+#include "NavMesh/RecastNavMesh.h"
+#include "NavFilters/NavigationQueryFilter.h"
+#include "EngineUtils.h"
 
 
 UA1GameInstance::UA1GameInstance()
@@ -62,6 +65,9 @@ void UA1GameInstance::Init()
 	
 	
 	GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, this, &UA1GameInstance::SpawnMonsters, 1.0f, false);
+
+	LogNavMeshPolygonsForAllActors();
+	
 }
 
 
@@ -69,12 +75,12 @@ void UA1GameInstance::Init()
 void UA1GameInstance::SpawnMonsters()
 {
 	
-	/*GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, [this]()
+	GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, [this]()
 		{
 			
 			SpawnMonster(BPClassMonk);
 			SpawnMonster(BPClassFanatic);
-		}, 3.0f, true);*/
+		}, 3.0f, true);
 }
 
 //몬스터스폰 충돌검사
@@ -125,6 +131,8 @@ void UA1GameInstance::SpawnMonster(TSubclassOf<AMonster> MonsterClass)
 
 		NextSpawnLocation.X += 10.0f;
 		NextSpawnLocation.Y += 10.0f;
+
+		LogNavMeshPolygonsForAllActors();
 	}
 	
 	
@@ -166,5 +174,50 @@ void UA1GameInstance::LogCharacterChange(int32 PlayerIndex, const FString& NewCh
 	for (const TPair<int32, FString>& Info : PlayerCharacterChangeLog)
 	{
 		UE_LOG(LogTemp, Log, TEXT("Log - Player %d: %s"), Info.Key, *Info.Value);
+	}
+}
+
+void UA1GameInstance::LogNavMeshPolygonsForAllActors() {
+	UWorld* World = GetWorld();
+	if (!World) return;
+
+	UNavigationSystemV1* NavSys = UNavigationSystemV1::GetCurrent(World);
+	if (!NavSys) return;
+
+	// Retrieve the default navigation data
+	const ANavigationData* NavData = NavSys->GetDefaultNavDataInstance(FNavigationSystem::DontCreate);
+	if (!NavData) return;
+
+	// Create a default query filter
+	FSharedConstNavQueryFilter QueryFilter = NavData->GetDefaultQueryFilter();
+
+	for (TActorIterator<APawn> It(World); It; ++It)
+	{
+		APawn* Pawn = *It;
+		if (!Pawn) continue;
+
+		FVector PawnLocation = Pawn->GetActorLocation();
+		FNavLocation NavLocation;  // Use FNavLocation instead of FVector
+
+		bool bProjected = NavSys->ProjectPointToNavigation(
+			PawnLocation,  // The point to project
+			NavLocation,    // Out parameter for the projected location
+			FVector(100.0f, 100.0f, 100.0f),  // The extent to use for projection
+			nullptr,        // Use nullptr for ANavigationData to use default
+			QueryFilter     // Use default query filter
+		);
+
+		if (bProjected)
+		{
+			FString LogMessage = FString::Printf(TEXT("Pawn: %s, NavMesh Location: %s"), *Pawn->GetName(), *NavLocation.Location.ToString());
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, LogMessage);
+			UE_LOG(LogTemp, Log, TEXT("%s"), *LogMessage);
+		}
+		else
+		{
+			FString LogMessage = FString::Printf(TEXT("Failed to project point to NavMesh for Pawn: %s"), *Pawn->GetName());
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, LogMessage);
+			UE_LOG(LogTemp, Warning, TEXT("%s"), *LogMessage);
+		}
 	}
 }

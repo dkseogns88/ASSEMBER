@@ -49,7 +49,12 @@ public:
 
 	UClass* GetCharacterClass(const FString& CharacterName) const;
 	void LogCharacterChange(int32 PlayerIndex, const FString& NewCharacterName);
-private:
+
+	void LogNavMeshPolygonsForAllActors();
+
+	
+
+	
 	// 캐릭터 이름과 클래스를 매핑하는 맵
 	TMap<FString, FString> CharacterBlueprintPaths;
 	TMap<int32, FString> PlayerCharacterChangeLog;
