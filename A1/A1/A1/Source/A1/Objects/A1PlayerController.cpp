@@ -819,7 +819,7 @@ void AA1PlayerController::UseBombSkill()
         APlayerChar* PlayerChar = Cast<APlayerChar>(GetPawn());
         if (PlayerChar)
         {
-            PlayerChar->UseSkillAnim(false); 
+            PlayerChar->UseSkillAnim(true); 
 
             FVector Location = GetPawn()->GetActorLocation();
             FRotator Rotation = CameraRot;

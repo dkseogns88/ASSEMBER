@@ -20,7 +20,7 @@ public:
     virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
 	void SetAiming(bool bNewAiming) { bIsAiming = bNewAiming; }
-
+	void SetUsingSkill(bool bUsingSkill) { bIsUsingSkill = bUsingSkill; }
 protected:
 	UPROPERTY(BlueprintReadOnly)
 	TObjectPtr<class ABaseChar> Character;
@@ -28,6 +28,8 @@ protected:
 	UPROPERTY(BlueprintReadOnly)
 	TObjectPtr<class UCharacterMovementComponent> MovementComponent;
 
+	UPROPERTY(BlueprintReadOnly)
+	TObjectPtr<class APlayerChar> PlayingCharacter;
 
 protected:
 	UPROPERTY(BlueprintReadOnly)
@@ -44,5 +46,8 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly)
 	bool bIsAiming = false;
+
+	UPROPERTY(BlueprintReadOnly)
+	bool bIsUsingSkill = false;
 
 };

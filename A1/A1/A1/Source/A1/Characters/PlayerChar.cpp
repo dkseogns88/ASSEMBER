@@ -40,12 +40,17 @@ APlayerChar::APlayerChar()
     FirstPersonCamera->SetupAttachment(CameraBoom);
     FirstPersonCamera->bUsePawnControlRotation = false;
     
+    FirstPersonMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("FirstPersonMesh"));
+    FirstPersonMesh->SetupAttachment(FirstPersonCamera);
+    FirstPersonMesh->SetOnlyOwnerSee(true);  
+    FirstPersonMesh->bCastDynamicShadow = false;
+    FirstPersonMesh->CastShadow = false;
    
     GetCharacterMovement()->MaxWalkSpeed = 600.0f;
     GetCharacterMovement()->bOrientRotationToMovement = true; 
     GetCharacterMovement()->bUseControllerDesiredRotation = true; 
     GetCharacterMovement()->JumpZVelocity = 300.f;
-    GetCharacterMovement()->bAllowPhysicsRotationDuringAnimRootMotion = false; // Prevents rotation while root motion is active
+    GetCharacterMovement()->bAllowPhysicsRotationDuringAnimRootMotion = false; 
    
     
     MovementInput = FVector2D(0.0f, 0.0f);
@@ -134,7 +139,7 @@ void APlayerChar::UseSkillAnim(bool UsingSkill)
     UAnimInstanceCustom* AnimInstance = Cast<UAnimInstanceCustom>(GetMesh()->GetAnimInstance());
     if (AnimInstance)
     {
-        //AnimInstance->bIsUsingSkill = bIsUsingSkill;
+        AnimInstance->SetUsingSkill(bIsUsingSkill);
     }
 }
 
