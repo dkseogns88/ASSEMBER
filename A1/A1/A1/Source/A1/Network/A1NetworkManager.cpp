@@ -123,9 +123,12 @@ void UA1NetworkManager::HandleDespawn(uint64 ObjectId)
 	if (FindActor == nullptr)
 		return;
 
-	World->DestroyActor(*FindActor);
-	Objects.Remove(ObjectId);
-}
+	if ((*FindActor)->GetObjectInfo()->object_type() == Protocol::ObjectType::OBJECT_TYPE_MONSTER)
+	{
+		AMonster* Monster = Cast<AMonster>(*FindActor);
+		Monster->Die();
+		Objects.Remove(ObjectId);
+	}}
 
 void UA1NetworkManager::HandleDespawn(const Protocol::S_DESPAWN& DespawnPkt)
 {
@@ -166,17 +169,33 @@ void UA1NetworkManager::HandleAttack(const Protocol::S_ATTACK& AttackPkt)
 	if (Socket == nullptr || GameServerSession == nullptr)
 		return;
 
-	// TODO: 다른 플레이어의 스킬 애니메이션 보여주기
-	AttackPkt.attack_info();
+	{
+		// 공격한 Object
+		// TODO: 다른 플레이어의 스킬 애니메이션 보여주기
+		uint64 AttackObjectId = AttackPkt.attack_info().attack_object_id();
+		ABaseChar** FindActor = Objects.Find(AttackObjectId);
+		if (FindActor == nullptr) return;
+		ABaseChar* AttackObject = *FindActor;
+
+		if (AttackPkt.attack_info().attack_type() == Protocol::AttackType::ATTACK_TYPE_SKILL)
+		{
+
+		}
+	}
 
 	{
-		const uint64 ObjectId = AttackPkt.stat_info().object_id();
-		ABaseChar** FindActor = Objects.Find(ObjectId);
+		// 피격당한 Object
+		const uint64 HitObjectId = AttackPkt.stat_info().object_id();
+		ABaseChar** FindActor = Objects.Find(HitObjectId);
 		if (FindActor == nullptr) return;
 
 		ABaseChar* Object = *FindActor;
 		Object->SetStatInfo(AttackPkt.stat_info());
+		Object->TakeDMG(0.f);
+
 	}
+
+
 }
 
 ABaseChar* UA1NetworkManager::ValidationPlayer(int ObjectId)
@@ -214,6 +233,7 @@ void UA1NetworkManager::SpawnPlayer(const Protocol::ObjectInfo& ObjectInfo, bool
 		if (Player == nullptr)
 			return;
 
+		Player->SetObjectInfo(ObjectInfo);
 		Player->SetPosInfo(ObjectInfo.pos_info());
 		Player->SetStatInfo(ObjectInfo.stat_info());
 		MyPlayer = Player;
@@ -224,6 +244,7 @@ void UA1NetworkManager::SpawnPlayer(const Protocol::ObjectInfo& ObjectInfo, bool
 		AOtherPlayerChar* Player = Cast<AOtherPlayerChar>(World->SpawnActor(Cast<UA1GameInstance>(GetGameInstance())->OtherPlayerClass, &SpawnLocation));
 		if (Player != nullptr) {
 
+			Player->SetObjectInfo(ObjectInfo);
 			Player->SetPosInfo(ObjectInfo.pos_info());
 			Player->SetStatInfo(ObjectInfo.stat_info());
 			Objects.Add(ObjectInfo.object_id(), Player);
@@ -248,6 +269,7 @@ void UA1NetworkManager::SpawnMonster(const Protocol::ObjectInfo& ObjectInfo)
 	AMonster* Monster = Cast<AMonster>(World->SpawnActor(MonsterClass, &SpawnLocation));
 	if (Monster)
 	{
+		Monster->SetObjectInfo(ObjectInfo);
 		Monster->SetPosInfo(ObjectInfo.pos_info());
 		Monster->SetStatInfo(ObjectInfo.stat_info());
 		Objects.Add(ObjectInfo.object_id(), Monster);

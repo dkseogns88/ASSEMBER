@@ -67,9 +67,9 @@ void UA1GameInstance::Init()
 	CharacterBlueprintPaths.Add("Rinty", "Blueprint'/Game/BP/BP_Rinty.BP_Rinty_C'");
 	
 	
-	GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, this, &UA1GameInstance::SpawnMonsters, 1.0f, false);
+	//GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, this, &UA1GameInstance::SpawnMonsters, 1.0f, false);
 
-	LogNavMeshPolygons();
+	//LogNavMeshPolygons();
 	
 }
 

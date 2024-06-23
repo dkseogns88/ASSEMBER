@@ -19,21 +19,42 @@ Room::~Room()
 
 bool Room::InitializationRoom()
 {
-	MonsterRef monster = ObjectUtils::CreateMonster();
-	
-	// TODO: 몬스터 타입 정의
-	monster->objectInfo->set_monster_type(Protocol::MONSTER_TYPE_FANATIC);
-	monster->posInfo->set_x(Utils::GetRandom(0.f, 500.f));
-	monster->posInfo->set_y(Utils::GetRandom(0.f, 500.f));
-	monster->posInfo->set_z(40.f);
-	monster->posInfo->set_state(Protocol::MOVE_STATE_IDLE);
+	{
+		MonsterRef monster = ObjectUtils::CreateMonster();
 
-	// TODO: 몬스터 스탯 정의
-	monster->statInfo->set_hp(400);
-	monster->statInfo->set_max_hp(400);
-	monster->statInfo->set_damage(50);;
+		// TODO: 몬스터 타입 정의
+		monster->objectInfo->set_monster_type(Protocol::MONSTER_TYPE_FANATIC);
+		monster->posInfo->set_x(Utils::GetRandom(0.f, 500.f));
+		monster->posInfo->set_y(Utils::GetRandom(0.f, 500.f));
+		monster->posInfo->set_z(40.f);
+		monster->posInfo->set_state(Protocol::MOVE_STATE_IDLE);
 
-	if (!AddMonster(monster)) return false;
+		// TODO: 몬스터 스탯 정의
+		monster->statInfo->set_hp(400);
+		monster->statInfo->set_max_hp(400);
+		monster->statInfo->set_damage(50);;
+
+		if (!AddMonster(monster)) return false;
+	}
+
+	{
+		MonsterRef monster = ObjectUtils::CreateMonster();
+
+		// TODO: 몬스터 타입 정의
+		monster->objectInfo->set_monster_type(Protocol::MONSTER_TYPE_MONK);
+		monster->posInfo->set_x(Utils::GetRandom(0.f, 500.f));
+		monster->posInfo->set_y(Utils::GetRandom(0.f, 500.f));
+		monster->posInfo->set_z(40.f);
+		monster->posInfo->set_state(Protocol::MOVE_STATE_IDLE);
+
+		// TODO: 몬스터 스탯 정의
+		monster->statInfo->set_hp(400);
+		monster->statInfo->set_max_hp(400);
+		monster->statInfo->set_damage(50);;
+
+		if (!AddMonster(monster)) return false;
+
+	}
 
 	cout << "Room Initial\n";
 	return true;
@@ -202,39 +223,44 @@ void Room::HandleAttack(Protocol::C_ATTACK pkt)
 		return;
 	if (_objects.find(hitId) == _objects.end())
 		return;
-	
+
+	ObjectRef attackObject = _objects[attackId];
+	ObjectRef HitObject = _objects[hitId];
+
+	// TODO: 스킬 데미지로 처리해야 함
+	const uint32 damage = attackObject->statInfo->damage();
+	uint32 hp = HitObject->statInfo->hp();
+	hp -= damage;
+
+	cout << "공격한 ID: " << attackId << ",  피격당한 ID: " << hitId << endl;
+	cout << "HP: " << hp << endl << endl;
+
+	if (hp <= 0)
+	{
+		Protocol::S_DESPAWN despawnPkt;
+		despawnPkt.add_object_ids(hitId);
+
+		SendBufferRef sendBuffer = ClientPacketHandler::MakeSendBuffer(despawnPkt);
+		Broadcast(sendBuffer);
+
+		if (HitObject->objectInfo->object_type() == Protocol::ObjectType::OBJECT_TYPE_PLAYER)
+		{
+			// TODO: 플레이어는 추후 관리!
+			cout << "플레이어 죽었어요~\n\n";
+
+		}
+		else if (HitObject->objectInfo->object_type() == Protocol::ObjectType::OBJECT_TYPE_PLAYER)
+		{
+			// TODO: 몬스터를 제거해서 하거나 다시 HP를 reset해서 동작시키거나
+			cout << "몬스터 사망\n\n";
+			RemoveMonster(hitId);
+		}
+		return;
+	}
+
 	if (pkt.info().attack_type() ==  Protocol::AttackType::ATTACK_TYPE_BASIC)
 	{
-		ObjectRef attackObject = _objects[attackId];
-		ObjectRef HitObject = _objects[hitId];
-
-		const uint32 damage = attackObject->statInfo->damage();
-		uint32 hp = HitObject->statInfo->hp();
-
-		hp -= damage;
-		if (hp <= 0)
-		{
-			Protocol::S_DESPAWN despawnPkt;
-			despawnPkt.add_object_ids(hitId);
-
-			SendBufferRef sendBuffer = ClientPacketHandler::MakeSendBuffer(despawnPkt);
-			Broadcast(sendBuffer);
-
-			if (HitObject->objectInfo->object_type() == Protocol::ObjectType::OBJECT_TYPE_PLAYER)
-			{
-				// TODO: 플레이어는 추후 관리!
-				
-			}
-			else if (HitObject->objectInfo->object_type() == Protocol::ObjectType::OBJECT_TYPE_PLAYER)
-			{
-				RemoveMonster(hitId);
-			}
-			cout << "삭제 ID: " << hitId << endl;
-			return;
-		}
-
 		HitObject->statInfo->set_hp(hp);
-
 		Protocol::S_ATTACK attackPkt;
 		Protocol::AttackInfo* attack_info = attackPkt.mutable_attack_info();
 		Protocol::StatInfo* stat_info = attackPkt.mutable_stat_info();
@@ -245,41 +271,10 @@ void Room::HandleAttack(Protocol::C_ATTACK pkt)
 		SendBufferRef sendBuffer = ClientPacketHandler::MakeSendBuffer(attackPkt);
 		Broadcast(sendBuffer);
 
-		cout << "공격 ID: " << attackId << ", 데미지: " << damage << endl;
-		cout << "피격 ID: " << hitId << ", 체력: " << hp << endl;
 
 	}
-	else if (pkt.info().attack_type() == Protocol::AttackType::ATTACK_TYPE_BASIC)
+	else if (pkt.info().attack_type() == Protocol::AttackType::ATTACK_TYPE_SKILL)
 	{
-		ObjectRef attackObject = _objects[attackId];
-		ObjectRef HitObject = _objects[hitId];
-
-		const uint32 damage = attackObject->statInfo->damage();
-		uint32 hp = HitObject->statInfo->hp();
-
-		hp -= damage;
-		if (hp <= 0)
-		{
-			Protocol::S_DESPAWN despawnPkt;
-			despawnPkt.add_object_ids(hitId);
-
-			SendBufferRef sendBuffer = ClientPacketHandler::MakeSendBuffer(despawnPkt);
-			Broadcast(sendBuffer);
-
-			if (HitObject->objectInfo->object_type() == Protocol::ObjectType::OBJECT_TYPE_PLAYER)
-			{
-				// TODO: 플레이어는 추후 관리!
-
-			}
-			else if (HitObject->objectInfo->object_type() == Protocol::ObjectType::OBJECT_TYPE_PLAYER)
-			{
-				RemoveMonster(hitId);
-			}
-
-			cout << "삭제 ID: " << hitId << endl;
-			return;
-		}
-
 		HitObject->statInfo->set_hp(hp);
 
 		Protocol::S_ATTACK attackPkt;
@@ -291,10 +286,6 @@ void Room::HandleAttack(Protocol::C_ATTACK pkt)
 
 		SendBufferRef sendBuffer = ClientPacketHandler::MakeSendBuffer(attackPkt);
 		Broadcast(sendBuffer);
-
-		cout << "공격 ID: " << attackId << ", 데미지: " << damage << endl;
-		cout << "피격 ID: " << hitId << ", 체력: " << hp << endl;
-		
 	}
 
 }

@@ -67,14 +67,20 @@ public:
     Protocol::MoveState GetMoveState() { return PosInfo->state(); }
     void SetMoveState(Protocol::MoveState State);
 
+    void SetObjectInfo(const Protocol::ObjectInfo& Info);
     void SetPosInfo(const Protocol::PosInfo& Info);
     void SetDestInfo(const Protocol::PosInfo& Info);
+
+    Protocol::ObjectInfo* GetObjectInfo() { return ObjectInfo; }
     Protocol::PosInfo* GetPosInfo() { return PosInfo; }
 
     void SetStatInfo(const Protocol::StatInfo& Info);
     Protocol::StatInfo* GetStatInfo() { return StatInfo; }
 
 protected:
+    class Protocol::ObjectInfo* ObjectInfo;
+
+
     class Protocol::PosInfo* PosInfo;
     class Protocol::PosInfo* DestInfo;
     class Protocol::StatInfo* StatInfo;

@@ -33,6 +33,7 @@ enum SkillType
 {
 	SKILL_TYPE_NONE = 0;
 	SKILL_TYPE_BOMB = 1;
+	SKILL_TYPE_RINTY = 2; // TODO: 스킬 이름 바꾸기
 }
 
 enum MoveState

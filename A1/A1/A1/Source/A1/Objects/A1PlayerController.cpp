@@ -389,7 +389,7 @@ void AA1PlayerController::FireWeapon()
         if (HitMonster)
         {
             // Dealing Monster
-            HitMonster->TakeDMG(AttackPower);
+            // HitMonster->TakeDMG(AttackPower);
             
             APlayerChar* MyCharacter = Cast<APlayerChar>(GetPawn());
             

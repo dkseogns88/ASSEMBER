@@ -47,6 +47,9 @@ public:
     UFUNCTION()
     void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
+
+public:
+    uint64 MonterId = 0;
 private:
     void DestroyProjectile();
 };

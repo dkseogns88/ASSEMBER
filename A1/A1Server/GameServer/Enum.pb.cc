@@ -37,15 +37,16 @@ const char descriptor_table_protodef_Enum_2eproto[] PROTOBUF_SECTION_VARIABLE(pr
   "ype\022\025\n\021MONSTER_TYPE_NONE\020\000\022\030\n\024MONSTER_TY"
   "PE_FANATIC\020\001\022\025\n\021MONSTER_TYPE_MONK\020\002*P\n\nA"
   "ttackType\022\024\n\020ATTACK_TYPE_NONE\020\000\022\025\n\021ATTAC"
-  "K_TYPE_BASIC\020\001\022\025\n\021ATTACK_TYPE_SKILL\020\002*5\n"
+  "K_TYPE_BASIC\020\001\022\025\n\021ATTACK_TYPE_SKILL\020\002*K\n"
   "\tSkillType\022\023\n\017SKILL_TYPE_NONE\020\000\022\023\n\017SKILL"
-  "_TYPE_BOMB\020\001*^\n\tMoveState\022\023\n\017MOVE_STATE_"
-  "NONE\020\000\022\023\n\017MOVE_STATE_IDLE\020\001\022\022\n\016MOVE_STAT"
-  "E_RUN\020\002\022\023\n\017MOVE_STATE_JUMP\020\003b\006proto3"
+  "_TYPE_BOMB\020\001\022\024\n\020SKILL_TYPE_RINTY\020\002*^\n\tMo"
+  "veState\022\023\n\017MOVE_STATE_NONE\020\000\022\023\n\017MOVE_STA"
+  "TE_IDLE\020\001\022\022\n\016MOVE_STATE_RUN\020\002\022\023\n\017MOVE_ST"
+  "ATE_JUMP\020\003b\006proto3"
   ;
 static ::_pbi::once_flag descriptor_table_Enum_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_Enum_2eproto = {
-    false, false, 516, descriptor_table_protodef_Enum_2eproto,
+    false, false, 538, descriptor_table_protodef_Enum_2eproto,
     "Enum.proto",
     &descriptor_table_Enum_2eproto_once, nullptr, 0, 0,
     schemas, file_default_instances, TableStruct_Enum_2eproto::offsets,
@@ -127,6 +128,7 @@ bool SkillType_IsValid(int value) {
   switch (value) {
     case 0:
     case 1:
+    case 2:
       return true;
     default:
       return false;

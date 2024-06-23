@@ -20,6 +20,9 @@ class A1_API AMonster : public ABaseChar
     friend class AA1GameInstance;
     friend class AA1PlayerController;
     
+public:
+    virtual void Die() override;
+
 protected:
   
     virtual void BeginPlay();
@@ -27,7 +30,6 @@ protected:
     virtual void ReadyAttack(bool canattack) override;
     virtual void Attack(bool canattack) override;
     
-    virtual void Die() override;
     virtual void TurnLeft(float Value) override;
     virtual void TurnRight(float Value) override;
     void ResetAttack();

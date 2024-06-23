@@ -154,12 +154,13 @@ inline bool AttackType_Parse(
 enum SkillType : int {
   SKILL_TYPE_NONE = 0,
   SKILL_TYPE_BOMB = 1,
+  SKILL_TYPE_RINTY = 2,
   SkillType_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
   SkillType_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
 };
 bool SkillType_IsValid(int value);
 constexpr SkillType SkillType_MIN = SKILL_TYPE_NONE;
-constexpr SkillType SkillType_MAX = SKILL_TYPE_BOMB;
+constexpr SkillType SkillType_MAX = SKILL_TYPE_RINTY;
 constexpr int SkillType_ARRAYSIZE = SkillType_MAX + 1;
 
 const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* SkillType_descriptor();

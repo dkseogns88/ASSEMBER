@@ -9,6 +9,7 @@
 #include "../Characters/PlayerChar.h"
 #include "Kismet/GameplayStatics.h"
 #include "TimerManager.h"
+#include "Network/A1NetworkManager.h"
 
 
 AMonsterProjectile::AMonsterProjectile()
@@ -63,17 +64,23 @@ void AMonsterProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor,
             APlayerChar* HitCharacter = Cast<APlayerChar>(OtherActor);
             if (HitCharacter)
             {
+
+
                 AA1PlayerController* PlayerController = Cast<AA1PlayerController>(HitCharacter->GetController());
                 if (PlayerController)
                 {
                     PlayerController->ApplyDamage(Damage);
-
-                    if (GEngine)
-                    {
-                        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Monk dealing %f damage to %s"), Damage, *HitCharacter->GetName()));
-                    }
                 }
                 HitCharacter->IsDamaged(true);
+
+
+                Protocol::C_ATTACK AttackPkt;
+                Protocol::AttackInfo* Info = AttackPkt.mutable_info();
+                Info->set_attack_object_id(MonterId);
+                Info->set_hit_object_id(HitCharacter->GetObjectInfo()->object_id());
+                Info->set_attack_type(Protocol::AttackType::ATTACK_TYPE_BASIC);
+
+                GetGameInstance()->GetSubsystem<UA1NetworkManager>()->SendPacket(AttackPkt);
             }
             
         }

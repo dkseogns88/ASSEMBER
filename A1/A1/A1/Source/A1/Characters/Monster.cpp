@@ -17,6 +17,7 @@
 #include "../Objects/A1PlayerController.h"
 #include "Sound/SoundCue.h"
 #include "Components/SphereComponent.h" 
+#include "Network/A1NetworkManager.h"
 
 
 AMonster::AMonster()
@@ -184,7 +185,7 @@ void AMonster::FireProjectile()
             
             Projectile->CollisionComponent->IgnoreActorWhenMoving(this, true);
 
-           
+            Projectile->MonterId = ObjectInfo->object_id();
         }
     }
     
@@ -236,9 +237,21 @@ void AMonster::CheckSwordHit()
                     {
                         PlayerController->ApplyDamage(SwordDMG);
                         bIsDealPlayer = true;
+
+
+                        Protocol::C_ATTACK AttackPkt;
+                        Protocol::AttackInfo* Info = AttackPkt.mutable_info();
+                        Info->set_attack_object_id(ObjectInfo->object_id());
+                        Info->set_hit_object_id(HitCharacter->GetObjectInfo()->object_id());
+                        Info->set_attack_type(Protocol::AttackType::ATTACK_TYPE_BASIC);
+
+                        HitCharacter->GetNetworkManager()->SendPacket(AttackPkt);
+
                         break;
                     }
                     HitCharacter->IsDamaged(true);
+
+
                 }
             }
         }

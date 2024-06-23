@@ -11,6 +11,7 @@ ABaseChar::ABaseChar()
     IsMoving = false;
 
     GetCharacterMovement()->bRunPhysicsWithNoController = true;
+    ObjectInfo = new Protocol::ObjectInfo();
     PosInfo = new Protocol::PosInfo();
     DestInfo = new Protocol::PosInfo();
     StatInfo = new Protocol::StatInfo();
@@ -18,11 +19,13 @@ ABaseChar::ABaseChar()
 
 ABaseChar::~ABaseChar()
 {
+    delete ObjectInfo;
     delete PosInfo;
     delete DestInfo;
     delete StatInfo;
-    PosInfo = nullptr;
+    ObjectInfo = nullptr;
     DestInfo = nullptr;
+    StatInfo = nullptr;
     StatInfo = nullptr;
 }
 
@@ -126,6 +129,16 @@ void ABaseChar::SetMoveState(Protocol::MoveState State)
         return;
 
     PosInfo->set_state(State);
+}
+
+void ABaseChar::SetObjectInfo(const Protocol::ObjectInfo& Info)
+{
+    if (ObjectInfo->object_id() != 0)
+    {
+        assert(ObjectInfo->object_id() == Info.object_id());
+    }
+
+    ObjectInfo->CopyFrom(Info);
 }
 
 void ABaseChar::SetPosInfo(const Protocol::PosInfo& Info)
