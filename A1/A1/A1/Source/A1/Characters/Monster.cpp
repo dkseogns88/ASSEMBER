@@ -59,6 +59,7 @@ void AMonster::Tick(float DeltaTime)
 
     if (Health <= 0)
     {
+        ReadyAttack(false);
         Die();
     }
 
@@ -121,13 +122,14 @@ void AMonster::Die()
     {
         bIsDead = true;
 
+
         UE_LOG(LogTemp, Log, TEXT("%s died"), *MonName);
 
         
         GetWorld()->GetTimerManager().SetTimer(DeathHandle, [this]()
             {
                 this->Destroy();
-            }, 0.3f, false);
+            }, 1.5f, false);
     }
 }
 
