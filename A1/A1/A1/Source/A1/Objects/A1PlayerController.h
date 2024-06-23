@@ -14,6 +14,7 @@
 #include "../Widgets/HealthBarWidget.h"
 #include "../Widgets/PlayerStatWidget.h"
 #include "../Widgets/SkillCooldownWidget.h"
+#include "../Widgets/GameOverWidget.h"
 #include "../SKill.h"
 #include "../BombSkill.h"
 #include "A1PlayerController.generated.h"
@@ -145,6 +146,11 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "UI")
 	TSubclassOf<UPlayerStatWidget> PlayerStatWidgetClass;
+
+	UPROPERTY(EditAnywhere, Category = "UI")
+	TSubclassOf<UGameOverWidget> GameOverWidgetClass;
+
+	UGameOverWidget* GameOverWidgetInstance;
 
 	UPROPERTY()
 	class UCrosshairWidget* CrosshairWidgetInstance;

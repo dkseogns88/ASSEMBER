@@ -101,6 +101,13 @@ AA1PlayerController::AA1PlayerController()
         PlayerStatWidgetClass = PlayerStatBPClass.Class;
     }
 
+    static ConstructorHelpers::FClassFinder<UGameOverWidget> GameOverBPClass(TEXT("/Game/MyBP/Widgets/GameOverWidget.GameOverWidget_C"));
+    if (GameOverBPClass.Succeeded())
+    {
+       GameOverWidgetClass = GameOverBPClass.Class;
+    }
+
+
     static ConstructorHelpers::FClassFinder<ASKill> SkillBPClass(TEXT("/Game/MyBP/Attack/BP_Skill.BP_Skill_C"));
     if (SkillBPClass.Succeeded())
     {
@@ -112,7 +119,7 @@ AA1PlayerController::AA1PlayerController()
         BombSkillClass = BombSkillBPClass.Class;
     }
 
-   
+    
 }
 
 void AA1PlayerController::AimPressed()
@@ -477,7 +484,22 @@ void AA1PlayerController::ApplyDamage(float DamageAmount)
     //When Player die
     if (PlayerHealth <= 0)
     {
-     
+        if (APawn* ControlledPawn = GetPawn())
+        {
+            ControlledPawn->Destroy();
+        }
+        if (GameOverWidgetClass)
+        {
+            GameOverWidgetInstance = CreateWidget<UGameOverWidget>(this, GameOverWidgetClass);
+            if (GameOverWidgetInstance)
+            {
+                GameOverWidgetInstance->AddToViewport();
+
+                // Switch to UI mode
+                SetInputMode(FInputModeUIOnly());
+                bShowMouseCursor = true;
+            }
+        }
         
     }
     HealthBarWidgets->UpdateHealth(PlayerHealth);
