@@ -58,10 +58,6 @@ void ASKill::ApplyDamage()
             if (HitMonster)
             {
                 HitMonster->TakeDMG(Damage);
-<<<<<<< Updated upstream
-                
-=======
-                UE_LOG(LogTemp, Log, TEXT("Damage applied to %s"), *HitMonster->GetName());
 
                 APlayerChar* MyCharacter = Cast<APlayerChar>(UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetPawn());
 
@@ -73,7 +69,6 @@ void ASKill::ApplyDamage()
                 Info->set_skill_type(Protocol::SkillType::SKILL_TYPE_RINTY);
 
                 MyCharacter->GetNetworkManager()->SendPacket(AttackPkt);
->>>>>>> Stashed changes
             }
         }
     }

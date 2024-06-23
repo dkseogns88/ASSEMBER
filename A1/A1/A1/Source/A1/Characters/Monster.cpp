@@ -84,7 +84,7 @@ void AMonster::Attack(bool canattack)
 {
     if (canattack && !bIsDamaged)
     {
-       
+
 
         if (MonsterType == "Gunner")
         {
@@ -93,7 +93,6 @@ void AMonster::Attack(bool canattack)
             {
                 UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
             }
-            }
         }
         else if (MonsterType == "Warrior")
         {
@@ -101,9 +100,8 @@ void AMonster::Attack(bool canattack)
         }
 
         GetWorld()->GetTimerManager().SetTimer(AttackResetTimerHandle, this, &AMonster::ResetAttack, AttackDuration, false);
-    
+    }
 }
-
 
 void AMonster::TakeDMG(float DMG)
 {
