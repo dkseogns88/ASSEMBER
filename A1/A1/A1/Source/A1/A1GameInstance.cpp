@@ -130,7 +130,7 @@ void UA1GameInstance::SpawnMonster(TSubclassOf<AMonster> MonsterClass)
 
 		uint64 MonsterID = FGuid::NewGuid().A; // 고유 ID 생성
 		Monsters.Add(MonsterID, SpawnedMonster);
-		UE_LOG(LogTemp, Log, TEXT("Spawned Monster: %s at Location: %s"), *MonsterClass->GetName(), *Location.ToString());
+		
 
 		NextSpawnLocation.X += 10.0f;
 		NextSpawnLocation.Y += 10.0f;

@@ -30,7 +30,7 @@ void ASKill::InitializeSkill(AActor* SkillCaster, float SkillRadius, float Damag
 	Radius = SkillRadius;
 	Damage = DamageAmount;
 
-	UE_LOG(LogTemp, Log, TEXT("Skill initialized with Radius: %f, Damage: %f"), Radius, Damage);
+	
     ApplyDamage();
     EndSkill();
 }
@@ -38,10 +38,10 @@ void ASKill::InitializeSkill(AActor* SkillCaster, float SkillRadius, float Damag
 
 void ASKill::ApplyDamage()
 {
-    UE_LOG(LogTemp, Log, TEXT("Applying damage"));
+    
 
     if (!Caster) {
-        UE_LOG(LogTemp, Error, TEXT("Invalid Caster reference"));
+       
         return;
     }
 
@@ -57,14 +57,14 @@ void ASKill::ApplyDamage()
             if (HitMonster)
             {
                 HitMonster->TakeDMG(Damage);
-                UE_LOG(LogTemp, Log, TEXT("Damage applied to %s"), *HitMonster->GetName());
+                
             }
         }
     }
 }
 void ASKill::EndSkill()
 {
-    UE_LOG(LogTemp, Log, TEXT("Ending skill"));
+   
     APlayerChar* PlayerChar = Cast<APlayerChar>(Caster);
     if (PlayerChar)
     {

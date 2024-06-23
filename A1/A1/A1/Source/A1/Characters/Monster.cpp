@@ -74,7 +74,7 @@ void AMonster::ReadyAttack(bool canattack)
     if (canattack && !bIsAttacking && !bIsDamaged)
     {
         bIsAttacking = true;
-        UE_LOG(LogTemp, Log, TEXT("%s Attack triggered"), *GetName());
+       
         Attack(canattack);
     }
 }
@@ -83,7 +83,7 @@ void AMonster::Attack(bool canattack)
 {
     if (canattack && !bIsDamaged)
     {
-        UE_LOG(LogTemp, Log, TEXT("%s is attacking"), *GetName());
+       
 
         if (MonsterType == "Gunner")
         {
@@ -109,7 +109,7 @@ void AMonster::TakeDMG(float DMG)
     if (!bIsDamaged)
     {
         bIsDamaged = true;
-        UE_LOG(LogTemp, Log, TEXT("%s Damage taken"), *MonName);
+        
         Health = Health - DMG;
         GetWorld()->GetTimerManager().SetTimer(DamageResetTimerHandle, this, &AMonster::ResetDamage, 0.5f, false);
         
@@ -123,7 +123,7 @@ void AMonster::Die()
         bIsDead = true;
 
 
-        UE_LOG(LogTemp, Log, TEXT("%s died"), *MonName);
+        
 
         
         GetWorld()->GetTimerManager().SetTimer(DeathHandle, [this]()
@@ -146,7 +146,7 @@ void AMonster::TurnRight(float Value)
 void AMonster::ResetAttack()
 {
     bIsAttacking = false;
-    UE_LOG(LogTemp, Log, TEXT("%s has finished attacking"), *GetName());
+    
 
     // 일정 시간 후 canattack을 true로 설정하여 다시 공격할 수 있도록 함
     GetWorld()->GetTimerManager().SetTimer(AttackResetTimerHandle, this, &AMonster::EnableAttack, AttackInterval, false);
@@ -193,7 +193,7 @@ void AMonster::FireProjectile()
 void AMonster::SwordAttack()
 {
     
-    UE_LOG(LogTemp, Log, TEXT("%s performs a sword attack"), *GetName());
+    
 
     // 공격 시작
     bIsAttacking = true;
@@ -207,7 +207,7 @@ void AMonster::SwordAttack()
 void AMonster::EndSwordAttack()
 {
     bIsAttacking = false;
-    UE_LOG(LogTemp, Log, TEXT("%s ends the sword attack"), *GetName());
+    
 }
 
 void AMonster::CheckSwordHit()
@@ -235,11 +235,6 @@ void AMonster::CheckSwordHit()
                     if (PlayerController)
                     {
                         PlayerController->ApplyDamage(SwordDMG);
-                        //데미지로그
-                        if (GEngine)
-                        {
-                            GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Fanatic Dealing %f damage to %s"), SwordDMG, *HitCharacter->GetName()));
-                        }
                         bIsDealPlayer = true;
                         break;
                     }
@@ -276,43 +271,7 @@ TArray<FVector> AMonster::GetBoxCornerPoints() const
     return Points;
 }
 
-void AMonster::CheckMeshSetup()
-{
 
-    USkeletalMeshComponent* SkeletalMeshComponent = GetMesh();
-    if (!SkeletalMeshComponent)
-    {
-        UE_LOG(LogTemp, Warning, TEXT("SkeletalMeshComponent not found in %s"), *GetName());
-        return;
-    }
-
-    // GetSkinnedAsset()을 사용하여 SkeletalMesh 가져오기
-    USkeletalMesh* SkeletalMesh = Cast<USkeletalMesh>(SkeletalMeshComponent->GetSkinnedAsset());
-    if (!SkeletalMesh)
-    {
-        UE_LOG(LogTemp, Warning, TEXT("No skeletal mesh is set for %s"), *GetName());
-    }
-    else
-    {
-        UE_LOG(LogTemp, Log, TEXT("Skeletal Mesh for %s is %s"), *GetName(), *SkeletalMesh->GetName());
-    }
-
-    int32 MaterialCount = SkeletalMeshComponent->GetNumMaterials();
-    UE_LOG(LogTemp, Log, TEXT("Number of materials on %s: %d"), *GetName(), MaterialCount);
-
-    for (int32 i = 0; i < MaterialCount; ++i)
-    {
-        UMaterialInterface* Material = SkeletalMeshComponent->GetMaterial(i);
-        if (!Material)
-        {
-            UE_LOG(LogTemp, Warning, TEXT("Material %d on %s is not set"), i, *GetName());
-        }
-        else
-        {
-            UE_LOG(LogTemp, Log, TEXT("Material %d on %s is %s"), i, *GetName(), *Material->GetName());
-        }
-    }
-}
 
 void AMonster::CheckAndTeleport()
 {

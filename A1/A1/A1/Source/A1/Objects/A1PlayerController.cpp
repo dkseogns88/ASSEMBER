@@ -64,13 +64,8 @@ AA1PlayerController::AA1PlayerController()
     if (EnemyInfoWidgetBPClass.Succeeded())
     {
         EnemyInfoWidgetClass = EnemyInfoWidgetBPClass.Class;
-        UE_LOG(LogTemp, Log, TEXT("Successfully found BP_EnemyInfoWidget"));
+       
     }
-    else
-    {
-        UE_LOG(LogTemp, Error, TEXT("Failed to find BP_EnemyInfoWidget"));
-    }
-
     static ConstructorHelpers::FClassFinder<UUserWidget> LevelUpWidgetBPClass(TEXT("/Game/MyBP/Widgets/LevelUpWidget.LevelUpWidget_C"));
     if (LevelUpWidgetBPClass.Succeeded())
     {
@@ -81,11 +76,7 @@ AA1PlayerController::AA1PlayerController()
     if (IPAddressWidgetBPClass.Succeeded())
     {
         IPAddressWidgetClass = IPAddressWidgetBPClass.Class;
-        UE_LOG(LogTemp, Warning, TEXT("Successfully found BP_IPAddressWidget"));
-    }
-    else
-    {
-        UE_LOG(LogTemp, Error, TEXT("Failed to find BP_IPAddressWidget"));
+       
     }
 
     //NearbyStatue = nullptr;
@@ -208,7 +199,7 @@ void AA1PlayerController::BeginPlay()
         HealthBarWidgets = CreateWidget<UHealthBarWidget>(this, HealthBarWidgetClass);
         if (HealthBarWidgets)
         {
-            UE_LOG(LogTemp, Log, TEXT("Health bar widget created successfully."));
+           
             HealthBarWidgets->AddToViewport(1);
             HealthBarWidgets->NativeConstruct();
             HealthBarWidgets->UpdateHealth(PlayerHealth);
@@ -219,15 +210,12 @@ void AA1PlayerController::BeginPlay()
         AmmoWidget = CreateWidget<UAmmoWidget>(this, AmmoWidgetClass);
         if (AmmoWidget)
         {
-            UE_LOG(LogTemp, Log, TEXT("Ammo widget created successfully."));
+            
             AmmoWidget->AddToViewport(1);
             AmmoWidget->NativeConstruct();
             AmmoWidget->UpdateAmmoCount(CurrentAmmo, MaxAmmo);
         }
-        else
-        {
-            UE_LOG(LogTemp, Warning, TEXT("Failed to create Ammo widget."));
-        }
+        
 
         //Create LevelUpWidget
         LevelUpWidgetInstance = CreateWidget<ULevelUpWidget>(this, LevelUpWidgetClass);
@@ -237,19 +225,19 @@ void AA1PlayerController::BeginPlay()
         if (GetPawn())
         {
             CharacterBlueprintClass = GetPawn()->GetClass();
-            UE_LOG(LogTemp, Log, TEXT("Character Blueprint Class: %s"), *CharacterBlueprintClass->GetName());
+           
 
 
             if (CharacterBlueprintClass->GetName() == "BP_Rinty_C")
             {
                 PlayingRinty = true;
-                UE_LOG(LogTemp, Log, TEXT("Character is BP_Rinty"));
+                
 
             }
             else if (CharacterBlueprintClass->GetName() == "BP_Sida_C")
             {
                 PlayingSida = true;
-                UE_LOG(LogTemp, Log, TEXT("Character is BP_Sida"));
+               
 
             }
         }
@@ -429,7 +417,7 @@ void AA1PlayerController::SetHealth(float NewHealth)
     {
         HealthBarWidgets->UpdateHealth(PlayerHealth);  
     }
-    UE_LOG(LogTemp, Log, TEXT("Health set to %f"), PlayerHealth);
+   
 }
 
 void AA1PlayerController::InitializeStats(float InitialHealth, float InitialMovementSpeed, float InitialAttackPower)
@@ -437,7 +425,7 @@ void AA1PlayerController::InitializeStats(float InitialHealth, float InitialMove
     PlayerHealth = InitialHealth;
     MovementSpeed = InitialMovementSpeed;
     AttackPower = InitialAttackPower;
-    UE_LOG(LogTemp, Log, TEXT("Stats Initialized: Health = %f, Movement Speed = %f, Attack Power = %f"), PlayerHealth, MovementSpeed, AttackPower);
+  
 
    
     if (APawn* ControlledPawn = GetPawn())
@@ -456,7 +444,7 @@ void AA1PlayerController::UpdateStats(float NewHealth, float NewMovementSpeed, f
     MovementSpeed = NewMovementSpeed;
     AttackPower = NewAttackPower;
     
-    UE_LOG(LogTemp, Log, TEXT("Stats Updated: Health = %f, Movement Speed = %f, Attack Power = %f, MaxHealth"), PlayerHealth, MovementSpeed, AttackPower, NewMaxHealth);
+    
 
     if (APawn* ControlledPawn = GetPawn())
     {
@@ -475,7 +463,7 @@ void AA1PlayerController::ShowLevelUpUI()
         LevelUpWidgetInstance->ShowWidget();
         bShowMouseCursor = true;
         SetInputMode(FInputModeGameAndUI());
-        UE_LOG(LogTemp, Log, TEXT("Level Up UI shown"));
+        
     }
 }
 
@@ -639,17 +627,17 @@ void AA1PlayerController::HandleLevelUpOption(int OptionIndex)
         LevelUpWidgetInstance->RemoveFromParent();
         bShowMouseCursor = false;
         SetInputMode(FInputModeGameOnly());
-        UE_LOG(LogTemp, Log, TEXT("Level Up UI hidden"));
+       
     }
 }
 
 void AA1PlayerController::ToggleIPAddressWidget()
 {
-    UE_LOG(LogTemp, Warning, TEXT("ToggleIPAddressWidget called"));
+    
 
     if (!IPAddressWidgetClass)
     {
-        UE_LOG(LogTemp, Error, TEXT("IPAddressWidgetClass is null in ToggleIPAddressWidget"));
+        
         return;
     }
 
@@ -658,13 +646,13 @@ void AA1PlayerController::ToggleIPAddressWidget()
         IPAddressWidget = CreateWidget<UIPAddressWidget>(this, IPAddressWidgetClass);
         if (IPAddressWidget)
         {
-            UE_LOG(LogTemp, Warning, TEXT("IPAddressWidget created successfully"));
+           
             IPAddressWidget->AddToViewport(100);
             IPAddressWidget->SetVisibility(ESlateVisibility::Collapsed);
         }
         else
         {
-            UE_LOG(LogTemp, Error, TEXT("IPAddressWidget creation failed"));
+           
         }
     }
 
@@ -673,14 +661,14 @@ void AA1PlayerController::ToggleIPAddressWidget()
         IPAddressWidget->SetVisibility(ESlateVisibility::Collapsed);
         bShowMouseCursor = false;
         SetInputMode(FInputModeGameOnly());
-        UE_LOG(LogTemp, Warning, TEXT("UI hidden, switched to game mode"));
+       
     }
     else
     {
         IPAddressWidget->SetVisibility(ESlateVisibility::Visible);
         bShowMouseCursor = true;
         SetInputMode(FInputModeUIOnly());
-        UE_LOG(LogTemp, Warning, TEXT("UI visible, switched to UI mode"));
+        
     }
 
     bIsIPWidgetVisible = !bIsIPWidgetVisible;
@@ -690,22 +678,19 @@ void AA1PlayerController::ShowEnemyInfo_Internal(FString EnemyName, float Health
 {
     if (!CurrentEnemyInfoWidget && EnemyInfoWidgetClass)
     {
-        UE_LOG(LogTemp, Log, TEXT("Attempting to create EnemyInfoWidget"));
+      
 
         try
         {
             CurrentEnemyInfoWidget = CreateWidget<UEnemyInfoWidget>(this, EnemyInfoWidgetClass);
-            UE_LOG(LogTemp, Log, TEXT("CreateWidget called"));
+           
 
             if (CurrentEnemyInfoWidget)
             {
                 CurrentEnemyInfoWidget->AddToViewport(1);
-                UE_LOG(LogTemp, Log, TEXT("Success to add EnemyInfoWidget"));
+               
             }
-            else
-            {
-                UE_LOG(LogTemp, Warning, TEXT("Failed to add EnemyInfoWidget"));
-            }
+           
         }
         catch (const std::exception& e)
         {
@@ -719,10 +704,7 @@ void AA1PlayerController::ShowEnemyInfo_Internal(FString EnemyName, float Health
         CurrentEnemyInfoWidget->SetEnemyName(EnemyName);
         CurrentEnemyInfoWidget->SetEnemyHealth(Health / 100.0f);
     }
-    else
-    {
-        UE_LOG(LogTemp, Warning, TEXT("CurrentEnemyInfoWidget is null"));
-    }
+    
 }
 
 void AA1PlayerController::UpdateStatsBasedOnOption(int OptionIndex)
@@ -765,7 +747,7 @@ void AA1PlayerController::UpdateStatsBasedOnOption(int OptionIndex)
     // Update all stats and sync with character
     UpdateStats(NewHealth, NewMovementSpeed, NewAttackPower,NewMaxHealth);
 
-    UE_LOG(LogTemp, Log, TEXT("Stats updated: Health = %f, Movement Speed = %f, Attack Power = %f"), NewHealth, NewMovementSpeed, NewAttackPower);
+   
 }
 
 void AA1PlayerController::Interact()
@@ -797,7 +779,7 @@ void AA1PlayerController::UseSkill()
                     {
                         Skill->OnSkillEnd.AddDynamic(this, &AA1PlayerController::OnSkillEnd);
                         Skill->InitializeSkill(GetPawn(), SkillRange, SkillPower);  
-                        UE_LOG(LogTemp, Log, TEXT("Skill spawned and initialized"));
+                       
                     }
                    
                 }, 1.0f, false); 
@@ -809,7 +791,7 @@ void AA1PlayerController::UseSkill()
                 {
                     bIsSkillOnCooldown = false;
                     GunSkillCooldownWidgetInstance->ResetCooldown();
-                    UE_LOG(LogTemp, Log, TEXT("Skill cooldown finished, skill is ready to use again."));
+                   
                 }, 10.0f, false); 
 
         }
@@ -850,12 +832,9 @@ void AA1PlayerController::UseBombSkill()
             {
                 CurrentBombSkill->OnSkillEnd.AddDynamic(this, &AA1PlayerController::OnSkillEnd);
                 CurrentBombSkill->InitializeSkill(GetPawn(), TargetLocation, SkillRange, SkillPower);  // ÆøÅº ½ºÅ³ ¼³Á¤
-                UE_LOG(LogTemp, Log, TEXT("Bomb skill spawned and initialized"));
+               
             }
-            else
-            {
-                UE_LOG(LogTemp, Warning, TEXT("Failed to spawn bomb skill"));
-            }
+           
 
             
             bIsBombSkillOnCooldown = true;
@@ -864,14 +843,11 @@ void AA1PlayerController::UseBombSkill()
                 {
                     bIsBombSkillOnCooldown = false;
                     BombSkillCooldownWidgetInstance->ResetCooldown();
-                    UE_LOG(LogTemp, Log, TEXT("Bomb skill cooldown finished, skill is ready to use again."));
+                    
                 }, 10.0f, false); 
         }
     }
-    else
-    {
-        UE_LOG(LogTemp, Warning, TEXT("BombSkillClass is not set"));
-    }
+   
 }
 
 void AA1PlayerController::ThrowBomb()

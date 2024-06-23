@@ -38,7 +38,7 @@ void ABombSkill::InitializeSkill(AActor* SkillCaster, FVector TargetLocation, fl
     Damage = DamageAmount;
     ImpactLocation = TargetLocation;
 
-    UE_LOG(LogTemp, Log, TEXT("Bomb skill initialized with Radius: %f, Damage: %f at Location: %s"), Radius, Damage, *ImpactLocation.ToString());
+   
 
    
 }
@@ -53,10 +53,10 @@ void ABombSkill::ThrowBomb(FVector LaunchVelocity)
 
 void ABombSkill::ApplyDamage()
 {
-    UE_LOG(LogTemp, Log, TEXT("Applying bomb damage"));
+    
 
     if (!Caster) {
-        UE_LOG(LogTemp, Error, TEXT("Invalid Caster reference"));
+       
         return;
     }
 

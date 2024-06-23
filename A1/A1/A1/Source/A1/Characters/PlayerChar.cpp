@@ -170,18 +170,15 @@ void APlayerChar::MoveCache()
 void APlayerChar::SetAiming(bool bNewAiming)
 {
     bIsAiming = bNewAiming;
-    UE_LOG(LogTemp, Log, TEXT("Aiming state set to: %s"), bIsAiming ? TEXT("True") : TEXT("False"));
+   
 
     UAnimInstanceCustom* AnimInstance = Cast<UAnimInstanceCustom>(GetMesh()->GetAnimInstance());
     if (AnimInstance)
     {
         AnimInstance->SetAiming(bIsAiming);
-        UE_LOG(LogTemp, Log, TEXT("Aiming state updated in animation blueprint to: %s"), bIsAiming ? TEXT("True") : TEXT("False"));
+        
     }
-    else
-    {
-        UE_LOG(LogTemp, Error, TEXT("Failed to cast to UAnimInstanceCustom"));
-    }
+    
 }
 
 void APlayerChar::Aimingchanged()

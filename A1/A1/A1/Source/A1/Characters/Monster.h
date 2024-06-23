@@ -100,7 +100,6 @@ public:
     FString GetMonsterName() const { return MonName; }
     float GetHealth() const { return Health; }
     TArray<FVector> GetBoxCornerPoints() const;
-    void CheckMeshSetup();
     void CheckAndTeleport();
     virtual void TakeDMG(float DMG) override;
 
