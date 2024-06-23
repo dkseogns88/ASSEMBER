@@ -15,6 +15,7 @@
 #include "../Widgets/PlayerStatWidget.h"
 #include "../Widgets/SkillCooldownWidget.h"
 #include "../Widgets/GameOverWidget.h"
+#include "../Widgets/KeyTipWidget.h"
 #include "../SKill.h"
 #include "../BombSkill.h"
 #include "A1PlayerController.generated.h"
@@ -95,6 +96,8 @@ public:
 
 	void ToggleIPAddressWidget();
 
+	void ToggleKeyTips();
+
 	//void SetNearbyStatue(ACharacterStatue* Statue);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
@@ -151,6 +154,11 @@ private:
 	TSubclassOf<UGameOverWidget> GameOverWidgetClass;
 
 	UGameOverWidget* GameOverWidgetInstance;
+
+	UPROPERTY(EditAnywhere, Category = "UI")
+	TSubclassOf<UKeyTipWidget> KeyTipWidgetClass;
+
+	UKeyTipWidget* KeyTipWidgetInstance;
 
 	UPROPERTY()
 	class UCrosshairWidget* CrosshairWidgetInstance;

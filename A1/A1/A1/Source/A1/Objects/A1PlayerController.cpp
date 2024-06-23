@@ -107,6 +107,12 @@ AA1PlayerController::AA1PlayerController()
        GameOverWidgetClass = GameOverBPClass.Class;
     }
 
+    static ConstructorHelpers::FClassFinder<UKeyTipWidget> KeyTipWidgetBPClass(TEXT("/Game/MyBP/Widgets/KeyTipWidget.KeyTipWidget_C"));
+    if (KeyTipWidgetBPClass.Succeeded())
+    {
+        KeyTipWidgetClass = KeyTipWidgetBPClass.Class;
+    }
+
 
     static ConstructorHelpers::FClassFinder<ASKill> SkillBPClass(TEXT("/Game/MyBP/Attack/BP_Skill.BP_Skill_C"));
     if (SkillBPClass.Succeeded())
@@ -181,6 +187,17 @@ void AA1PlayerController::BeginPlay()
             PlayerStatWidget->SetVisibility(ESlateVisibility::Hidden);
         }
     }
+
+    if (KeyTipWidgetClass)
+    {
+        KeyTipWidgetInstance = CreateWidget<UKeyTipWidget>(this, KeyTipWidgetClass);
+        if (KeyTipWidgetInstance)
+        {
+            KeyTipWidgetInstance->AddToViewport();
+            KeyTipWidgetInstance->SetVisibility(ESlateVisibility::Visible);
+        }
+    }
+
 
     if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
     {
@@ -286,6 +303,7 @@ void AA1PlayerController::SetupInputComponent()
     InputComponent->BindAction("TogglePlayerStats", IE_Pressed, this, &AA1PlayerController::TogglePlayerStatWidget);
     InputComponent->BindAction("UseBombSkill", IE_Pressed, this, &AA1PlayerController::UseBombSkill);
     InputComponent->BindAction("ThrowBomb", IE_Pressed, this, &AA1PlayerController::ThrowBomb);
+    InputComponent->BindAction("ToggleKeyTips", IE_Pressed, this, &AA1PlayerController::ToggleKeyTips);
     //InputComponent->BindAction("Roll", IE_Pressed, this, &AA1PlayerController::OnRollPressed);
 
    
@@ -474,6 +492,14 @@ void AA1PlayerController::TogglePlayerStatWidget()
             PlayerStatWidget->SetVisibility(ESlateVisibility::Visible);
             PlayerStatWidget->UpdateStats(PlayerHealth, MovementSpeed, AttackPower);
         }
+    }
+}
+
+void AA1PlayerController::ToggleKeyTips()
+{
+    if (KeyTipWidgetInstance)
+    {
+        KeyTipWidgetInstance->ToggleVisibility();
     }
 }
 
