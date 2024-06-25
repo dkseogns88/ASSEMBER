@@ -2,6 +2,9 @@
 
 #include "CoreMinimal.h"
 #include "BaseChar.h"
+#include "NiagaraSystem.h"
+#include "NiagaraFunctionLibrary.h"
+#include "NiagaraComponent.h"
 #include "PlayerChar.generated.h"
 
 
@@ -82,6 +85,14 @@ public:
 	void IsDamaged(bool Damaged);
 
 	FTimerHandle DamageResetTimerHandle;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects")
+	UNiagaraSystem* MuzzleFlashEffect;
+
+
+
+	void SpawnMuzzleFlash();
+
 protected:
 	virtual void BeginPlay() override;
 	
@@ -95,7 +106,7 @@ protected:
 
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-	
+
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FirstPersonCamera;

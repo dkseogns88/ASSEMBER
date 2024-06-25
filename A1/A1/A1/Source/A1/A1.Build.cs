@@ -25,7 +25,9 @@ public class A1 : ModuleRules
 			"UMG",
 			"Slate", 
 			"SlateCore",
-			"NavigationSystem"});
+			"NavigationSystem",
+			"Niagara"
+		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] { 
 			"ProtobufCore"

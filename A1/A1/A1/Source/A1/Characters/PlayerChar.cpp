@@ -52,6 +52,12 @@ APlayerChar::APlayerChar()
     GetCharacterMovement()->JumpZVelocity = 300.f;
     GetCharacterMovement()->bAllowPhysicsRotationDuringAnimRootMotion = false; 
    
+    static ConstructorHelpers::FObjectFinder<UNiagaraSystem> MuzzleFlashEffectObj(TEXT("/Game/Asset/Muzzle/MuzzleFlame.MuzzleFlame"));
+    if (MuzzleFlashEffectObj.Succeeded())
+    {
+        MuzzleFlashEffect = MuzzleFlashEffectObj.Object;
+    }
+   
     
     MovementInput = FVector2D(0.0f, 0.0f);
 }
@@ -190,6 +196,36 @@ void APlayerChar::Aimingchanged()
 {
     SetAiming(bIsAiming);
 }
+
+void APlayerChar::SpawnMuzzleFlash()
+{
+    if (MuzzleFlashEffect)
+    {
+        // 소켓의 위치와 회전을 가져옴
+        FVector MuzzleLocation = FirstPersonMesh->GetSocketLocation(TEXT("Muzzle"));
+        FRotator MuzzleRotation = FirstPersonMesh->GetSocketRotation(TEXT("Muzzle"));
+        FVector Scale = FVector(3.0f, 3.0f, 3.0f);
+
+        // 나이아가라 이펙트를 소켓에 붙여서 스폰
+        UNiagaraComponent* NiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(
+            MuzzleFlashEffect,
+            FirstPersonMesh,
+            TEXT("Muzzle"),
+            FVector::ZeroVector,
+            FRotator::ZeroRotator,
+            EAttachLocation::SnapToTargetIncludingScale,
+            true,  
+            true
+        );
+
+        
+        if (NiagaraComponent)
+        {
+            NiagaraComponent->SetWorldScale3D(Scale);
+        }
+    }
+}
+
 
 void APlayerChar::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {

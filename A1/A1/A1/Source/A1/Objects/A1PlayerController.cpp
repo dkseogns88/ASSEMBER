@@ -381,6 +381,12 @@ void AA1PlayerController::FireWeapon()
     {
         UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetPawn()->GetActorLocation());
     }
+
+    APlayerChar* MyCharacter = Cast<APlayerChar>(GetPawn());
+    if (MyCharacter)
+    {
+        MyCharacter->SpawnMuzzleFlash();
+    }
    
     if (GetWorld()->LineTraceSingleByChannel(HitResult, CameraLoc, TargetLocation, ECC_Pawn, Params))
     {
@@ -391,7 +397,7 @@ void AA1PlayerController::FireWeapon()
             // Dealing Monster
             // HitMonster->TakeDMG(AttackPower);
             
-            APlayerChar* MyCharacter = Cast<APlayerChar>(GetPawn());
+            
             
             Protocol::C_ATTACK AttackPkt;
             Protocol::AttackInfo* Info = AttackPkt.mutable_info();
