@@ -122,7 +122,7 @@ bool Room::HandleEnterPlayer(PlayerRef player)
 
 	// 입장한 플레이어 모두에게 기존 몬스터들을 알리자.
 	{
-		Protocol::S_SPAWN spawnPkt;
+		/*Protocol::S_SPAWN spawnPkt;
 
 		for (auto& item : _monsters)
 		{
@@ -132,7 +132,7 @@ bool Room::HandleEnterPlayer(PlayerRef player)
 
 		SendBufferRef sendBuffer = ClientPacketHandler::MakeSendBuffer(spawnPkt);
 		if (auto session = player->session.lock())
-			session->Send(sendBuffer);
+			session->Send(sendBuffer);*/
 	}
 
 	return success;

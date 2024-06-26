@@ -48,15 +48,6 @@ void AOtherPlayerChar::Tick(float DeltaTime)
 
 			FRotator NewRotation = FMath::RInterpTo(NowRotation, TargetRotation, DeltaTime, YawInterpValue);
 			SetActorRotation(NewRotation);
-			
-
-			/*FQuat NowQuat = GetActorRotation().Quaternion();
-			FQuat TargetQuat = FQuat(FRotator(0, DestInfo->yaw(), 0));
-
-			FQuat NewQuat = FQuat::Slerp(NowQuat, TargetQuat, DeltaTime * YawInterpValue);
-
-			FRotator NewRotation = NewQuat.Rotator();
-			SetActorRotation(NewRotation);*/
 
 			FVector ForwardDirection = FVector(DestInfo->d_x(), DestInfo->d_y(), DestInfo->d_z());
 			AddMovementInput(ForwardDirection);
@@ -78,12 +69,15 @@ void AOtherPlayerChar::Tick(float DeltaTime)
 
 
 		FVector NowLocation = GetActorLocation();
-		FVector TargetLocation = FVector(DestInfo->x(), DestInfo->y(), DestInfo->z());
+		FVector NextLocation = FVector(DestInfo->x(), DestInfo->y(), DestInfo->z());
 
-		float Distance = FVector::Dist(NowLocation, TargetLocation);
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("NowLocation: %s"), *NowLocation.ToString()));
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("NextLocation: %s"), *NextLocation.ToString()));
+
+		float Distance = FVector::Dist(NowLocation, NextLocation);
 		if (Distance >= 200.f)
 		{
-			SetActorLocation(TargetLocation);
+			SetActorLocation(NextLocation);
 		}
 	}
 }

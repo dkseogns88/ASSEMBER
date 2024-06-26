@@ -278,38 +278,22 @@ FVector2D APlayerChar::GetMovementInput() const
     return FVector2D(InputVector.X, InputVector.Y);
 }
 
-
-
-
-
-
-
-
-
-
-
 void APlayerChar::Move(const FInputActionValue& Value)
 {
     // input is a Vector2D
     FVector2D MovementVector = Value.Get<FVector2D>();
 
-    // Server
-    FVector ForwardDirection;
-    FVector RightDirection;
+    const FRotator Rotation = Controller->GetControlRotation();
+    const FRotator YawRotation(0, Rotation.Yaw, 0);
+  
+    // get forward vector
+    const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 
-    if (MovementVector.X != 0)
-    {
-        FRotator Rotator = GetControlRotation();
-        ForwardDirection = UKismetMathLibrary::GetForwardVector(FRotator(0, Rotator.Yaw, 0));
-        AddMovementInput(ForwardDirection, MovementVector.X);
-    }
-
-    if (MovementVector.Y != 0)
-    {
-        FRotator Rotator = GetControlRotation();
-        RightDirection = UKismetMathLibrary::GetRightVector(FRotator(0, Rotator.Yaw, 0));
-        AddMovementInput(RightDirection, MovementVector.Y);
-    }
+    // get right vector 
+    const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+    
+    AddMovementInput(ForwardDirection, MovementVector.X);
+    AddMovementInput(RightDirection, MovementVector.Y);
 
     DesiredInput = MovementVector;
 
@@ -317,12 +301,10 @@ void APlayerChar::Move(const FInputActionValue& Value)
     DesiredMoveDirection += ForwardDirection * MovementVector.X;
     DesiredMoveDirection += RightDirection * MovementVector.Y;
     DesiredMoveDirection.Normalize();
-
-    /*
+    
     const FVector Location = GetActorLocation();
     FRotator Rotator = UKismetMathLibrary::FindLookAtRotation(Location, Location + DesiredMoveDirection);
-    DesiredYaw = GetControlRotation().Yaw;
-    */
+    DesiredYaw = Rotation.Yaw;
     
 
 }
@@ -337,21 +319,15 @@ void APlayerChar::Look(const FInputActionValue& Value)
         // add yaw and pitch input to controller
         AddControllerYawInput(LookAxisVector.X);
         AddControllerPitchInput(LookAxisVector.Y);
-        DesiredYaw = GetControlRotation().Yaw;
     }
 }
-
-
-
-
-
-
 
 void APlayerChar::StateTick()
 {
     if (DesiredInput == FVector2D::Zero())
     {
         SetMoveState(Protocol::MOVE_STATE_IDLE);
+        DesiredYaw = Controller->GetControlRotation().Yaw;
     }
     else if ((DesiredInput != FVector2D::Zero()))
     {
@@ -373,7 +349,7 @@ void APlayerChar::SendTick(float DeltaTime)
         ForceSendPacket = true;
         LastDesiredInput = DesiredInput;
     }
-
+    
     if (bLastInputJump) {
         ForceSendPacket = true;
 		bLastInputJump = false;
