@@ -81,8 +81,7 @@ public:
 	void SetMovementSpeed(float NewSpeed);
 	virtual void Jump() override;
 
-	UFUNCTION(BlueprintCallable, Category = "Combat")
-	void IsDamaged(bool Damaged);
+
 
 	FTimerHandle DamageResetTimerHandle;
 

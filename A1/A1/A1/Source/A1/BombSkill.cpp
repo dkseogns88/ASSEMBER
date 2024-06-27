@@ -24,6 +24,8 @@ ABombSkill::ABombSkill()
     ProjectileMovement->ProjectileGravityScale = 1.0f;
     ProjectileMovement->UpdatedComponent = BombMesh;
     BombMesh->SetSimulatePhysics(false);
+
+    BombMesh->OnComponentHit.AddDynamic(this, &ABombSkill::OnBombImpact);
 }
 
 void ABombSkill::BeginPlay()
@@ -46,12 +48,20 @@ void ABombSkill::InitializeSkill(AActor* SkillCaster, FVector TargetLocation, fl
 void ABombSkill::ThrowBomb(FVector LaunchVelocity)
 {
   
-    ProjectileMovement->Velocity = LaunchVelocity; //메쉬는 제대로 날아가지만 스킬은 다른곳에서터짐
+    ProjectileMovement->Velocity = LaunchVelocity;
     ProjectileMovement->Activate();
-    GetWorld()->GetTimerManager().SetTimer(TimerHandle_Damage, this, &ABombSkill::ApplyDamage, 3.0f, false);
 }
 
-void ABombSkill::ApplyDamage()
+void ABombSkill::OnBombImpact(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+    ImpactLocation = Hit.ImpactPoint;
+    GetWorld()->GetTimerManager().SetTimer(TimerHandle_Damage, [this]()
+        {
+            PerformDamage(ImpactLocation);
+        }, 3.0f, false);
+}
+
+void ABombSkill::PerformDamage(const FVector& DamageCenter)
 {
     
 
@@ -62,41 +72,15 @@ void ABombSkill::ApplyDamage()
 
     if (ExplosionEffect)
     {
-        UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionEffect, ImpactLocation);
+        UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionEffect, DamageCenter);
     }
 
     if (ExplosionSound)
     {
-        UGameplayStatics::PlaySoundAtLocation(this, ExplosionSound, ImpactLocation);
+        UGameplayStatics::PlaySoundAtLocation(this, ExplosionSound, DamageCenter);
     }
 
-    TArray<AActor*> OverlappingActors;
-    UGameplayStatics::GetAllActorsOfClass(GetWorld(), AMonster::StaticClass(), OverlappingActors);
-    
-    //서버충돌처리
-    for (AActor* Actor : OverlappingActors)
-    {
-        if (Actor != Caster && (Actor->GetActorLocation() - ImpactLocation).Size() <= Radius)
-        {
-            AMonster* HitMonster = Cast<AMonster>(Actor);
-            if (HitMonster)
-            {
-                HitMonster->TakeDMG(Damage);
-
-                
-                APlayerChar* MyCharacter = Cast<APlayerChar>(UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetPawn());
-
-                Protocol::C_ATTACK AttackPkt;
-                Protocol::AttackInfo* Info = AttackPkt.mutable_info();
-                Info->set_attack_object_id(MyCharacter->GetPosInfo()->object_id());
-                Info->set_hit_object_id(HitMonster->GetPosInfo()->object_id());
-                Info->set_attack_type(Protocol::AttackType::ATTACK_TYPE_SKILL);
-                Info->set_skill_type(Protocol::SkillType::SKILL_TYPE_BOMB);
-                
-                MyCharacter->GetNetworkManager()->SendPacket(AttackPkt);
-            }
-        }
-    }
+    Super::PerformDamage(DamageCenter);
 
     EndSkill();
 }

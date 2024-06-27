@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "SKill.h"
+#include "BaseSkill.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Particles/ParticleSystem.h"
 #include "Sound/SoundCue.h"
@@ -13,7 +13,7 @@
  * 
  */
 UCLASS()
-class A1_API ABombSkill : public ASKill
+class A1_API ABombSkill : public ABaseSkill
 {
 	GENERATED_BODY()
 	
@@ -38,10 +38,13 @@ public:
     UPROPERTY(EditAnywhere, Category = "Effects")
     USoundCue* ExplosionSound;
 
-    virtual void InitializeSkill(AActor* SkillCaster, FVector TargetLocation, float SkillRadius, float DamageAmount);
+    virtual void InitializeSkill(AActor* SkillCaster, FVector TargetLocation, float SkillRadius, float DamageAmount) override;
     void ThrowBomb(FVector LaunchVelocity);
 
-    virtual void ApplyDamage() override;
+    UFUNCTION()
+    void OnBombImpact(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+
+    virtual void PerformDamage(const FVector& DamageLocation) override;
 
 private:
    

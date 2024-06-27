@@ -16,7 +16,7 @@
 #include "../Widgets/SkillCooldownWidget.h"
 #include "../Widgets/GameOverWidget.h"
 #include "../Widgets/KeyTipWidget.h"
-#include "../SKill.h"
+#include "../GunSkill.h"
 #include "../BombSkill.h"
 #include "A1PlayerController.generated.h"
 
@@ -104,7 +104,7 @@ public:
 	TSubclassOf<class UBaseWidget> IPAddressWidgetClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
-	TSubclassOf<ASKill> SkillClass;
+	TSubclassOf<AGunSkill> SkillClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skills", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<ABombSkill> BombSkillClass;

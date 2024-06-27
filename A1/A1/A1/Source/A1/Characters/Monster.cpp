@@ -247,7 +247,7 @@ void AMonster::CheckSwordHit()
 
                         break;
                     }
-                    HitCharacter->IsDamaged(true);
+                   
 
 
                 }

@@ -71,7 +71,7 @@ void AMonsterProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor,
                 {
                     PlayerController->ApplyDamage(Damage);
                 }
-                HitCharacter->IsDamaged(true);
+               
 
 
                 Protocol::C_ATTACK AttackPkt;

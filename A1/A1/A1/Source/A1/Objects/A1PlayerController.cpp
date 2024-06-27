@@ -16,16 +16,13 @@
 AA1PlayerController::AA1PlayerController()
 {
     
-    MaxAmmo = 6;
-    CurrentAmmo = MaxAmmo;
-    AttackPower = 50.0f;
-    PlayerHealth = 100.0f;
-    PlayerMaxHealth = 100.0f;
+    PlayerMaxHealth = 300.0f;
+    AttackPower = 60.0f;
+    PlayerHealth = PlayerMaxHealth;
     MovementSpeed = 500.0f;
-    SkillPower = 100.0f;
-    SkillRange = 1000.0f;
+    SkillRange = 500.0f;
 
-    
+   
     static ConstructorHelpers::FClassFinder<UHealthBarWidget> HealthBarBPClass(TEXT("/Game/MyBP/Widgets/HealthBarWidget.HealthBarWidget_C"));
     if (HealthBarBPClass.Succeeded())
     {
@@ -105,7 +102,7 @@ AA1PlayerController::AA1PlayerController()
     }
 
 
-    static ConstructorHelpers::FClassFinder<ASKill> SkillBPClass(TEXT("/Game/MyBP/Attack/BP_Skill.BP_Skill_C"));
+    static ConstructorHelpers::FClassFinder<AGunSkill> SkillBPClass(TEXT("/Game/MyBP/Attack/BP_GunSkill.BP_GunSkill_C"));
     if (SkillBPClass.Succeeded())
     {
         SkillClass = SkillBPClass.Class;
@@ -152,8 +149,9 @@ void AA1PlayerController::BeginPlay()
 {
     Super::BeginPlay();
 
+    
 
-
+   
     //Set Player Stat
     InitializeStats(PlayerHealth, MovementSpeed, AttackPower);
     SetHealth(PlayerHealth);
@@ -206,15 +204,6 @@ void AA1PlayerController::BeginPlay()
 
         }
 
-        // Create and display AmmoUI
-        AmmoWidget = CreateWidget<UAmmoWidget>(this, AmmoWidgetClass);
-        if (AmmoWidget)
-        {
-            
-            AmmoWidget->AddToViewport(1);
-            AmmoWidget->NativeConstruct();
-            AmmoWidget->UpdateAmmoCount(CurrentAmmo, MaxAmmo);
-        }
         
 
         //Create LevelUpWidget
@@ -243,6 +232,11 @@ void AA1PlayerController::BeginPlay()
         }
         if (PlayingRinty && !PlayingSida)
         {
+            //Stat Initialize
+            MaxAmmo = 6;
+            CurrentAmmo = MaxAmmo;
+            SkillPower = (AttackPower * 2.0) + 150;
+
             if (GunSkillCooldownWidgetClass)
             {
                 GunSkillCooldownWidgetInstance = CreateWidget<USkillCooldownWidget>(this, GunSkillCooldownWidgetClass);
@@ -255,6 +249,11 @@ void AA1PlayerController::BeginPlay()
         }
         if (PlayingSida && !PlayingRinty)
         {
+            //Stat Initialize
+            MaxAmmo = 10;
+            CurrentAmmo = MaxAmmo;
+            SkillPower = (AttackPower * 1.5) + 200;
+
             if (BombSkillCooldownWidgetClass)
             {
                 BombSkillCooldownWidgetInstance = CreateWidget<USkillCooldownWidget>(this, BombSkillCooldownWidgetClass);
@@ -265,6 +264,17 @@ void AA1PlayerController::BeginPlay()
                 }
             }
         }
+
+        // Create and display AmmoUI
+        AmmoWidget = CreateWidget<UAmmoWidget>(this, AmmoWidgetClass);
+        if (AmmoWidget)
+        {
+
+            AmmoWidget->AddToViewport(1);
+            AmmoWidget->NativeConstruct();
+            AmmoWidget->UpdateAmmoCount(CurrentAmmo, MaxAmmo);
+        }
+
 
 
 
@@ -780,11 +790,11 @@ void AA1PlayerController::UseSkill()
                     FActorSpawnParameters SpawnParams;
                     SpawnParams.Owner = this;
 
-                    ASKill* Skill = GetWorld()->SpawnActor<ASKill>(SkillClass, Location, Rotation, SpawnParams);
+                    AGunSkill* Skill = GetWorld()->SpawnActor<AGunSkill>(SkillClass, Location, Rotation, SpawnParams);
                     if (Skill)
                     {
                         Skill->OnSkillEnd.AddDynamic(this, &AA1PlayerController::OnSkillEnd);
-                        Skill->InitializeSkill(GetPawn(), SkillRange, SkillPower);  
+                        Skill->InitializeSkill(GetPawn(),Location, SkillRange, SkillPower);  
                        
                     }
                    
@@ -850,7 +860,7 @@ void AA1PlayerController::UseBombSkill()
                     bIsBombSkillOnCooldown = false;
                     BombSkillCooldownWidgetInstance->ResetCooldown();
                     
-                }, 10.0f, false); 
+                }, 3.0f, false); 
         }
     }
    
