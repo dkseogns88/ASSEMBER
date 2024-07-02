@@ -52,8 +52,8 @@ public:
 
 	void LogNavMeshPolygons();
 
-	
-
+	UFUNCTION(BlueprintCallable, Category = "CharacterSelect")
+	void CharacterSelect(FString CharacterName);
 	
 	// 캐릭터 이름과 클래스를 매핑하는 맵
 	TMap<FString, FString> CharacterBlueprintPaths;

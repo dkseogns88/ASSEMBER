@@ -67,9 +67,6 @@ void UA1GameInstance::Init()
 	CharacterBlueprintPaths.Add("Rinty", "Blueprint'/Game/BP/BP_Rinty.BP_Rinty_C'");
 	
 	
-	//GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, this, &UA1GameInstance::SpawnMonsters, 1.0f, false);
-
-	//LogNavMeshPolygons();
 	
 }
 
@@ -254,6 +251,63 @@ void UA1GameInstance::LogNavMeshPolygons()
 			
 			UE_LOG(LogTemp, Log, TEXT("Triangle %s -> %s, %s, %s"), *FString::Printf(TEXT("{(%.0f,%.0f),(%.0f,%.0f),(%.0f,%.0f)}"), Triangle1[0].X, Triangle1[0].Y, Triangle1[1].X, Triangle1[1].Y, Triangle1[2].X, Triangle1[2].Y), *WorldTriangle1[0].ToString(), *WorldTriangle1[1].ToString(), *WorldTriangle1[2].ToString());
 			UE_LOG(LogTemp, Log, TEXT("Triangle %s -> %s, %s, %s"), *FString::Printf(TEXT("{(%.0f,%.0f),(%.0f,%.0f),(%.0f,%.0f)}"), Triangle2[0].X, Triangle2[0].Y, Triangle2[1].X, Triangle2[1].Y, Triangle2[2].X, Triangle2[2].Y), *WorldTriangle2[0].ToString(), *WorldTriangle2[1].ToString(), *WorldTriangle2[2].ToString());
+		}
+	}
+}
+
+void UA1GameInstance::CharacterSelect(FString CharacterName)
+{
+	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, 0);
+	if (PlayerController)
+	{
+		APawn* CurrentPawn = PlayerController->GetPawn();
+		FVector SpawnLocation;
+		FRotator SpawnRotation;
+
+		if (CurrentPawn)
+		{
+			// 기존 폰의 위치와 회전 정보 저장
+			SpawnLocation = CurrentPawn->GetActorLocation();
+			SpawnRotation = CurrentPawn->GetActorRotation();
+
+			// 현재 폰 삭제
+			CurrentPawn->Destroy();
+		}
+
+		// 캐릭터 블루프린트를 찾아 스폰
+		FString BlueprintPath;
+		if (CharacterName == "Rinty")
+		{
+			BlueprintPath = TEXT("/Game/MyBP/Characters/BP_Rinty.BP_Rinty_C");
+		}
+		else if (CharacterName == "Sida")
+		{
+			BlueprintPath = TEXT("/Game/MyBP/Characters/BP_Sida.BP_Sida_C");
+		}
+
+		if (!BlueprintPath.IsEmpty())
+		{
+			UClass* CharacterClass = Cast<UClass>(StaticLoadObject(UClass::StaticClass(), nullptr, *BlueprintPath));
+			if (CharacterClass)
+			{
+				FActorSpawnParameters SpawnParams;
+				SpawnParams.Owner = PlayerController;
+				SpawnParams.Instigator = PlayerController->GetPawn();
+
+				// 새로운 폰 스폰
+				APawn* NewPawn = GetWorld()->SpawnActor<APawn>(CharacterClass, SpawnLocation, SpawnRotation, SpawnParams);
+				if (NewPawn)
+				{
+					// 새로운 폰을 소유하게 함
+					PlayerController->Possess(NewPawn);
+
+					AA1PlayerController* A1PlayerController = Cast<AA1PlayerController>(PlayerController);
+					if (A1PlayerController)
+					{
+						A1PlayerController->UpdateStatsAndWidgets(CharacterName);
+					}
+				}
+			}
 		}
 	}
 }

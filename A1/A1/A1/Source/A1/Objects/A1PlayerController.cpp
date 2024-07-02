@@ -113,6 +113,12 @@ AA1PlayerController::AA1PlayerController()
         BombSkillClass = BombSkillBPClass.Class;
     }
 
+    static ConstructorHelpers::FClassFinder<UCharacterSelectWidget> CharacterSelectBPClass(TEXT("/Game/MyBP/Widgets/NewCharacterSelectWidget.NewCharacterSelectWidget_C"));
+    if (CharacterSelectBPClass.Succeeded())
+    {
+        CharacterSelectWidgetClass = CharacterSelectBPClass.Class;
+    }
+
     
 }
 
@@ -150,6 +156,15 @@ void AA1PlayerController::BeginPlay()
     Super::BeginPlay();
 
     
+    if (CharacterSelectWidgetClass)
+    {
+        CharacterSelectWidgetInstance = CreateWidget<UCharacterSelectWidget>(this, CharacterSelectWidgetClass);
+        if (CharacterSelectWidgetInstance)
+        {
+            CharacterSelectWidgetInstance->AddToViewport();
+            CharacterSelectWidgetInstance->SetVisibility(ESlateVisibility::Hidden);
+        }
+    }
 
    
     //Set Player Stat
@@ -194,6 +209,9 @@ void AA1PlayerController::BeginPlay()
     }
     if (IsLocalController())
     {
+
+        
+
         HealthBarWidgets = CreateWidget<UHealthBarWidget>(this, HealthBarWidgetClass);
         if (HealthBarWidgets)
         {
@@ -275,7 +293,7 @@ void AA1PlayerController::BeginPlay()
             AmmoWidget->UpdateAmmoCount(CurrentAmmo, MaxAmmo);
         }
 
-
+       
 
 
     }
@@ -302,8 +320,7 @@ void AA1PlayerController::SetupInputComponent()
     InputComponent->BindAction("UseBombSkill", IE_Pressed, this, &AA1PlayerController::UseBombSkill);
     InputComponent->BindAction("ThrowBomb", IE_Pressed, this, &AA1PlayerController::ThrowBomb);
     InputComponent->BindAction("ToggleKeyTips", IE_Pressed, this, &AA1PlayerController::ToggleKeyTips);
-    //InputComponent->BindAction("Roll", IE_Pressed, this, &AA1PlayerController::OnRollPressed);
-
+    InputComponent->BindAction("ToggleCharacterSelect", IE_Pressed, this, &AA1PlayerController::ToggleCharacterSelectWidget);
    
 }
 
@@ -666,7 +683,7 @@ void AA1PlayerController::ToggleIPAddressWidget()
             IPAddressWidget->AddToViewport(100);
             IPAddressWidget->SetVisibility(ESlateVisibility::Collapsed);
         }
-        else
+        else 
         {
            
         }
@@ -688,6 +705,127 @@ void AA1PlayerController::ToggleIPAddressWidget()
     }
 
     bIsIPWidgetVisible = !bIsIPWidgetVisible;
+}
+
+void AA1PlayerController::ToggleCharacterSelectWidget()
+{
+    if (!CharacterSelectWidgetInstance)
+    {
+        // 위젯이 생성되지 않았으면 생성
+        CharacterSelectWidgetInstance = CreateWidget<UCharacterSelectWidget>(this, CharacterSelectWidgetClass);
+        if (CharacterSelectWidgetInstance)
+        {
+            CharacterSelectWidgetInstance->AddToViewport();
+            CharacterSelectWidgetInstance->SetVisibility(ESlateVisibility::Hidden);
+        }
+    }
+
+    if (CharacterSelectWidgetInstance)
+    {
+        if (!CharacterSelectWidgetInstance->IsInViewport())
+        {
+            // 위젯을 뷰포트에 추가하고 입력 모드를 설정
+            CharacterSelectWidgetInstance->AddToViewport();
+            CharacterSelectWidgetInstance->SetVisibility(ESlateVisibility::Visible);
+            SetInputMode(FInputModeGameAndUI());
+            bShowMouseCursor = true;
+        }
+        else
+        {
+            // 위젯을 뷰포트에서 제거하고 입력 모드를 게임 전용으로 설정
+            CharacterSelectWidgetInstance->RemoveFromParent();
+            SetInputMode(FInputModeGameOnly());
+            bShowMouseCursor = false;
+        }
+    }
+}
+
+void AA1PlayerController::UpdateStatsAndWidgets(FString CharacterName)
+{
+    if (GunSkillCooldownWidgetInstance)
+    {
+        GunSkillCooldownWidgetInstance->RemoveFromParent();
+        GunSkillCooldownWidgetInstance = nullptr;
+    }
+
+    if (BombSkillCooldownWidgetInstance)
+    {
+        BombSkillCooldownWidgetInstance->RemoveFromParent();
+        BombSkillCooldownWidgetInstance = nullptr;
+    }
+
+    if (CharacterName == "Rinty")
+    {
+        PlayingSida = false;
+        PlayingRinty = true;
+        // Rinty의 스탯 및 스킬 설정
+        PlayerMaxHealth = 300.0f;
+        AttackPower = 60.0f;
+        MovementSpeed = 600.0f;
+        SkillRange = 1000.0f;
+        SkillPower = (AttackPower * 2.0) + 150;
+        // 위젯 업데이트
+        if (HealthBarWidgets)
+        {
+            HealthBarWidgets->UpdateHealth(PlayerMaxHealth);
+        }
+        if (AmmoWidget)
+        {
+            MaxAmmo = 6;
+            CurrentAmmo = MaxAmmo;
+            AmmoWidget->UpdateAmmoCount(CurrentAmmo, MaxAmmo);
+        }
+        if (GunSkillCooldownWidgetClass)
+        {
+            GunSkillCooldownWidgetInstance = CreateWidget<USkillCooldownWidget>(this, GunSkillCooldownWidgetClass);
+            if (GunSkillCooldownWidgetInstance)
+            {
+                GunSkillCooldownWidgetInstance->AddToViewport();
+                
+                GunSkillCooldownWidgetInstance->InitializeCooldown(10.0f);
+                
+            }
+            
+        }
+    }
+    else if (CharacterName == "Sida")
+    {
+        PlayingRinty = false;
+        PlayingSida = true;
+        // Sida의 스탯 및 스킬 설정
+        PlayerMaxHealth = 300.0f;
+        AttackPower = 70.0f;
+        MovementSpeed = 500.0f;
+        SkillRange = 1000.0f;
+        SkillPower = (AttackPower * 1.0) + 200;
+        // 위젯 업데이트
+        if (HealthBarWidgets)
+        {
+            HealthBarWidgets->UpdateHealth(PlayerMaxHealth);
+        }
+        if (AmmoWidget)
+        {
+            MaxAmmo = 10;
+            CurrentAmmo = MaxAmmo;
+            AmmoWidget->UpdateAmmoCount(CurrentAmmo, MaxAmmo);
+        }
+        if (BombSkillCooldownWidgetClass)
+        {
+            BombSkillCooldownWidgetInstance = CreateWidget<USkillCooldownWidget>(this, BombSkillCooldownWidgetClass);
+            if (BombSkillCooldownWidgetInstance)
+            {
+                BombSkillCooldownWidgetInstance->AddToViewport();
+                BombSkillCooldownWidgetInstance->ResetCooldown();
+                BombSkillCooldownWidgetInstance->InitializeCooldown(10.0f);
+               
+            }
+           
+        }
+    }
+
+    // 기타 업데이트 로직 추가 가능
+    SetHealth(PlayerMaxHealth);
+    InitializeStats(PlayerMaxHealth, MovementSpeed, AttackPower);
 }
 
 void AA1PlayerController::ShowEnemyInfo_Internal(FString EnemyName, float Health)
@@ -802,13 +940,23 @@ void AA1PlayerController::UseSkill()
 
             
             bIsSkillOnCooldown = true;
-            GunSkillCooldownWidgetInstance->StartCooldown();
+            if (GunSkillCooldownWidgetInstance)
+            {
+                GunSkillCooldownWidgetInstance->StartCooldown();
+               
+            }
+            
             GetWorld()->GetTimerManager().SetTimer(SkillCooldownTimerHandle, [this]()
                 {
                     bIsSkillOnCooldown = false;
-                    GunSkillCooldownWidgetInstance->ResetCooldown();
+                    if (GunSkillCooldownWidgetInstance)
+                    {
+                        GunSkillCooldownWidgetInstance->ResetCooldown();
+                       
+                    }
                    
-                }, 10.0f, false); 
+
+                }, 10.0f, false);
 
         }
     }
@@ -860,7 +1008,7 @@ void AA1PlayerController::UseBombSkill()
                     bIsBombSkillOnCooldown = false;
                     BombSkillCooldownWidgetInstance->ResetCooldown();
                     
-                }, 3.0f, false); 
+                }, 10.0f, false); 
         }
     }
    

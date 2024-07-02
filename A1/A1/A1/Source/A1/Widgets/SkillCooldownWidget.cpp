@@ -23,6 +23,11 @@ void USkillCooldownWidget::NativeConstruct()
     if (CooldownText)
     {
         CooldownText->SetText(FText::FromString(TEXT("")));
+        UE_LOG(LogTemp, Warning, TEXT("CooldownText initialized successfully."));
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("CooldownText is nullptr in NativeConstruct."));
     }
 }
 
@@ -64,7 +69,15 @@ void USkillCooldownWidget::StartCooldown()
 
 void USkillCooldownWidget::ResetCooldown()
 {
-    CooldownRemaining = 0.0f;
-    CooldownText->SetText(FText::FromString(TEXT("")));
-    bIsCooldownActive = false;
+    if (CooldownText)
+    {
+        CooldownRemaining = 0.0f;
+        CooldownText->SetText(FText::FromString(TEXT("")));
+        bIsCooldownActive = false;
+        UE_LOG(LogTemp, Warning, TEXT("ResetCooldown executed successfully."));
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("CooldownText is nullptr in ResetCooldown."));
+    }
 }

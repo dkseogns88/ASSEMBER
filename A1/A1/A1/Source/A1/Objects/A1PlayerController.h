@@ -16,6 +16,7 @@
 #include "../Widgets/SkillCooldownWidget.h"
 #include "../Widgets/GameOverWidget.h"
 #include "../Widgets/KeyTipWidget.h"
+#include "../Widgets/CharacterSelectWidget.h"
 #include "../GunSkill.h"
 #include "../BombSkill.h"
 #include "A1PlayerController.generated.h"
@@ -97,6 +98,7 @@ public:
 	void ToggleIPAddressWidget();
 
 	void ToggleKeyTips();
+	void UpdateStatsAndWidgets(FString CharacterName);
 
 	//void SetNearbyStatue(ACharacterStatue* Statue);
 
@@ -132,6 +134,7 @@ public:
 	TSubclassOf<ACharacter> CharacterBlueprintClass;
 
 	
+
 private:
 	bool PlayingRinty = false;
 	bool PlayingSida = false;
@@ -169,6 +172,11 @@ private:
 	UPROPERTY()
 	UIPAddressWidget* IPAddressWidget;
 
+	UPROPERTY(EditAnywhere, Category = "UI")
+	TSubclassOf<UCharacterSelectWidget> CharacterSelectWidgetClass;
+
+	UPROPERTY()
+	UCharacterSelectWidget* CharacterSelectWidgetInstance;
 	
 	void UpdateStatsBasedOnOption(int OptionIndex);
 
@@ -179,6 +187,8 @@ private:
 	void Interact();
 
 	void TogglePlayerStatWidget();
+
+	void ToggleCharacterSelectWidget();
 
 	void UseSkill();
 
