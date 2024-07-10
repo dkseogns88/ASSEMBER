@@ -31,9 +31,6 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-
-
-
 	UFUNCTION(BlueprintCallable, Category = "Character Actions")
 	void UseSkillAnim(bool UsingSkill);
 
@@ -81,14 +78,10 @@ public:
 	void SetMovementSpeed(float NewSpeed);
 	virtual void Jump() override;
 
-
-
 	FTimerHandle DamageResetTimerHandle;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects")
 	UNiagaraSystem* MuzzleFlashEffect;
-
-
 
 	void SpawnMuzzleFlash();
 
@@ -128,8 +121,6 @@ public:
 
 
 private:
-	void MoveCache();
-
 	void StateTick();
 	void SendTick(float DeltaTime);
 

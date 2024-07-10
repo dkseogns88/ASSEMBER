@@ -82,12 +82,6 @@ void APlayerChar::Tick(float DeltaTime)
 
     bIsMoving = MovementInput.SizeSquared() > 0.0f;
     bIsMovingBackward = MovementInput.X < 0.0f;
-
-    if (UAnimInstanceCustom* AnimInstance = Cast<UAnimInstanceCustom>(GetMesh()->GetAnimInstance()))
-    {
-        //AnimInstance->SetMovementInput(MovementInput);
-        //AnimInstance->SetIsMovingBackward(bIsMovingBackward);
-    }
      
     StateTick();
     SendTick(DeltaTime);
@@ -109,7 +103,6 @@ void APlayerChar::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
         
         EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &APlayerChar::Look);
     }
-    
 }
 
 
@@ -149,34 +142,6 @@ void APlayerChar::UseSkillAnim(bool UsingSkill)
     }
 }
 
-void APlayerChar::MoveCache()
-{
-    FVector ForwardDirection;
-    FVector RightDirection;
-
-    if (MovementInput.X != 0)
-    {
-        FRotator Rotator = GetControlRotation();
-        ForwardDirection = UKismetMathLibrary::GetForwardVector(FRotator(0, Rotator.Yaw, 0));
-    }
-
-    if (MovementInput.Y != 0)
-    {
-        FRotator Rotator = GetControlRotation();
-        RightDirection = UKismetMathLibrary::GetRightVector(FRotator(0, Rotator.Yaw, 0));
-    }
-
-    DesiredInput = MovementInput;
-
-    DesiredMoveDirection = FVector::ZeroVector;
-    DesiredMoveDirection += ForwardDirection * MovementInput.X;
-    DesiredMoveDirection += RightDirection * MovementInput.Y;
-    DesiredMoveDirection.Normalize();
-
-    const FVector Location = GetActorLocation();
-    FRotator Rotator = UKismetMathLibrary::FindLookAtRotation(Location, Location + DesiredMoveDirection);
-    DesiredYaw = GetControlRotation().Yaw;
-}
 
 void APlayerChar::SetAiming(bool bNewAiming)
 {
@@ -269,8 +234,6 @@ void APlayerChar::Move(const FInputActionValue& Value)
     const FVector Location = GetActorLocation();
     FRotator Rotator = UKismetMathLibrary::FindLookAtRotation(Location, Location + DesiredMoveDirection);
     DesiredYaw = Rotation.Yaw;
-    
-
 }
 
 void APlayerChar::Look(const FInputActionValue& Value)

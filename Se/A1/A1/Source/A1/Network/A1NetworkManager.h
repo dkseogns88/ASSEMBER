@@ -63,7 +63,7 @@ public:
 	TMap<uint64, AA1Character*> Players;	// 다른 클라이언트들에 캐릭터
 
 	UPROPERTY()
-	TMap<uint64, AA1Character*> Monsters;		// 몬스터들 관리
+	TMap<uint64, AA1Character*> Monsters;	// 몬스터들 관리
 
 	UPROPERTY()
 	TObjectPtr<AA1Character> MyPlayer;		// 이건 내가 컨트롤하는 플레이어

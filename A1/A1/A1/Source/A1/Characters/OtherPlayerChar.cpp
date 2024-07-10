@@ -67,12 +67,8 @@ void AOtherPlayerChar::Tick(float DeltaTime)
 			AddMovementInput(ForwardDirection);
 		}
 
-
 		FVector NowLocation = GetActorLocation();
 		FVector NextLocation = FVector(DestInfo->x(), DestInfo->y(), DestInfo->z());
-
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("NowLocation: %s"), *NowLocation.ToString()));
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("NextLocation: %s"), *NextLocation.ToString()));
 
 		float Distance = FVector::Dist(NowLocation, NextLocation);
 		if (Distance >= 200.f)
