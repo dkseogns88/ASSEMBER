@@ -133,3 +133,23 @@ bool Handle_S_SPAWN_MONSTER(PacketSessionRef& session, Protocol::S_SPAWN_MONSTER
 
 	return true;
 }
+
+bool Handle_S_PATHFINDING(PacketSessionRef& session, Protocol::S_PATHFINDING& pkt)
+{
+	if (UA1NetworkManager* GameNetwork = GetWorldNetwork(session))
+	{
+		GameNetwork->HandlePathFinding(pkt);
+	}
+
+	return true;
+}
+
+bool Handle_S_NPCMOVE(PacketSessionRef& session, Protocol::S_NPCMOVE& pkt)
+{
+	if (UA1NetworkManager* GameNetwork = GetWorldNetwork(session))
+	{
+		GameNetwork->HandleNpcMove(pkt);
+	}
+
+	return true;
+}

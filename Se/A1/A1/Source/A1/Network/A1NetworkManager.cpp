@@ -10,6 +10,7 @@
 #include "Character/A1OtherPlayer.h"
 #include "Character/A1Monster.h"
 #include "Kismet/GameplayStatics.h"
+#include "A1LogChannels.h"
 
 void UA1NetworkManager::ConnectToGameServer()
 {
@@ -114,7 +115,7 @@ void UA1NetworkManager::HandleSpawn(const Protocol::S_ENTER_GAME& EnterGamePkt)
 
 void UA1NetworkManager::HandleSpawn(const Protocol::S_SPAWN& SpawnPkt)
 {
-	for (auto& Player : SpawnPkt.players())
+		for (auto& Player : SpawnPkt.players())
 	{
 		HandleSpawn(Player, false);
 	}
@@ -214,6 +215,52 @@ void UA1NetworkManager::HandleZoom(const Protocol::S_ZOOM& ZoomPkt)
 		Cast<AA1OtherPlayer>(Player)->PlayZoom(ZoomPkt.info().b_zoom());
 	}
 
+}
+
+void UA1NetworkManager::HandleNpcMove(const Protocol::S_NPCMOVE& NpcMovePkt)
+{
+	const uint64 ObjectId = NpcMovePkt.info().object_id();
+
+	if (AA1Character* monster = ValidationMonster(ObjectId))
+	{
+		const Protocol::PosInfo& Info = NpcMovePkt.info();
+		UE_LOG(LogTemp, Warning, TEXT("DestInfo : (%f,%f,%f)"), Info.x(), Info.y(), Info.z());
+
+		monster->SetDestInfo(Info);
+	}
+	
+}
+
+void UA1NetworkManager::HandlePathFinding(const Protocol::S_PATHFINDING& pathPkt)
+{
+	UE_LOG(LogA1, Warning, TEXT("HandlePathFinding"));
+
+	for (auto path : pathPkt.info())
+	{
+		UE_LOG(LogA1, Warning, TEXT("(%f,%f,%f)"), path.x(), path.y(), path.z());
+	}
+}
+
+void UA1NetworkManager::TestFunc()
+{
+	Protocol::C_PATHFINDING pkt;
+	Protocol::PosInfo* startInfo = pkt.add_info();
+	startInfo->set_x(-2000.f);
+	startInfo->set_y(-2000.f);
+	startInfo->set_z(0.f);
+	startInfo->set_state(Protocol::MoveState::MOVE_STATE_RUN);
+	startInfo->set_object_id(0);
+	startInfo->set_yaw(0.f);
+
+	Protocol::PosInfo* goalInfo = pkt.add_info();
+	goalInfo->set_x(-900.f);
+	goalInfo->set_y(-900.f);
+	goalInfo->set_z(0.f);
+	goalInfo->set_state(Protocol::MoveState::MOVE_STATE_RUN);
+	goalInfo->set_object_id(1);
+	goalInfo->set_yaw(0.f);
+
+	SendPacket(pkt);
 }
 
 AA1Character* UA1NetworkManager::ValidationPlayer(int ObjectId)

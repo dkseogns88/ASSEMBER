@@ -21,10 +21,11 @@
 
 USING_SHARED_PTR(GameSession);
 USING_SHARED_PTR(Room);
-USING_SHARED_PTR(Object);
 USING_SHARED_PTR(Player);
 USING_SHARED_PTR(Monster);
 USING_SHARED_PTR(Creature);
+USING_SHARED_PTR(Object);
+USING_SHARED_PTR(PathFinder);
 
 
 #define SEND_PACKET(pkt)													\

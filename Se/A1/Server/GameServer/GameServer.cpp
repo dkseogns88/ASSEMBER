@@ -9,6 +9,7 @@
 #include <tchar.h>
 #include "Room.h"
 #include "Protocol.pb.h"
+#include "PathFinder.h"
 
 enum
 {
@@ -43,9 +44,12 @@ int main()
 		100);
 
 	ASSERT_CRASH(service->Start());
+
+	// 몬스터 생성 부분
 	GRoom->InitializationRoom();
 
-	cout << "Server Initial Finish!\n\n";
+	GPathFinder->ReadFile();
+	//GRoom->UpdateTick();
 
 	for (int32 i = 0; i < 5; i++)
 	{

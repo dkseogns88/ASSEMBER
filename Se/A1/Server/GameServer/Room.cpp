@@ -10,7 +10,8 @@
 #include "BehaviorTree.h"
 #include "FindTargetNode.h"
 #include "ConditionNode.h"
-
+#include "CoroutineJob.h"
+#include "PathFinder.h"
 RoomRef GRoom = make_shared<Room>();
 
 Room::Room()
@@ -26,31 +27,29 @@ Room::~Room()
 void Room::InitializationRoom()
 {
 	MonsterRef monster = ObjectUtils::CreateMonster();
-	monster->posInfo->set_x(Utils::GetRandom(0.f, 500.f));
-	monster->posInfo->set_y(Utils::GetRandom(0.f, 500.f));
+	monster->posInfo->set_x(-1900.f);
+	monster->posInfo->set_y(-1900.f);
 	monster->posInfo->set_z(Utils::GetRandom(100.f, 100.f));
 	if (AddMonster(monster)) {
 
+		monster->vector3D.x = monster->posInfo->x();
+		monster->vector3D.y = monster->posInfo->y();
+		monster->vector3D.z = monster->posInfo->z();
 
-		// 행동 노드: 랜덤 이동
-		ActionNode* wander = new ActionNode([monster]() {
+		/*ActionNode* wander = new ActionNode([monster]() {
 			monster->MoveToRandom();
 			return true;
 			});
 
-		// 행동 노드: 플레이어 추적
 		ActionNode* chasePlayer = new ActionNode([monster]() {
 			monster->ChasePlayer();
 			return true;
 			});
 
-		// 시퀀스 노드: 조건을 확인하고 플레이어를 추적
 		SequenceNode* chaseSequence = new SequenceNode({ chasePlayer });
 
-		// 타겟이 있을 때 행동하는 선택자 노드
 		SelectorNode* targetSelector = new SelectorNode({ chaseSequence });
 
-		// 타겟이 없을 때 행동하는 시퀀스 노드
 		SequenceNode* noTargetSequence = new SequenceNode({ wander });
 
 
@@ -58,34 +57,54 @@ void Room::InitializationRoom()
 			monster, targetSelector, noTargetSequence
 			);
 		BehaviorTree* behaviorTree = new BehaviorTree(behaviorTreeRoot);
-		monster->_behaviorTree = behaviorTree;
-		_testMonster = monster;
+		monster->_behaviorTree = behaviorTree;*/
 	}
-	
 }
 
-void Room::TestMonsterAI()
+void Room::UpdateMonsterAI()
 {
-	//this_thread::sleep_for(2s);
-	//while (true) {
-		//_testMonster->executeBehavior();
-	//}
-	
-	_testMonster->executeBehavior();
-	DoTimer(0, &Room::TestMonsterAI);
+	for (auto it = _monsters.begin(); it != _monsters.end(); ++it) {
+		if (MonsterRef monster = dynamic_pointer_cast<Monster>((it->second))) {
+			monster->executeBehavior();
+		}
+	}
+	DoTimer(0, &Room::UpdateMonsterAI);
 
 }
 
 bool Room::HandleEnterPlayer(PlayerRef player)
 {
+	UpdateTick();
+
 	bool success = AddPlayer(player);
-	_testPlayer = player;
 
 	// 랜덤 위치
 	player->posInfo->set_x(Utils::GetRandom(0.f, 500.f));
 	player->posInfo->set_y(Utils::GetRandom(0.f, 500.f));
 	player->posInfo->set_z(Utils::GetRandom(100.f, 100.f));
 	player->posInfo->set_yaw(Utils::GetRandom(0.f, 500.f));
+
+
+	/*if (_player1 == nullptr)
+	{
+		_player1 = player;
+
+		_player1->posInfo->set_x(Utils::GetRandom(0.f, 500.f));
+		_player1->posInfo->set_y(Utils::GetRandom(0.f, 500.f));
+		_player1->posInfo->set_z(Utils::GetRandom(0.f, 500.f));
+		_player1->posInfo->set_yaw(90.f);
+
+		DoTimer(2000, &Room::UpdateMonsterAI);
+	}
+	else if (_player2 == nullptr)
+	{
+		_player2 = player;
+
+		_player2->posInfo->set_x(Utils::GetRandom(0.f, 500.f));
+		_player2->posInfo->set_y(Utils::GetRandom(0.f, 500.f));
+		_player2->posInfo->set_z(Utils::GetRandom(0.f, 500.f));
+		_player2->posInfo->set_yaw(90.f);
+	}*/
 
 	// 입장 사실을 들어온 플레이어에게 알린다.
 	{
@@ -144,28 +163,38 @@ bool Room::HandleEnterPlayer(PlayerRef player)
 
 	// 입장한 플레이어 모두에게 기존 몬스터들을 알리자.
 	{
-		Protocol::S_SPAWN_MONSTER spawnPkt;
 
 		for (auto& item : _monsters)
 		{
+			Protocol::S_SPAWN_MONSTER spawnPkt;
+			Protocol::S_NPCMOVE npcMovePkt;
+			
 			Protocol::ObjectInfo* objectInfo = spawnPkt.add_monsters();
 			objectInfo->CopyFrom(*item.second->objectInfo);
+			SendBufferRef sendBuffer = ClientPacketHandler::MakeSendBuffer(spawnPkt);
+
+			if (auto session = player->session.lock()) {
+				session->Send(sendBuffer);
+				
+				if (auto npc = dynamic_pointer_cast<Monster>(item.second))
+				{
+					{
+						Protocol::PosInfo* info = npcMovePkt.mutable_info();
+
+						auto dest = npc->GetDestByIdx(npc->idx);
+						info->set_x(dest.x);
+						info->set_y(dest.y);
+						info->set_z(dest.z);
+						info->set_object_id(npc->objectInfo->object_id());
+						info->set_state(Protocol::MoveState::MOVE_STATE_RUN);
+					}
+
+					SendBufferRef sendBuffer = ClientPacketHandler::MakeSendBuffer(npcMovePkt);
+					session->Send(sendBuffer);
+				}
+			}
 		}
-
-		SendBufferRef sendBuffer = ClientPacketHandler::MakeSendBuffer(spawnPkt);
-		if (auto session = player->session.lock())
-			session->Send(sendBuffer);
-
-		//DoTimer(3000, &Room::TestMonsterAI);
 	}
-
-
-	// 몬스터 AI 테스트
-	//thread testThread(&Room::TestMonsterAI, this);
-	//testThread.detach();
-
-	DoTimer(2000, &Room::TestMonsterAI);
-
 
 	return success;
 }
@@ -281,6 +310,81 @@ void Room::HandleSelect(Protocol::C_SELECT pkt)
 		Broadcast(sendBuffer);
 	}
 	
+}
+
+void Room::HandlePathFinding(Protocol::C_PATHFINDING pkt)
+{
+	auto arr = pkt.info();
+	FVector start = {};
+	FVector goal = {};
+
+	for (int i = 0; i < arr.size(); i++)
+	{
+		if (i == 0) 
+			start = { arr[i].x(),arr[i].y(),arr[i].z() };
+		else
+			goal = { arr[i].x(),arr[i].y(),arr[i].z() };
+	}
+
+	auto coroutine = CoroutineJob::CoroutineFunc(GPathFinder, start, goal);
+
+	while (true)
+	{
+		if (GPathFinder->IsRead)
+		{
+			coroutine.resume();
+			break;
+		}
+	}
+
+	for (auto p : GPathFinder->path)
+		cout << "(" << p.x << "," << p.y << "," << p.z << ") ->";
+	cout << endl << endl;
+}
+
+void Room::HandleNpcMove(Protocol::C_NPCMOVE pkt)
+{
+	const uint64 objectId = pkt.info().object_id();
+
+	MonsterRef npc = dynamic_pointer_cast<Monster>(_monsters[objectId]);
+	auto info = npc->objectInfo->mutable_pos_info();
+	info->CopyFrom(pkt.info());
+	npc->posInfo->CopyFrom(pkt.info());
+	npc->vector3D.x = npc->posInfo->x();
+	npc->vector3D.y = npc->posInfo->y();
+	npc->vector3D.z = npc->posInfo->z();
+
+	npc->CheckIdx();
+
+	if (!npc->isArrvied)
+		npc->posInfo->set_state(Protocol::MoveState::MOVE_STATE_RUN);
+
+	Protocol::S_NPCMOVE npcMovePkt;
+	Protocol::PosInfo* sendInfo = npcMovePkt.mutable_info();
+
+	auto dest = npc->GetDestByIdx(npc->idx);
+	sendInfo->set_x(dest.x);
+	sendInfo->set_y(dest.y);
+	sendInfo->set_z(dest.z);
+	sendInfo->set_object_id(npc->objectInfo->object_id());
+	sendInfo->set_state(npc->posInfo->state());
+
+	SendBufferRef sendBuffer = ClientPacketHandler::MakeSendBuffer(npcMovePkt);
+	Broadcast(sendBuffer);
+}
+
+void Room::UpdateTick()
+{
+	cout << endl << "Update Room" << endl;
+
+	for (auto n : _monsters)
+	{
+		auto npc = dynamic_pointer_cast<Monster>(n.second);
+		npc->DoPathFinding(npc);
+	}
+
+	//DoTimer(5000, &Room::UpdateTick);
+
 }
 
 

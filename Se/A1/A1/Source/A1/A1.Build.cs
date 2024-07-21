@@ -25,6 +25,7 @@ public class A1 : ModuleRules
             "Networking",
             "GameplayTags",
             "NavigationSystem",
+            "Navmesh",
             "AIModule",
             "Niagara",
          });

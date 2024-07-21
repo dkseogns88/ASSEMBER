@@ -27,7 +27,23 @@ public:
 
 	void SetAiming(bool bNewAiming);
 
+	void SpawnMuzzleFlash();
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects")
+	UNiagaraSystem* MuzzleFlashEffect;
+
+	
 private:
 	bool bIsAiming = false;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	class UCameraComponent* FirstPersonCamera;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	class USpringArmComponent* CameraBoom;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	class USkeletalMeshComponent* FirstPersonMesh;
 
 };

@@ -8,7 +8,7 @@ public:
 	virtual ~Room();
 
 	void InitializationRoom();
-	void TestMonsterAI();
+	void UpdateMonsterAI();
 
 
 	bool HandleEnterPlayer(PlayerRef player);
@@ -20,6 +20,13 @@ public:
 	void HandleZoom(Protocol::C_ZOOM pkt);
 
 	void HandleSelect(Protocol::C_SELECT pkt);
+
+	void HandlePathFinding(Protocol::C_PATHFINDING pkt);
+
+	void HandleNpcMove(Protocol::C_NPCMOVE pkt);
+
+	void UpdateTick();
+
 public:
 
 	RoomRef GetRoomRef();
@@ -35,14 +42,15 @@ private:
 
 public:
 	void Broadcast(SendBufferRef sendBuffer, uint64 exceptId = 0);
-	shared_ptr<Player> _testPlayer;
+	
+	// 플레이어
+	PlayerRef _player1;
+	PlayerRef _player2;
 
 private:
 	unordered_map<uint64, ObjectRef> _objects;			// 모든 오브젝트 관리
 	unordered_map<uint64, ObjectRef> _players;			// 플레이어만 관리
 	unordered_map<uint64, ObjectRef> _monsters;			// 몬스터만 관리
-
-	shared_ptr<Monster> _testMonster;
 };
 
 extern RoomRef GRoom;

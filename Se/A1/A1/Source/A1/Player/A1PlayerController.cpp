@@ -194,6 +194,8 @@ void AA1PlayerController::Input_Move(const FInputActionValue& InputValue)
 
 void AA1PlayerController::Input_Turn(const FInputActionValue& InputValue)
 {
+	//float Val = InputValue.Get<float>();
+
 	FVector2D LookAxisVector = InputValue.Get<FVector2D>();
 
 	if (A1MyPlayer->GetMoveState() != Protocol::MOVE_STATE_IDLE)
@@ -216,6 +218,19 @@ void AA1PlayerController::Input_Mouse(const FInputActionValue& InputValue)
 	FVector2D MouseValue = InputValue.Get<FVector2D>();
 	
 	bool IsZoom = static_cast<bool>(MouseValue.Y);
+
+	/*if (ZoomMontage)
+	{
+		A1MyPlayer->PlayAnimMontage(ZoomMontage);
+
+		Protocol::C_ZOOM ZoomPkt;
+
+		Protocol::ZoomInfo* Info = ZoomPkt.mutable_info();
+		Info->set_object_id(A1MyPlayer->PlayerInfo->object_id());
+		Info->set_b_zoom(IsZoom);
+
+		A1MyPlayer->GetNetworkManager()->SendPacket(ZoomPkt);
+	}*/
 
 	if (MouseValue.Y != 0)
 	{

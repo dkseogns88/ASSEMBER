@@ -29,6 +29,10 @@ enum : uint16
 	PKT_C_ZOOM = 1016,
 	PKT_S_ZOOM = 1017,
 	PKT_S_SPAWN_MONSTER = 1018,
+	PKT_C_PATHFINDING = 1019,
+	PKT_S_PATHFINDING = 1020,
+	PKT_C_NPCMOVE = 1021,
+	PKT_S_NPCMOVE = 1022,
 };
 
 // Custom Handlers
@@ -44,6 +48,8 @@ bool Handle_S_SELECT(PacketSessionRef& session, Protocol::S_SELECT& pkt);
 bool Handle_S_CHAT(PacketSessionRef& session, Protocol::S_CHAT& pkt);
 bool Handle_S_ZOOM(PacketSessionRef& session, Protocol::S_ZOOM& pkt);
 bool Handle_S_SPAWN_MONSTER(PacketSessionRef& session, Protocol::S_SPAWN_MONSTER& pkt);
+bool Handle_S_PATHFINDING(PacketSessionRef& session, Protocol::S_PATHFINDING& pkt);
+bool Handle_S_NPCMOVE(PacketSessionRef& session, Protocol::S_NPCMOVE& pkt);
 
 class ServerPacketHandler
 {
@@ -63,6 +69,8 @@ public:
 		GPacketHandler[PKT_S_CHAT] = [](PacketSessionRef& session, BYTE* buffer, int32 len) { return HandlePacket<Protocol::S_CHAT>(Handle_S_CHAT, session, buffer, len); };
 		GPacketHandler[PKT_S_ZOOM] = [](PacketSessionRef& session, BYTE* buffer, int32 len) { return HandlePacket<Protocol::S_ZOOM>(Handle_S_ZOOM, session, buffer, len); };
 		GPacketHandler[PKT_S_SPAWN_MONSTER] = [](PacketSessionRef& session, BYTE* buffer, int32 len) { return HandlePacket<Protocol::S_SPAWN_MONSTER>(Handle_S_SPAWN_MONSTER, session, buffer, len); };
+		GPacketHandler[PKT_S_PATHFINDING] = [](PacketSessionRef& session, BYTE* buffer, int32 len) { return HandlePacket<Protocol::S_PATHFINDING>(Handle_S_PATHFINDING, session, buffer, len); };
+		GPacketHandler[PKT_S_NPCMOVE] = [](PacketSessionRef& session, BYTE* buffer, int32 len) { return HandlePacket<Protocol::S_NPCMOVE>(Handle_S_NPCMOVE, session, buffer, len); };
 	}
 
 	static bool HandlePacket(PacketSessionRef& session, BYTE* buffer, int32 len)
@@ -78,6 +86,8 @@ public:
 	static SendBufferRef MakeSendBuffer(Protocol::C_SELECT& pkt) { return MakeSendBuffer(pkt, PKT_C_SELECT); }
 	static SendBufferRef MakeSendBuffer(Protocol::C_CHAT& pkt) { return MakeSendBuffer(pkt, PKT_C_CHAT); }
 	static SendBufferRef MakeSendBuffer(Protocol::C_ZOOM& pkt) { return MakeSendBuffer(pkt, PKT_C_ZOOM); }
+	static SendBufferRef MakeSendBuffer(Protocol::C_PATHFINDING& pkt) { return MakeSendBuffer(pkt, PKT_C_PATHFINDING); }
+	static SendBufferRef MakeSendBuffer(Protocol::C_NPCMOVE& pkt) { return MakeSendBuffer(pkt, PKT_C_NPCMOVE); }
 
 private:
 	template<typename PacketType, typename ProcessFunc>

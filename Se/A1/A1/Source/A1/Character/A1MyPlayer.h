@@ -35,5 +35,5 @@ protected:
 	TObjectPtr<class UCameraComponent> Camera;
 
 
-
+	float TimeAccumulator = 0.f;
 };

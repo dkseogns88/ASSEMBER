@@ -150,6 +150,7 @@ void UA1NetworkManager::HandleMove(const Protocol::S_MOVE& MovePkt)
 	if (ABaseChar* Player = ValidationPlayer(ObjectId))
 	{
 		const Protocol::PosInfo& Info = MovePkt.info();
+		Player->SetPosInfo(Info);
 		Player->SetDestInfo(Info);
 	}
 }

@@ -105,3 +105,23 @@ message S_SPAWN_MONSTER
 {
 	repeated ObjectInfo monsters = 1;
 }
+
+message C_PATHFINDING
+{
+	repeated PosInfo info = 1;
+}
+
+message S_PATHFINDING
+{
+	repeated PosInfo info = 1;
+}
+
+message C_NPCMOVE
+{
+	PosInfo info = 1;
+}
+
+message S_NPCMOVE
+{
+	PosInfo info = 1;
+}

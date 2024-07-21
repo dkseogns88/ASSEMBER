@@ -13,9 +13,13 @@ public:
 
 	void executeBehavior();
 
-	void ChasePlayer();
-	void Attack();
 	void MoveToRandom();
+	void ChasePlayer();
+
+	void  DoPathFinding(MonsterRef npc);
+	void CheckIdx();
+
+	FVector GetDestByIdx(int idx);
 
 public:
 	BehaviorTree* _behaviorTree;
@@ -26,5 +30,15 @@ public:
 	chrono::steady_clock::time_point _lastSendTime;
 
 	FVector _newLocation;
+
+	FVector vector3D;
+	FVector curDest;
+	FVector lastDest;
+
+	vector<FVector> DestVec;
+	int size = 0;
+
+	bool isArrvied = false;
+	int idx = 0;
 };
 

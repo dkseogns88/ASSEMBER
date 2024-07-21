@@ -31,8 +31,23 @@ void AA1MyPlayer::BeginPlay()
 void AA1MyPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
 
+	/*TimeAccumulator += DeltaTime;
+	if (TimeAccumulator >= 3.0f)
+	{
+		TimeAccumulator = 0.0f;
+
+		for (auto World : GEngine->GetWorldContexts())
+		{
+			if (const UGameInstance* GameInstance = World.World()->GetGameInstance())
+			{
+				if (UA1NetworkManager* NetworkManager = GameInstance->GetSubsystem<UA1NetworkManager>())
+				{
+					NetworkManager->TestFunc();
+				}
+			}
+		}
+	}*/
 }
 
 UA1NetworkManager* AA1MyPlayer::GetNetworkManager() const
