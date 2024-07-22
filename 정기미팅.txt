@@ -747,3 +747,21 @@
  - 서버 : 총쏘기 이펙트 동기화, NPC 길찾기
  - 클라 : 맵에 언리얼 물을 깔아보자.  스스로 구현하기 위해서는 무엇을 해야 하는가 알아보기.
  - 7월 22일 월요일 오전 11시 30분
+
+2024-07-22
+-------------
+1. 진행상황
+ - 서버 : 몬스터 충돌 처리
+      * 서버에서 맵데이터를 로딩했음,
+      * (구현방법) 2D 게임이므로, 2차원 배열에 장애물 등록후 충돌처리하면 된다
+ - 서버 : 몬스터 길찾기
+     * 서버에서 맵데이터를 로딩하였음
+ - 클라 : 물구현
+  * 기존의 Unrea Water에 아래 2가지 추가.
+  * 플레이어 이동시 물결생기기 : 이미 있다. (interactive water) https://www.youtube.com/watch?v=CVBY3qgjbZ4, https://www.google.com/search?sca_esv=6205b46f4b2e847c&q=unreal+walk+in+water&tbm=vid&source=lnms&fbs=AEQNm0DmKhoYsBCHazhZSCWuALW8l8eUs1i3TeMYPF4tXSfZ96qP8jk59Ek0sz1u1YABeO97Kg_HO-KtF2S8ZC2gd6OMgxanGK0ucuQE0TMKSErHKctRuUUD4bQfmtLMb-t5nSp1wKRjKbwkIMubh-VVzWSzyahapBbE04Gnnge7yVTH2tC-IPsqKOMIbApiGBjT8-4GSqy4JkvK-CDlEzhVOQegAf_83A&sa=X&ved=2ahUKEwjw59PM07mHAxVHgVYBHZn8BXQQ0pQJegQIEBAB&biw=1529&bih=905&dpr=1#fpstate=ive&vld=cid:38a354ef,vid:J3BlkZF0484,st:0
+  * 천정에서 물방울 떨어지기 및 물결 : unreal rain effect로 검색해 보자. 이미 있다. (https://www.youtube.com/watch?v=fL_DyPCsr7o)
+
+2. 다음 미팅
+ - 서버 : 총쏘기 이펙트 동기화, NPC 충돌 검사. <= 실제 게임에 추가
+ - 클라 : 물을 구현하는데 기존 구현과의 차별점 (없는 기능 추가 or 비주얼이 더 좋다 or 성능이 더 좋다 or 기존의 구현을 사용하지 않고 자체적으로 구현)
+ - 8월 5일 월요일 오전 11시 30분
