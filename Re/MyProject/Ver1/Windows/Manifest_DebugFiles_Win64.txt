@@ -1,8 +1,0 @@
-MyProject/Binaries/Win64/MyProject.pdb	2024-06-02T23:23:34.357Z
-MyProject/Binaries/Win64/tbb.pdb	2023-11-18T07:54:23.368Z
-MyProject/Binaries/Win64/tbbmalloc.pdb	2023-11-18T07:54:23.374Z
-Engine/Content/SlateDebug/Fonts/LastResort.tps	2023-11-18T07:56:07.085Z
-Engine/Content/SlateDebug/Fonts/LastResort.ttf	2023-11-18T07:56:07.096Z
-Engine/Extras/GPUDumpViewer/GPUDumpViewer.html	2023-11-18T07:57:21.590Z
-Engine/Extras/GPUDumpViewer/OpenGPUDumpViewer.bat	2023-11-18T07:57:21.591Z
-Engine/Extras/GPUDumpViewer/OpenGPUDumpViewer.sh	2023-11-18T07:57:21.592Z
