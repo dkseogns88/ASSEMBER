@@ -9,8 +9,7 @@
 			"Type": "Runtime",
 			"LoadingPhase": "Default",
 			"AdditionalDependencies": [
-				"Engine",
-				"CoreUObject"
+				"Engine"
 			]
 		}
 	],
@@ -21,22 +20,6 @@
 			"TargetAllowList": [
 				"Editor"
 			]
-		},
-		{
-			"Name": "MotionTrajectory",
-			"Enabled": true
-		},
-		{
-			"Name": "PoseSearch",
-			"Enabled": true
-		},
-		{
-			"Name": "AnimationLocomotionLibrary",
-			"Enabled": true
-		},
-		{
-			"Name": "AnimationWarping",
-			"Enabled": true
 		}
 	]
 }

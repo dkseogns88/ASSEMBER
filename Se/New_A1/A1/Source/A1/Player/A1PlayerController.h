@@ -35,6 +35,7 @@ private:
 	void Input_Sprint(const FInputActionValue& InputValue);
 	void Input_Crouch(const FInputActionValue& InputValue);
 	void Input_Aim(const FInputActionValue& InputValue);
+	void Input_Wheel(const FInputActionValue& InputValue);
 	
 
 protected:
@@ -67,4 +68,7 @@ protected:
 	// Dirty Flag Test
 	FVector2D LastDesiredInput;
 	bool bLastInputJump = false;
+
+	// TODO: ÇÑ ¹ø º¸´Â°Å ±ò²ûÇÏ°Ô
+	int32 InputAimCount = 0;
 };

@@ -18,7 +18,6 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-
 public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
@@ -32,7 +31,7 @@ public:
 
 
 public:
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TMap<FName, FA1Weapons> Weapons;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)

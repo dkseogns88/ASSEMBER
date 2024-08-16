@@ -38,13 +38,13 @@ AA1Character::AA1Character()
 	{
 		CrouchCurve = curve.Object;
 	}
-
 	// WeaponComponent
 	static ConstructorHelpers::FClassFinder<UA1WeaponComponent> WeaponBP(TEXT("/Game/WeaponSystem/AC_Weapon.AC_Weapon_C"));
 	if (WeaponBP.Succeeded())
 	{
 		ObjectWeaponComponent = WeaponBP.Class;
 	}
+
 
 	// ChildActor
 	HandObject = CreateDefaultSubobject<UChildActorComponent>(TEXT("ChildActorComponent"));
@@ -91,7 +91,8 @@ void AA1Character::BeginPlay()
 	}
 
 	{
-		WeaponComponent = Cast<UA1WeaponComponent>(ObjectWeaponComponent.GetDefaultObject());
+		WeaponComponent = NewObject<UA1WeaponComponent>(this, ObjectWeaponComponent);
+		//WeaponComponent = Cast<UA1WeaponComponent>(ObjectWeaponComponent.GetDefaultObject());
 	}
 }
 
@@ -158,15 +159,8 @@ void AA1Character::PickupWeapon(FName WeaponName, bool& Success)
 	if (WeaponComponent)
 	{
 		WeaponComponent->Give(WeaponName);
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, WeaponName.ToString());
-
-		int32 playerId = ObjectInfo->object_id();
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, FString::Printf(TEXT("Pick PlayerID: %d")
-			,playerId));
-
 		FA1Weapons Weapon = WeaponComponent->CycleUp();
 		AttachToHand(Weapon.Overlay, Weapon.BP_Actor, Weapon.SocketTransform);
-
 		Success = true;
 		return;
 	}
@@ -179,7 +173,8 @@ FName AA1Character::GetWeaponName()
 
 void AA1Character::AttachToHand(EOverlayStates Overlay, TSoftClassPtr<AActor> BP_Actor, FTransform SocketTransform)
 {
-	if (BP_Actor)
+	bool IsValidActor = UKismetSystemLibrary::IsValidSoftClassReference(BP_Actor);
+	if (IsValidActor)
 	{
 		UClass* ActorClass =  UKismetSystemLibrary::LoadClassAsset_Blocking(BP_Actor);
 		if (ActorClass)
@@ -193,6 +188,21 @@ void AA1Character::AttachToHand(EOverlayStates Overlay, TSoftClassPtr<AActor> BP
 			//HandObject->SetRelativeTransform(SocketTransform, true, OutSweepHitResult, ETeleportType::TeleportPhysics);
 			HandObject->SetRelativeTransform(SocketTransform);
 			OverlayState = Overlay;
+
+			Protocol::OverlayState State;
+			switch (OverlayState)
+			{
+			case EOverlayStates::Pistol:
+				State = Protocol::OVERLAY_STATE_PISTOL;
+				break;
+			case EOverlayStates::Rifle:
+				State = Protocol::OVERLAY_STATE_RIFLE;
+				break;
+			default:
+				State = Protocol::OVERLAY_STATE_NONE;
+				break;
+			}
+			SetOverlayState(State);
 		}
 		else
 		{
@@ -293,6 +303,7 @@ void AA1Character::SetStateInfo(const Protocol::StateInfo& Info)
 		assert(StateInfo->object_id() == Info.object_id());
 	}
 
+	Protocol::OverlayState Before_Overlay_State = StateInfo->overlay_state();
 	StateInfo->CopyFrom(Info);
 
 	if (IsMyPlayer() == false)
@@ -311,6 +322,8 @@ void AA1Character::SetStateInfo(const Protocol::StateInfo& Info)
 		}
 		BeforeLocomotion_State = Locomotion_State;
 
+
+
 		const Protocol::OverlayState Overlay_State = StateInfo->overlay_state();
 		switch (Overlay_State)
 		{
@@ -325,5 +338,11 @@ void AA1Character::SetStateInfo(const Protocol::StateInfo& Info)
 			break;
 		}
 		bAiming = StateInfo->aim();
+
+		if (Before_Overlay_State != Overlay_State)
+		{
+			FA1Weapons Outputs = WeaponComponent->CycleUp();
+			AttachToHand(Outputs.Overlay, Outputs.BP_Actor, Outputs.SocketTransform);
+		}
 	}
 }

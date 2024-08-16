@@ -14,6 +14,7 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Blueprint/UserWidget.h"
+#include "../Character/A1WeaponComponent.h"
 
 
 AA1PlayerController::AA1PlayerController(const FObjectInitializer& ObjectInitializer)
@@ -89,6 +90,9 @@ void AA1PlayerController::SetupInputComponent()
 		auto Action6 = InputData->FindInputActionByTag(A1GameplayTags::Input_Action_Aim);
 		EnhancedInputComponent->BindAction(Action6, ETriggerEvent::Triggered, this, &ThisClass::Input_Aim);
 		EnhancedInputComponent->BindAction(Action6, ETriggerEvent::Completed, this, &ThisClass::Input_Aim);
+
+		auto Action7 = InputData->FindInputActionByTag(A1GameplayTags::Input_Action_Wheel);
+		EnhancedInputComponent->BindAction(Action7, ETriggerEvent::Started, this, &ThisClass::Input_Wheel);
 	}
 }
 
@@ -281,10 +285,13 @@ void AA1PlayerController::Input_Crouch(const FInputActionValue& InputValue)
 	SendAllState();
 }
 
+// TODO: 계속 보내는 게 아니라, 특정 Tick마다 보내게?
 void AA1PlayerController::Input_Aim(const FInputActionValue& InputValue)
 {
-	Protocol::OverlayState State;
+	if (InputAimCount < 2)
+		InputAimCount++;
 
+	Protocol::OverlayState State;
 	switch (A1MyPlayer->OverlayState)
 	{
 	case EOverlayStates::Pistol:
@@ -308,7 +315,6 @@ void AA1PlayerController::Input_Aim(const FInputActionValue& InputValue)
 		A1MyPlayer->AimPitch = DeltaRotator.Pitch;
 		A1MyPlayer->AimYaw = DeltaRotator.Yaw;
 
-		A1MyPlayer->SetOverlayState(State);
 		A1MyPlayer->GetStateInfo()->set_aim(true);
 	}
 	else
@@ -317,11 +323,43 @@ void AA1PlayerController::Input_Aim(const FInputActionValue& InputValue)
 		CreatedWidget->RemoveFromParent();
 		A1MyPlayer->bAiming = false;
 
-		A1MyPlayer->SetOverlayState(State);
 		A1MyPlayer->GetStateInfo()->set_aim(false);
+
+		InputAimCount = 0;
 	}
 
-	SendAllState();
+	if (InputAimCount < 2)
+	{
+		A1MyPlayer->SetOverlayState(State);
+		SendAllState();
+	}
+}
+
+void AA1PlayerController::Input_Wheel(const FInputActionValue& InputValue)
+{
+	if (InputValue.Get<bool>())
+	{
+		FA1Weapons Outputs = A1MyPlayer->WeaponComponent->CycleUp();
+		A1MyPlayer->AttachToHand(Outputs.Overlay, Outputs.BP_Actor, Outputs.SocketTransform);
+
+		Protocol::OverlayState State;
+		switch (A1MyPlayer->OverlayState)
+		{
+		case EOverlayStates::Pistol:
+			State = Protocol::OVERLAY_STATE_PISTOL;
+			break;
+		case EOverlayStates::Rifle:
+			State = Protocol::OVERLAY_STATE_RIFLE;
+			break;
+		default:
+			State = Protocol::OVERLAY_STATE_NONE;
+			break;
+		}
+
+
+		A1MyPlayer->SetOverlayState(State);
+		SendAllState();
+	}
 }
 
 void AA1PlayerController::AimTimelineProgress(float Value)

@@ -97,7 +97,7 @@ public:
     // 이거 하나로 합치고 싶은데 해결 못함
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
     UA1WeaponComponent* WeaponComponent;
-    UPROPERTY(EditAnywhere)
+    UPROPERTY(EditDefaultsOnly)
     TSubclassOf<UA1WeaponComponent> ObjectWeaponComponent;
 
 

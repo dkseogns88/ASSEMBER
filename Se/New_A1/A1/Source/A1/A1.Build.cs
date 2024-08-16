@@ -29,7 +29,7 @@ public class A1 : ModuleRules
             "AIModule",
             "Niagara",
             "Kismet",
-            "UMG",
+            "UMG"
          });
 
         PrivateDependencyModuleNames.AddRange(new string[] { "ProtobufCore" });
