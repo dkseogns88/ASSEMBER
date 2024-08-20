@@ -101,6 +101,9 @@ PROTOBUF_CONSTEXPR AttackInfo::AttackInfo(
   , /*decltype(_impl_.hit_object_id_)*/uint64_t{0u}
   , /*decltype(_impl_.attack_type_)*/0
   , /*decltype(_impl_.skill_type_)*/0
+  , /*decltype(_impl_.impact_location_x_)*/0
+  , /*decltype(_impl_.impact_location_y_)*/0
+  , /*decltype(_impl_.impact_location_z_)*/0
   , /*decltype(_impl_._cached_size_)*/{}} {}
 struct AttackInfoDefaultTypeInternal {
   PROTOBUF_CONSTEXPR AttackInfoDefaultTypeInternal()
@@ -177,6 +180,9 @@ const uint32_t TableStruct_Struct_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(p
   PROTOBUF_FIELD_OFFSET(::Protocol::AttackInfo, _impl_.hit_object_id_),
   PROTOBUF_FIELD_OFFSET(::Protocol::AttackInfo, _impl_.attack_type_),
   PROTOBUF_FIELD_OFFSET(::Protocol::AttackInfo, _impl_.skill_type_),
+  PROTOBUF_FIELD_OFFSET(::Protocol::AttackInfo, _impl_.impact_location_x_),
+  PROTOBUF_FIELD_OFFSET(::Protocol::AttackInfo, _impl_.impact_location_y_),
+  PROTOBUF_FIELD_OFFSET(::Protocol::AttackInfo, _impl_.impact_location_z_),
 };
 static const ::_pbi::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
   { 0, -1, -1, sizeof(::Protocol::PosInfo)},
@@ -213,18 +219,20 @@ const char descriptor_table_protodef_Struct_2eproto[] PROTOBUF_SECTION_VARIABLE(
   "col.MonsterType\022#\n\010pos_Info\030\005 \001(\0132\021.Prot"
   "ocol.PosInfo\022%\n\tstat_Info\030\006 \001(\0132\022.Protoc"
   "ol.StatInfo\022\'\n\nstate_Info\030\007 \001(\0132\023.Protoc"
-  "ol.StateInfo\"\221\001\n\nAttackInfo\022\030\n\020attack_ob"
+  "ol.StateInfo\"\342\001\n\nAttackInfo\022\030\n\020attack_ob"
   "ject_id\030\001 \001(\004\022\025\n\rhit_object_id\030\002 \001(\004\022)\n\013"
   "attack_type\030\003 \001(\0162\024.Protocol.AttackType\022"
   "\'\n\nskill_type\030\004 \001(\0162\023.Protocol.SkillType"
-  "b\006proto3"
+  "\022\031\n\021impact_location_x\030\005 \001(\002\022\031\n\021impact_lo"
+  "cation_y\030\006 \001(\002\022\031\n\021impact_location_z\030\007 \001("
+  "\002b\006proto3"
   ;
 static const ::_pbi::DescriptorTable* const descriptor_table_Struct_2eproto_deps[1] = {
   &::descriptor_table_Enum_2eproto,
 };
 static ::_pbi::once_flag descriptor_table_Struct_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_Struct_2eproto = {
-    false, false, 888, descriptor_table_protodef_Struct_2eproto,
+    false, false, 969, descriptor_table_protodef_Struct_2eproto,
     "Struct.proto",
     &descriptor_table_Struct_2eproto_once, descriptor_table_Struct_2eproto_deps, 1, 5,
     schemas, file_default_instances, TableStruct_Struct_2eproto::offsets,
@@ -1712,12 +1720,15 @@ AttackInfo::AttackInfo(const AttackInfo& from)
     , decltype(_impl_.hit_object_id_){}
     , decltype(_impl_.attack_type_){}
     , decltype(_impl_.skill_type_){}
+    , decltype(_impl_.impact_location_x_){}
+    , decltype(_impl_.impact_location_y_){}
+    , decltype(_impl_.impact_location_z_){}
     , /*decltype(_impl_._cached_size_)*/{}};
 
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   ::memcpy(&_impl_.attack_object_id_, &from._impl_.attack_object_id_,
-    static_cast<size_t>(reinterpret_cast<char*>(&_impl_.skill_type_) -
-    reinterpret_cast<char*>(&_impl_.attack_object_id_)) + sizeof(_impl_.skill_type_));
+    static_cast<size_t>(reinterpret_cast<char*>(&_impl_.impact_location_z_) -
+    reinterpret_cast<char*>(&_impl_.attack_object_id_)) + sizeof(_impl_.impact_location_z_));
   // @@protoc_insertion_point(copy_constructor:Protocol.AttackInfo)
 }
 
@@ -1730,6 +1741,9 @@ inline void AttackInfo::SharedCtor(
     , decltype(_impl_.hit_object_id_){uint64_t{0u}}
     , decltype(_impl_.attack_type_){0}
     , decltype(_impl_.skill_type_){0}
+    , decltype(_impl_.impact_location_x_){0}
+    , decltype(_impl_.impact_location_y_){0}
+    , decltype(_impl_.impact_location_z_){0}
     , /*decltype(_impl_._cached_size_)*/{}
   };
 }
@@ -1758,8 +1772,8 @@ void AttackInfo::Clear() {
   (void) cached_has_bits;
 
   ::memset(&_impl_.attack_object_id_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&_impl_.skill_type_) -
-      reinterpret_cast<char*>(&_impl_.attack_object_id_)) + sizeof(_impl_.skill_type_));
+      reinterpret_cast<char*>(&_impl_.impact_location_z_) -
+      reinterpret_cast<char*>(&_impl_.attack_object_id_)) + sizeof(_impl_.impact_location_z_));
   _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
@@ -1800,6 +1814,30 @@ const char* AttackInfo::_InternalParse(const char* ptr, ::_pbi::ParseContext* ct
           uint64_t val = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
           CHK_(ptr);
           _internal_set_skill_type(static_cast<::Protocol::SkillType>(val));
+        } else
+          goto handle_unusual;
+        continue;
+      // float impact_location_x = 5;
+      case 5:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 45)) {
+          _impl_.impact_location_x_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      // float impact_location_y = 6;
+      case 6:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 53)) {
+          _impl_.impact_location_y_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      // float impact_location_z = 7;
+      case 7:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 61)) {
+          _impl_.impact_location_z_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
         } else
           goto handle_unusual;
         continue;
@@ -1858,6 +1896,36 @@ uint8_t* AttackInfo::_InternalSerialize(
       4, this->_internal_skill_type(), target);
   }
 
+  // float impact_location_x = 5;
+  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  float tmp_impact_location_x = this->_internal_impact_location_x();
+  uint32_t raw_impact_location_x;
+  memcpy(&raw_impact_location_x, &tmp_impact_location_x, sizeof(tmp_impact_location_x));
+  if (raw_impact_location_x != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(5, this->_internal_impact_location_x(), target);
+  }
+
+  // float impact_location_y = 6;
+  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  float tmp_impact_location_y = this->_internal_impact_location_y();
+  uint32_t raw_impact_location_y;
+  memcpy(&raw_impact_location_y, &tmp_impact_location_y, sizeof(tmp_impact_location_y));
+  if (raw_impact_location_y != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(6, this->_internal_impact_location_y(), target);
+  }
+
+  // float impact_location_z = 7;
+  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  float tmp_impact_location_z = this->_internal_impact_location_z();
+  uint32_t raw_impact_location_z;
+  memcpy(&raw_impact_location_z, &tmp_impact_location_z, sizeof(tmp_impact_location_z));
+  if (raw_impact_location_z != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(7, this->_internal_impact_location_z(), target);
+  }
+
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
@@ -1896,6 +1964,33 @@ size_t AttackInfo::ByteSizeLong() const {
       ::_pbi::WireFormatLite::EnumSize(this->_internal_skill_type());
   }
 
+  // float impact_location_x = 5;
+  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  float tmp_impact_location_x = this->_internal_impact_location_x();
+  uint32_t raw_impact_location_x;
+  memcpy(&raw_impact_location_x, &tmp_impact_location_x, sizeof(tmp_impact_location_x));
+  if (raw_impact_location_x != 0) {
+    total_size += 1 + 4;
+  }
+
+  // float impact_location_y = 6;
+  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  float tmp_impact_location_y = this->_internal_impact_location_y();
+  uint32_t raw_impact_location_y;
+  memcpy(&raw_impact_location_y, &tmp_impact_location_y, sizeof(tmp_impact_location_y));
+  if (raw_impact_location_y != 0) {
+    total_size += 1 + 4;
+  }
+
+  // float impact_location_z = 7;
+  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  float tmp_impact_location_z = this->_internal_impact_location_z();
+  uint32_t raw_impact_location_z;
+  memcpy(&raw_impact_location_z, &tmp_impact_location_z, sizeof(tmp_impact_location_z));
+  if (raw_impact_location_z != 0) {
+    total_size += 1 + 4;
+  }
+
   return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
 }
 
@@ -1926,6 +2021,27 @@ void AttackInfo::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PRO
   if (from._internal_skill_type() != 0) {
     _this->_internal_set_skill_type(from._internal_skill_type());
   }
+  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  float tmp_impact_location_x = from._internal_impact_location_x();
+  uint32_t raw_impact_location_x;
+  memcpy(&raw_impact_location_x, &tmp_impact_location_x, sizeof(tmp_impact_location_x));
+  if (raw_impact_location_x != 0) {
+    _this->_internal_set_impact_location_x(from._internal_impact_location_x());
+  }
+  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  float tmp_impact_location_y = from._internal_impact_location_y();
+  uint32_t raw_impact_location_y;
+  memcpy(&raw_impact_location_y, &tmp_impact_location_y, sizeof(tmp_impact_location_y));
+  if (raw_impact_location_y != 0) {
+    _this->_internal_set_impact_location_y(from._internal_impact_location_y());
+  }
+  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  float tmp_impact_location_z = from._internal_impact_location_z();
+  uint32_t raw_impact_location_z;
+  memcpy(&raw_impact_location_z, &tmp_impact_location_z, sizeof(tmp_impact_location_z));
+  if (raw_impact_location_z != 0) {
+    _this->_internal_set_impact_location_z(from._internal_impact_location_z());
+  }
   _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
 }
 
@@ -1944,8 +2060,8 @@ void AttackInfo::InternalSwap(AttackInfo* other) {
   using std::swap;
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
   ::PROTOBUF_NAMESPACE_ID::internal::memswap<
-      PROTOBUF_FIELD_OFFSET(AttackInfo, _impl_.skill_type_)
-      + sizeof(AttackInfo::_impl_.skill_type_)
+      PROTOBUF_FIELD_OFFSET(AttackInfo, _impl_.impact_location_z_)
+      + sizeof(AttackInfo::_impl_.impact_location_z_)
       - PROTOBUF_FIELD_OFFSET(AttackInfo, _impl_.attack_object_id_)>(
           reinterpret_cast<char*>(&_impl_.attack_object_id_),
           reinterpret_cast<char*>(&other->_impl_.attack_object_id_));

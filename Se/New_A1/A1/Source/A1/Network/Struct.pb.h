@@ -1059,6 +1059,9 @@ class AttackInfo final :
     kHitObjectIdFieldNumber = 2,
     kAttackTypeFieldNumber = 3,
     kSkillTypeFieldNumber = 4,
+    kImpactLocationXFieldNumber = 5,
+    kImpactLocationYFieldNumber = 6,
+    kImpactLocationZFieldNumber = 7,
   };
   // uint64 attack_object_id = 1;
   void clear_attack_object_id();
@@ -1096,6 +1099,33 @@ class AttackInfo final :
   void _internal_set_skill_type(::Protocol::SkillType value);
   public:
 
+  // float impact_location_x = 5;
+  void clear_impact_location_x();
+  float impact_location_x() const;
+  void set_impact_location_x(float value);
+  private:
+  float _internal_impact_location_x() const;
+  void _internal_set_impact_location_x(float value);
+  public:
+
+  // float impact_location_y = 6;
+  void clear_impact_location_y();
+  float impact_location_y() const;
+  void set_impact_location_y(float value);
+  private:
+  float _internal_impact_location_y() const;
+  void _internal_set_impact_location_y(float value);
+  public:
+
+  // float impact_location_z = 7;
+  void clear_impact_location_z();
+  float impact_location_z() const;
+  void set_impact_location_z(float value);
+  private:
+  float _internal_impact_location_z() const;
+  void _internal_set_impact_location_z(float value);
+  public:
+
   // @@protoc_insertion_point(class_scope:Protocol.AttackInfo)
  private:
   class _Internal;
@@ -1108,6 +1138,9 @@ class AttackInfo final :
     uint64_t hit_object_id_;
     int attack_type_;
     int skill_type_;
+    float impact_location_x_;
+    float impact_location_y_;
+    float impact_location_z_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   };
   union { Impl_ _impl_; };
@@ -1948,6 +1981,66 @@ inline void AttackInfo::_internal_set_skill_type(::Protocol::SkillType value) {
 inline void AttackInfo::set_skill_type(::Protocol::SkillType value) {
   _internal_set_skill_type(value);
   // @@protoc_insertion_point(field_set:Protocol.AttackInfo.skill_type)
+}
+
+// float impact_location_x = 5;
+inline void AttackInfo::clear_impact_location_x() {
+  _impl_.impact_location_x_ = 0;
+}
+inline float AttackInfo::_internal_impact_location_x() const {
+  return _impl_.impact_location_x_;
+}
+inline float AttackInfo::impact_location_x() const {
+  // @@protoc_insertion_point(field_get:Protocol.AttackInfo.impact_location_x)
+  return _internal_impact_location_x();
+}
+inline void AttackInfo::_internal_set_impact_location_x(float value) {
+  
+  _impl_.impact_location_x_ = value;
+}
+inline void AttackInfo::set_impact_location_x(float value) {
+  _internal_set_impact_location_x(value);
+  // @@protoc_insertion_point(field_set:Protocol.AttackInfo.impact_location_x)
+}
+
+// float impact_location_y = 6;
+inline void AttackInfo::clear_impact_location_y() {
+  _impl_.impact_location_y_ = 0;
+}
+inline float AttackInfo::_internal_impact_location_y() const {
+  return _impl_.impact_location_y_;
+}
+inline float AttackInfo::impact_location_y() const {
+  // @@protoc_insertion_point(field_get:Protocol.AttackInfo.impact_location_y)
+  return _internal_impact_location_y();
+}
+inline void AttackInfo::_internal_set_impact_location_y(float value) {
+  
+  _impl_.impact_location_y_ = value;
+}
+inline void AttackInfo::set_impact_location_y(float value) {
+  _internal_set_impact_location_y(value);
+  // @@protoc_insertion_point(field_set:Protocol.AttackInfo.impact_location_y)
+}
+
+// float impact_location_z = 7;
+inline void AttackInfo::clear_impact_location_z() {
+  _impl_.impact_location_z_ = 0;
+}
+inline float AttackInfo::_internal_impact_location_z() const {
+  return _impl_.impact_location_z_;
+}
+inline float AttackInfo::impact_location_z() const {
+  // @@protoc_insertion_point(field_get:Protocol.AttackInfo.impact_location_z)
+  return _internal_impact_location_z();
+}
+inline void AttackInfo::_internal_set_impact_location_z(float value) {
+  
+  _impl_.impact_location_z_ = value;
+}
+inline void AttackInfo::set_impact_location_z(float value) {
+  _internal_set_impact_location_z(value);
+  // @@protoc_insertion_point(field_set:Protocol.AttackInfo.impact_location_z)
 }
 
 #ifdef __GNUC__

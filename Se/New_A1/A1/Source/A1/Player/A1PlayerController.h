@@ -35,6 +35,7 @@ private:
 	void Input_Sprint(const FInputActionValue& InputValue);
 	void Input_Crouch(const FInputActionValue& InputValue);
 	void Input_Aim(const FInputActionValue& InputValue);
+	void Input_Fire(const FInputActionValue& InputValue);
 	void Input_Wheel(const FInputActionValue& InputValue);
 	
 

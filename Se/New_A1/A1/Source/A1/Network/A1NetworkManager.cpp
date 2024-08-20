@@ -9,6 +9,7 @@
 #include "Character/A1MyPlayer.h"
 #include "Kismet/GameplayStatics.h"
 #include "A1LogChannels.h"
+#include "../Character/A1Weapon.h"
 
 void UA1NetworkManager::ConnectToGameServer()
 {
@@ -152,6 +153,19 @@ void UA1NetworkManager::HandleState(const Protocol::S_STATE& StatePkt)
 	{
 		const Protocol::StateInfo& Info = StatePkt.state();
 		Player->SetStateInfo(Info);
+	}
+}
+
+void UA1NetworkManager::HandleAttack(const Protocol::S_ATTACK& attackPkt)
+{
+	const uint64 ObjectId = attackPkt.info().attack_object_id();
+	if (AA1Character* Player = ValidationPlayer(ObjectId))
+	{	
+		if (AA1Weapon* Weapon = Cast<AA1Weapon>(Player->HandObject->GetChildActor()))
+		{
+			Weapon->SetImpacLocation(attackPkt.info().impact_location_x(), attackPkt.info().impact_location_y(), attackPkt.info().impact_location_z());
+			Weapon->FireON();
+		}
 	}
 }
 

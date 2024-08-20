@@ -54,5 +54,10 @@ message AttackInfo
 	uint64 hit_object_id	= 2;
 	AttackType attack_type	= 3;
 	SkillType skill_type	= 4;
+
+	float impact_location_x	= 5;
+	float impact_location_y	= 6;
+	float impact_location_z	= 7;
+
 }
 

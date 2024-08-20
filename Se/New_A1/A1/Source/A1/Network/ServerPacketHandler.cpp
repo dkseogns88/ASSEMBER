@@ -97,3 +97,12 @@ bool Handle_S_STATE(PacketSessionRef& session, Protocol::S_STATE& pkt)
 	}
 	return true;
 }
+
+bool Handle_S_ATTACK(PacketSessionRef& session, Protocol::S_ATTACK& pkt)
+{
+	if (UA1NetworkManager* GameNetwork = GetWorldNetwork(session))
+	{
+		GameNetwork->HandleAttack(pkt);
+	}
+	return true;
+}

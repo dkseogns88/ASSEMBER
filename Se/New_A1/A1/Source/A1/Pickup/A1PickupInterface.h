@@ -20,4 +20,6 @@ class A1_API IA1PickupInterface
 public:
 	virtual void PickupWeapon(FName WeaponName, bool& Success);
 	virtual FName GetWeaponName() = 0;
+	virtual void GetCamera(FVector& WorldLocation, FVector& ForwardVector) = 0;
+
 };

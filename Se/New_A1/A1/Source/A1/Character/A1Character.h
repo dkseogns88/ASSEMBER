@@ -35,7 +35,8 @@ public:
     // Pickup
     virtual void PickupWeapon(FName WeaponName, bool& Success) override;
     virtual FName GetWeaponName() override;
-    
+    virtual void GetCamera(FVector& WorldLocation, FVector& ForwardVector) override;
+
     UFUNCTION(BlueprintCallable)
     void AttachToHand(EOverlayStates Overlay, TSoftClassPtr<AActor> BP_Actor, FTransform SocketTransform);
 
@@ -99,7 +100,6 @@ public:
     UA1WeaponComponent* WeaponComponent;
     UPROPERTY(EditDefaultsOnly)
     TSubclassOf<UA1WeaponComponent> ObjectWeaponComponent;
-
 
 protected:
     class Protocol::ObjectInfo* ObjectInfo;

@@ -38,4 +38,22 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     FTransform SocketTransform;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    bool Automatic;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    float FireRate;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    TSoftObjectPtr<USoundBase> WeaponSound;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    TSoftObjectPtr<UParticleSystem> FlashEmitter;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    float Range;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    TSoftObjectPtr<UParticleSystem> ImpactEmitter;
 };

@@ -33,3 +33,9 @@ UA1NetworkManager* AA1MyPlayer::GetNetworkManager() const
 	return GetGameInstance()->GetSubsystem<UA1NetworkManager>();
 
 }
+
+void AA1MyPlayer::GetCamera(FVector& WorldLocation, FVector& ForwardVector)
+{
+	WorldLocation = TTP_Camera->GetComponentLocation();
+	ForwardVector = TTP_Camera->GetForwardVector();
+}

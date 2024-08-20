@@ -13,6 +13,7 @@ public:
 
 	void HandleMove(Protocol::C_MOVE pkt);
 	void HandleSate(Protocol::C_STATE pkt);
+	void HandleAttack(Protocol::C_ATTACK pkt);
 
 public:
 

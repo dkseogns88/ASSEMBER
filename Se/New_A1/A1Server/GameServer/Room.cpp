@@ -157,6 +157,24 @@ void Room::HandleSate(Protocol::C_STATE pkt)
 
 }
 
+void Room::HandleAttack(Protocol::C_ATTACK pkt)
+{
+	const uint64 objectId = pkt.info().attack_object_id();
+	if (_objects.find(objectId) == _objects.end())
+		return;
+
+	{
+		Protocol::S_ATTACK attackPkt;
+		{
+			Protocol::AttackInfo* info = attackPkt.mutable_info();
+			info->CopyFrom(pkt.info());
+		}
+
+		SendBufferRef sendBuffer = ClientPacketHandler::MakeSendBuffer(attackPkt);
+		Broadcast(sendBuffer);
+	}
+}
+
 
 
 RoomRef Room::GetRoomRef()

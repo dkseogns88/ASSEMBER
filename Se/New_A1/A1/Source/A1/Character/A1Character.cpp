@@ -10,7 +10,7 @@
 #include "Components/CapsuleComponent.h"
 #include "A1WeaponComponent.h"
 #include "Components/ChildActorComponent.h"
-
+#include "A1Weapon.h"
 
 AA1Character::AA1Character()
 {
@@ -171,6 +171,9 @@ FName AA1Character::GetWeaponName()
 	return WeaponComponent->ActiveWeapon;
 }
 
+void AA1Character::GetCamera(FVector& WorldLocation, FVector& ForwardVector)
+{}
+
 void AA1Character::AttachToHand(EOverlayStates Overlay, TSoftClassPtr<AActor> BP_Actor, FTransform SocketTransform)
 {
 	bool IsValidActor = UKismetSystemLibrary::IsValidSoftClassReference(BP_Actor);
@@ -187,8 +190,13 @@ void AA1Character::AttachToHand(EOverlayStates Overlay, TSoftClassPtr<AActor> BP
 			//FHitResult* OutSweepHitResult;
 			//HandObject->SetRelativeTransform(SocketTransform, true, OutSweepHitResult, ETeleportType::TeleportPhysics);
 			HandObject->SetRelativeTransform(SocketTransform);
-			OverlayState = Overlay;
+			
+			if (AA1Weapon* WeaponActor = Cast<AA1Weapon>(HandObject->GetChildActor()))
+			{
+				WeaponActor->SetOwner(this);
+			}
 
+			OverlayState = Overlay;
 			Protocol::OverlayState State;
 			switch (OverlayState)
 			{

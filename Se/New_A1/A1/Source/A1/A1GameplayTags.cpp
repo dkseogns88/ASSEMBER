@@ -8,5 +8,6 @@ namespace A1GameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(Input_Action_Sprint, "Input.Action.Sprint");
 	UE_DEFINE_GAMEPLAY_TAG(Input_Action_Crouch, "Input.Action.Crocuh");
 	UE_DEFINE_GAMEPLAY_TAG(Input_Action_Aim, "Input.Action.Aim");
+	UE_DEFINE_GAMEPLAY_TAG(Input_Action_Fire, "Input.Action.Fire");
 	UE_DEFINE_GAMEPLAY_TAG(Input_Action_Wheel, "Input.Action.Wheel");
 }

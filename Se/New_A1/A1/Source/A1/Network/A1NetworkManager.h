@@ -42,6 +42,7 @@ public:
 	void HandleMove(const Protocol::S_MOVE& MovePkt);
 
 	void HandleState(const Protocol::S_STATE& StatePkt);
+	void HandleAttack(const Protocol::S_ATTACK& attackPkt);
 
 
 private:

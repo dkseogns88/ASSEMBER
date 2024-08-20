@@ -15,7 +15,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Blueprint/UserWidget.h"
 #include "../Character/A1WeaponComponent.h"
-
+#include "../Character/A1Weapon.h"
 
 AA1PlayerController::AA1PlayerController(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -91,8 +91,12 @@ void AA1PlayerController::SetupInputComponent()
 		EnhancedInputComponent->BindAction(Action6, ETriggerEvent::Triggered, this, &ThisClass::Input_Aim);
 		EnhancedInputComponent->BindAction(Action6, ETriggerEvent::Completed, this, &ThisClass::Input_Aim);
 
-		auto Action7 = InputData->FindInputActionByTag(A1GameplayTags::Input_Action_Wheel);
-		EnhancedInputComponent->BindAction(Action7, ETriggerEvent::Started, this, &ThisClass::Input_Wheel);
+		auto Action7 = InputData->FindInputActionByTag(A1GameplayTags::Input_Action_Fire);
+		EnhancedInputComponent->BindAction(Action7, ETriggerEvent::Triggered, this, &ThisClass::Input_Fire);
+		EnhancedInputComponent->BindAction(Action7, ETriggerEvent::Completed, this, &ThisClass::Input_Fire);
+
+		auto Action8 = InputData->FindInputActionByTag(A1GameplayTags::Input_Action_Wheel);
+		EnhancedInputComponent->BindAction(Action8, ETriggerEvent::Started, this, &ThisClass::Input_Wheel);
 	}
 }
 
@@ -102,7 +106,6 @@ void AA1PlayerController::PlayerTick(float DeltaTime)
 
 	StateTick();
 	SendTick(DeltaTime);
-	
 }
 
 void AA1PlayerController::StateTick()
@@ -332,6 +335,24 @@ void AA1PlayerController::Input_Aim(const FInputActionValue& InputValue)
 	{
 		A1MyPlayer->SetOverlayState(State);
 		SendAllState();
+	}
+}
+
+void AA1PlayerController::Input_Fire(const FInputActionValue& InputValue)
+{
+	if (InputValue.Get<bool>() && A1MyPlayer->bAiming)
+	{
+		if (AA1Weapon* Weapon = Cast<AA1Weapon>(A1MyPlayer->HandObject->GetChildActor()))
+		{
+			Weapon->FireON();
+		}
+	}
+	else if (InputValue.Get<bool>() == false)
+	{
+		if (AA1Weapon* Weapon = Cast<AA1Weapon>(A1MyPlayer->HandObject->GetChildActor()))
+		{
+			Weapon->FireOFF();
+		}
 	}
 }
 

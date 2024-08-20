@@ -24,6 +24,8 @@ public:
 public:
 	class UA1NetworkManager* GetNetworkManager() const;
 
+	virtual void GetCamera(FVector& WorldLocation, FVector& ForwardVector) override;
+
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<class USpringArmComponent> SpringArm;
