@@ -33,11 +33,14 @@ public:
 	virtual void FireOFF()	override;
 	void Fire();
 	
-	FVector TraceCamera(float WeaponRange, FVector& Location, AActor*& HitActor, UPrimitiveComponent*& HitComponent, FName& BoneName);
-	void TraceSocket(FVector End, FVector& ImpactPoint, UPrimitiveComponent*& HitComponent);
+	void TraceCamera(float WeaponRange, FVector& Location, AActor*& HitActor, UPrimitiveComponent*& HitComponent, FName& BoneName, FVector& Impulse);
+	void TraceSocket(FVector Location, AActor* HitActor, UPrimitiveComponent* HitComponent, FName BoneName, FVector Impulse, 
+		FVector& OutLocation, AActor*& OutHitActor, UPrimitiveComponent*& OutHitComponent, FName& OutBoneName, FVector& OutImpulse);
+	void ApplyPhysics(FVector Location, FVector Impulse, UPrimitiveComponent* HitComponent, FName BoneName);
 
 public:
-	void SetImpacLocation(float x, float y, float z);
+	void SetWorldLocation(float x, float y, float z);
+	void SetForwardVector(float x, float y, float z);
 
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
@@ -68,10 +71,18 @@ public:
 
 	FTimerHandle FireTimerHandle;
 
-	AActor* OverlapActor;
+	AActor* OverlapActor; // Owner
+
+	
+	// To Server
+	FVector WorldLocationToServer;
+	FVector ForwardVectorToServer;
 
 private:
-	// Server
-	FVector ImpactLocationFromServer;
+
+
+	// From Server
+	FVector WorldLocationFromServer;
+	FVector ForwardVectorFromServer;
 
 };

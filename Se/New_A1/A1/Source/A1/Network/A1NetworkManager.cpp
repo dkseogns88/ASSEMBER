@@ -163,7 +163,8 @@ void UA1NetworkManager::HandleAttack(const Protocol::S_ATTACK& attackPkt)
 	{	
 		if (AA1Weapon* Weapon = Cast<AA1Weapon>(Player->HandObject->GetChildActor()))
 		{
-			Weapon->SetImpacLocation(attackPkt.info().impact_location_x(), attackPkt.info().impact_location_y(), attackPkt.info().impact_location_z());
+			Weapon->SetWorldLocation(attackPkt.info().world_location_x(), attackPkt.info().world_location_y(), attackPkt.info().world_location_z());
+			Weapon->SetForwardVector(attackPkt.info().forward_vector_x(), attackPkt.info().forward_vector_y(), attackPkt.info().forward_vector_z());
 			Weapon->FireON();
 		}
 	}
@@ -206,6 +207,7 @@ void UA1NetworkManager::SpawnPlayer(const Protocol::ObjectInfo& ObjectInfo, bool
 
 		Player->SetObjectInfo(ObjectInfo);
 		Player->SetPosInfo(ObjectInfo.pos_info());
+		Player->SetStatInfo(ObjectInfo.stat_info());
 		Player->SetStateInfo(ObjectInfo.state_info());
 		
 		FVector Location(ObjectInfo.pos_info().x(), ObjectInfo.pos_info().y(), ObjectInfo.pos_info().z());
@@ -221,11 +223,9 @@ void UA1NetworkManager::SpawnPlayer(const Protocol::ObjectInfo& ObjectInfo, bool
 
 			Player->SetObjectInfo(ObjectInfo);
 			Player->SetPosInfo(ObjectInfo.pos_info());
+			Player->SetStatInfo(ObjectInfo.stat_info());
 			Player->SetStateInfo(ObjectInfo.state_info());
 
-
-			/*FVector Location(ObjectInfo.pos_info().x(), ObjectInfo.pos_info().y(), ObjectInfo.pos_info().z());
-			Player->SetActorLocation(Location);*/
 
 			Objects.Add(ObjectInfo.object_id(), Player);
 		}

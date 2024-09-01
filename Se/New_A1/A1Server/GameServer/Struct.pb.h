@@ -1059,9 +1059,12 @@ class AttackInfo final :
     kHitObjectIdFieldNumber = 2,
     kAttackTypeFieldNumber = 3,
     kSkillTypeFieldNumber = 4,
-    kImpactLocationXFieldNumber = 5,
-    kImpactLocationYFieldNumber = 6,
-    kImpactLocationZFieldNumber = 7,
+    kWorldLocationXFieldNumber = 5,
+    kWorldLocationYFieldNumber = 6,
+    kWorldLocationZFieldNumber = 7,
+    kForwardVectorXFieldNumber = 8,
+    kForwardVectorYFieldNumber = 9,
+    kForwardVectorZFieldNumber = 10,
   };
   // uint64 attack_object_id = 1;
   void clear_attack_object_id();
@@ -1099,31 +1102,58 @@ class AttackInfo final :
   void _internal_set_skill_type(::Protocol::SkillType value);
   public:
 
-  // float impact_location_x = 5;
-  void clear_impact_location_x();
-  float impact_location_x() const;
-  void set_impact_location_x(float value);
+  // float world_location_x = 5;
+  void clear_world_location_x();
+  float world_location_x() const;
+  void set_world_location_x(float value);
   private:
-  float _internal_impact_location_x() const;
-  void _internal_set_impact_location_x(float value);
+  float _internal_world_location_x() const;
+  void _internal_set_world_location_x(float value);
   public:
 
-  // float impact_location_y = 6;
-  void clear_impact_location_y();
-  float impact_location_y() const;
-  void set_impact_location_y(float value);
+  // float world_location_y = 6;
+  void clear_world_location_y();
+  float world_location_y() const;
+  void set_world_location_y(float value);
   private:
-  float _internal_impact_location_y() const;
-  void _internal_set_impact_location_y(float value);
+  float _internal_world_location_y() const;
+  void _internal_set_world_location_y(float value);
   public:
 
-  // float impact_location_z = 7;
-  void clear_impact_location_z();
-  float impact_location_z() const;
-  void set_impact_location_z(float value);
+  // float world_location_z = 7;
+  void clear_world_location_z();
+  float world_location_z() const;
+  void set_world_location_z(float value);
   private:
-  float _internal_impact_location_z() const;
-  void _internal_set_impact_location_z(float value);
+  float _internal_world_location_z() const;
+  void _internal_set_world_location_z(float value);
+  public:
+
+  // float forward_vector_x = 8;
+  void clear_forward_vector_x();
+  float forward_vector_x() const;
+  void set_forward_vector_x(float value);
+  private:
+  float _internal_forward_vector_x() const;
+  void _internal_set_forward_vector_x(float value);
+  public:
+
+  // float forward_vector_y = 9;
+  void clear_forward_vector_y();
+  float forward_vector_y() const;
+  void set_forward_vector_y(float value);
+  private:
+  float _internal_forward_vector_y() const;
+  void _internal_set_forward_vector_y(float value);
+  public:
+
+  // float forward_vector_z = 10;
+  void clear_forward_vector_z();
+  float forward_vector_z() const;
+  void set_forward_vector_z(float value);
+  private:
+  float _internal_forward_vector_z() const;
+  void _internal_set_forward_vector_z(float value);
   public:
 
   // @@protoc_insertion_point(class_scope:Protocol.AttackInfo)
@@ -1138,9 +1168,12 @@ class AttackInfo final :
     uint64_t hit_object_id_;
     int attack_type_;
     int skill_type_;
-    float impact_location_x_;
-    float impact_location_y_;
-    float impact_location_z_;
+    float world_location_x_;
+    float world_location_y_;
+    float world_location_z_;
+    float forward_vector_x_;
+    float forward_vector_y_;
+    float forward_vector_z_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   };
   union { Impl_ _impl_; };
@@ -1983,64 +2016,124 @@ inline void AttackInfo::set_skill_type(::Protocol::SkillType value) {
   // @@protoc_insertion_point(field_set:Protocol.AttackInfo.skill_type)
 }
 
-// float impact_location_x = 5;
-inline void AttackInfo::clear_impact_location_x() {
-  _impl_.impact_location_x_ = 0;
+// float world_location_x = 5;
+inline void AttackInfo::clear_world_location_x() {
+  _impl_.world_location_x_ = 0;
 }
-inline float AttackInfo::_internal_impact_location_x() const {
-  return _impl_.impact_location_x_;
+inline float AttackInfo::_internal_world_location_x() const {
+  return _impl_.world_location_x_;
 }
-inline float AttackInfo::impact_location_x() const {
-  // @@protoc_insertion_point(field_get:Protocol.AttackInfo.impact_location_x)
-  return _internal_impact_location_x();
+inline float AttackInfo::world_location_x() const {
+  // @@protoc_insertion_point(field_get:Protocol.AttackInfo.world_location_x)
+  return _internal_world_location_x();
 }
-inline void AttackInfo::_internal_set_impact_location_x(float value) {
+inline void AttackInfo::_internal_set_world_location_x(float value) {
   
-  _impl_.impact_location_x_ = value;
+  _impl_.world_location_x_ = value;
 }
-inline void AttackInfo::set_impact_location_x(float value) {
-  _internal_set_impact_location_x(value);
-  // @@protoc_insertion_point(field_set:Protocol.AttackInfo.impact_location_x)
+inline void AttackInfo::set_world_location_x(float value) {
+  _internal_set_world_location_x(value);
+  // @@protoc_insertion_point(field_set:Protocol.AttackInfo.world_location_x)
 }
 
-// float impact_location_y = 6;
-inline void AttackInfo::clear_impact_location_y() {
-  _impl_.impact_location_y_ = 0;
+// float world_location_y = 6;
+inline void AttackInfo::clear_world_location_y() {
+  _impl_.world_location_y_ = 0;
 }
-inline float AttackInfo::_internal_impact_location_y() const {
-  return _impl_.impact_location_y_;
+inline float AttackInfo::_internal_world_location_y() const {
+  return _impl_.world_location_y_;
 }
-inline float AttackInfo::impact_location_y() const {
-  // @@protoc_insertion_point(field_get:Protocol.AttackInfo.impact_location_y)
-  return _internal_impact_location_y();
+inline float AttackInfo::world_location_y() const {
+  // @@protoc_insertion_point(field_get:Protocol.AttackInfo.world_location_y)
+  return _internal_world_location_y();
 }
-inline void AttackInfo::_internal_set_impact_location_y(float value) {
+inline void AttackInfo::_internal_set_world_location_y(float value) {
   
-  _impl_.impact_location_y_ = value;
+  _impl_.world_location_y_ = value;
 }
-inline void AttackInfo::set_impact_location_y(float value) {
-  _internal_set_impact_location_y(value);
-  // @@protoc_insertion_point(field_set:Protocol.AttackInfo.impact_location_y)
+inline void AttackInfo::set_world_location_y(float value) {
+  _internal_set_world_location_y(value);
+  // @@protoc_insertion_point(field_set:Protocol.AttackInfo.world_location_y)
 }
 
-// float impact_location_z = 7;
-inline void AttackInfo::clear_impact_location_z() {
-  _impl_.impact_location_z_ = 0;
+// float world_location_z = 7;
+inline void AttackInfo::clear_world_location_z() {
+  _impl_.world_location_z_ = 0;
 }
-inline float AttackInfo::_internal_impact_location_z() const {
-  return _impl_.impact_location_z_;
+inline float AttackInfo::_internal_world_location_z() const {
+  return _impl_.world_location_z_;
 }
-inline float AttackInfo::impact_location_z() const {
-  // @@protoc_insertion_point(field_get:Protocol.AttackInfo.impact_location_z)
-  return _internal_impact_location_z();
+inline float AttackInfo::world_location_z() const {
+  // @@protoc_insertion_point(field_get:Protocol.AttackInfo.world_location_z)
+  return _internal_world_location_z();
 }
-inline void AttackInfo::_internal_set_impact_location_z(float value) {
+inline void AttackInfo::_internal_set_world_location_z(float value) {
   
-  _impl_.impact_location_z_ = value;
+  _impl_.world_location_z_ = value;
 }
-inline void AttackInfo::set_impact_location_z(float value) {
-  _internal_set_impact_location_z(value);
-  // @@protoc_insertion_point(field_set:Protocol.AttackInfo.impact_location_z)
+inline void AttackInfo::set_world_location_z(float value) {
+  _internal_set_world_location_z(value);
+  // @@protoc_insertion_point(field_set:Protocol.AttackInfo.world_location_z)
+}
+
+// float forward_vector_x = 8;
+inline void AttackInfo::clear_forward_vector_x() {
+  _impl_.forward_vector_x_ = 0;
+}
+inline float AttackInfo::_internal_forward_vector_x() const {
+  return _impl_.forward_vector_x_;
+}
+inline float AttackInfo::forward_vector_x() const {
+  // @@protoc_insertion_point(field_get:Protocol.AttackInfo.forward_vector_x)
+  return _internal_forward_vector_x();
+}
+inline void AttackInfo::_internal_set_forward_vector_x(float value) {
+  
+  _impl_.forward_vector_x_ = value;
+}
+inline void AttackInfo::set_forward_vector_x(float value) {
+  _internal_set_forward_vector_x(value);
+  // @@protoc_insertion_point(field_set:Protocol.AttackInfo.forward_vector_x)
+}
+
+// float forward_vector_y = 9;
+inline void AttackInfo::clear_forward_vector_y() {
+  _impl_.forward_vector_y_ = 0;
+}
+inline float AttackInfo::_internal_forward_vector_y() const {
+  return _impl_.forward_vector_y_;
+}
+inline float AttackInfo::forward_vector_y() const {
+  // @@protoc_insertion_point(field_get:Protocol.AttackInfo.forward_vector_y)
+  return _internal_forward_vector_y();
+}
+inline void AttackInfo::_internal_set_forward_vector_y(float value) {
+  
+  _impl_.forward_vector_y_ = value;
+}
+inline void AttackInfo::set_forward_vector_y(float value) {
+  _internal_set_forward_vector_y(value);
+  // @@protoc_insertion_point(field_set:Protocol.AttackInfo.forward_vector_y)
+}
+
+// float forward_vector_z = 10;
+inline void AttackInfo::clear_forward_vector_z() {
+  _impl_.forward_vector_z_ = 0;
+}
+inline float AttackInfo::_internal_forward_vector_z() const {
+  return _impl_.forward_vector_z_;
+}
+inline float AttackInfo::forward_vector_z() const {
+  // @@protoc_insertion_point(field_get:Protocol.AttackInfo.forward_vector_z)
+  return _internal_forward_vector_z();
+}
+inline void AttackInfo::_internal_set_forward_vector_z(float value) {
+  
+  _impl_.forward_vector_z_ = value;
+}
+inline void AttackInfo::set_forward_vector_z(float value) {
+  _internal_set_forward_vector_z(value);
+  // @@protoc_insertion_point(field_set:Protocol.AttackInfo.forward_vector_z)
 }
 
 #ifdef __GNUC__

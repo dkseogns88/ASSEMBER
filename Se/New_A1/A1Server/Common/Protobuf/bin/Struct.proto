@@ -55,9 +55,11 @@ message AttackInfo
 	AttackType attack_type	= 3;
 	SkillType skill_type	= 4;
 
-	float impact_location_x	= 5;
-	float impact_location_y	= 6;
-	float impact_location_z	= 7;
+	float world_location_x	= 5;
+	float world_location_y	= 6;
+	float world_location_z	= 7;
 
+	float forward_vector_x	= 8;
+	float forward_vector_y	= 9;
+	float forward_vector_z	= 10;
 }
-

@@ -11,6 +11,7 @@
 #include "A1WeaponComponent.h"
 #include "Components/ChildActorComponent.h"
 #include "A1Weapon.h"
+#include "Network/A1NetworkManager.h"
 
 AA1Character::AA1Character()
 {
@@ -102,56 +103,35 @@ void AA1Character::Tick(float DeltaTime)
 
 	if (IsMyPlayer() == false)
 	{
-		const Protocol::MoveState Move_State = DestInfo->move_state();
-		FRotator NowRotation = GetActorRotation();
-		FRotator TargetRotation = FRotator(0, DestInfo->yaw(), 0);
-
-		float YawInterpValue = 10.f;
-		if (Move_State == Protocol::MOVE_STATE_IDLE)
-		{
-			FRotator NewRotation = FMath::RInterpTo(NowRotation, TargetRotation, DeltaTime, YawInterpValue);
-			SetActorRotation(NewRotation);
-		}
-		else if (Move_State == Protocol::MOVE_STATE_WALK)
-		{
-			GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
-			FRotator NewRotation = FMath::RInterpTo(NowRotation, TargetRotation, DeltaTime, YawInterpValue);
-			SetActorRotation(NewRotation);
-
-			FVector ForwardDirection = FVector(DestInfo->d_x(), DestInfo->d_y(), DestInfo->d_z());
-			AddMovementInput(ForwardDirection);
-
-		}
-		else if (Move_State == Protocol::MOVE_STATE_RUN)
-		{
-			GetCharacterMovement()->MaxWalkSpeed = RunSpeed;
-			FRotator NewRotation = FMath::RInterpTo(NowRotation, TargetRotation, DeltaTime, YawInterpValue);
-			SetActorRotation(NewRotation);
-			
-			FVector ForwardDirection = FVector(DestInfo->d_x(), DestInfo->d_y(), DestInfo->d_z());
-			AddMovementInput(ForwardDirection);			
-		}
-		else if (Move_State == Protocol::MoveState::MOVE_STATE_JUMP)
-		{
-			Jump();
-
-			FRotator NewRotation = FMath::RInterpTo(NowRotation, TargetRotation, DeltaTime, YawInterpValue);
-			SetActorRotation(NewRotation);
-
-			FVector ForwardDirection = FVector(DestInfo->d_x(), DestInfo->d_y(), DestInfo->d_z());
-			AddMovementInput(ForwardDirection);
-		}
-
-		float Distance = FVector::Dist(GetActorLocation(), FVector(DestInfo->x(), DestInfo->y(), DestInfo->z()));
-		if (Distance >= 200.f)
-		{
-			FRotator NewRotation = FRotator(0, DestInfo->yaw(), 0);
-
-			SetActorLocation(FVector(DestInfo->x(), DestInfo->y(), DestInfo->z()));
-			SetActorRotation(NewRotation);
-		}
+		// 좌표에서 좌표로
+		// CurrentToDest(DeltaTime);
+		// 단순 방향벡터
+		CurrentToDirection(DeltaTime);
 	}
 
+}
+
+float AA1Character::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	AA1Weapon* AttackerWeapon = Cast<AA1Weapon>(DamageCauser);
+	AA1Character* Attacker = Cast<AA1Character>(AttackerWeapon->GetOwner());
+	if (Attacker == this) return -1.f;
+
+	Protocol::C_ATTACK AttackPkt;
+	Protocol::AttackInfo* Info = AttackPkt.mutable_info();
+	Info->set_attack_object_id(Attacker->GetStatInfo()->object_id());
+	Info->set_hit_object_id(ObjectInfo->object_id());
+	Info->set_world_location_x(AttackerWeapon->WorldLocationToServer.X);
+	Info->set_world_location_y(AttackerWeapon->WorldLocationToServer.Y);
+	Info->set_world_location_z(AttackerWeapon->WorldLocationToServer.Z);
+	Info->set_forward_vector_x(AttackerWeapon->ForwardVectorToServer.X);
+	Info->set_forward_vector_y(AttackerWeapon->ForwardVectorToServer.Y);
+	Info->set_forward_vector_z(AttackerWeapon->ForwardVectorToServer.Z);
+
+	UA1NetworkManager* NetworkManager = GetGameInstance()->GetSubsystem<UA1NetworkManager>();
+	if (NetworkManager) NetworkManager->SendPacket(AttackPkt);
+
+	return 0.0f;
 }
 
 void AA1Character::PickupWeapon(FName WeaponName, bool& Success)
@@ -289,6 +269,7 @@ void AA1Character::SetDestInfo(const Protocol::PosInfo& Info)
 	DestInfo->CopyFrom(Info);
 
 	SetMoveState(Info.move_state());
+
 }
 
 void AA1Character::SetStatInfo(const Protocol::StatInfo& Info)
@@ -352,5 +333,137 @@ void AA1Character::SetStateInfo(const Protocol::StateInfo& Info)
 			FA1Weapons Outputs = WeaponComponent->CycleUp();
 			AttachToHand(Outputs.Overlay, Outputs.BP_Actor, Outputs.SocketTransform);
 		}
+	}
+}
+
+void AA1Character::CurrentToDest(float DeltaTime)
+{
+	const Protocol::MoveState Move_State = DestInfo->move_state();
+	FRotator NowRotation = GetActorRotation();
+	FRotator TargetRotation = FRotator(0, DestInfo->yaw(), 0);
+
+	FVector CurrentLocation = GetActorLocation();
+	FVector TargetDestination = FVector(DestInfo->x(), DestInfo->y(), DestInfo->z());
+	FVector Direction = (TargetDestination - CurrentLocation).GetSafeNormal();
+
+	float YawInterpValue = 30.f;
+	if (Move_State == Protocol::MOVE_STATE_IDLE)
+	{
+		FRotator NewRotation = FMath::RInterpTo(NowRotation, TargetRotation, DeltaTime, YawInterpValue);
+		SetActorRotation(NewRotation);
+	}
+	else if (Move_State == Protocol::MOVE_STATE_WALK)
+	{
+		GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
+		FRotator NewRotation = FMath::RInterpTo(NowRotation, TargetRotation, DeltaTime, YawInterpValue);
+		SetActorRotation(NewRotation);
+
+		if (FVector::Dist(CurrentLocation, TargetDestination) > 10.0f)  // 어느 정도의 오차 허용
+		{
+			AddMovementInput(Direction);
+		}
+	}
+	else if (Move_State == Protocol::MOVE_STATE_RUN)
+	{
+		GetCharacterMovement()->MaxWalkSpeed = RunSpeed;
+		FRotator NewRotation = FMath::RInterpTo(NowRotation, TargetRotation, DeltaTime, YawInterpValue);
+		SetActorRotation(NewRotation);
+
+		if (FVector::Dist(CurrentLocation, TargetDestination) > 10.0f)  // 어느 정도의 오차 허용
+		{
+			AddMovementInput(Direction);
+		}
+	}
+
+	float Distance = FVector::Dist(GetActorLocation(), FVector(DestInfo->x(), DestInfo->y(), DestInfo->z()));
+	if (Distance >= 200.f)
+	{
+		FRotator NewRotation = FRotator(0, DestInfo->yaw(), 0);
+
+		SetActorLocation(FVector(DestInfo->x(), DestInfo->y(), DestInfo->z()));
+		SetActorRotation(NewRotation);
+	}
+}
+
+void AA1Character::CurrentToDirection(float DeltaTime)
+{
+	const Protocol::MoveState Move_State = DestInfo->move_state();
+	FRotator NowRotation = GetActorRotation();
+	FRotator TargetRotation = FRotator(0, DestInfo->yaw(), 0);
+
+
+	float YawInterpValue = 30.f;
+	if (Move_State == Protocol::MOVE_STATE_IDLE)
+	{
+		FRotator NewRotation = FMath::RInterpTo(NowRotation, TargetRotation, DeltaTime, YawInterpValue);
+		if (NewRotation.Equals(TargetRotation, 1.0f) == false)
+		{
+			SetActorRotation(NewRotation);
+		}
+		else
+		{
+			SetActorRotation(TargetRotation);
+
+		}
+	}
+	else if (Move_State == Protocol::MOVE_STATE_WALK)
+	{
+		GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
+		FRotator NewRotation = FMath::RInterpTo(NowRotation, TargetRotation, DeltaTime, YawInterpValue);
+		if (NewRotation.Equals(TargetRotation, 1.0f) == false)
+		{
+			SetActorRotation(NewRotation);
+		}
+		else
+		{
+			SetActorRotation(TargetRotation);
+
+		}
+		FVector ForwardDirection = FVector(DestInfo->d_x(), DestInfo->d_y(), DestInfo->d_z());
+		AddMovementInput(ForwardDirection);
+
+	}
+	else if (Move_State == Protocol::MOVE_STATE_RUN)
+	{
+		GetCharacterMovement()->MaxWalkSpeed = RunSpeed;
+		FRotator NewRotation = FMath::RInterpTo(NowRotation, TargetRotation, DeltaTime, YawInterpValue);
+		
+		if (NewRotation.Equals(TargetRotation, 1.0f) == false) 
+		{
+			SetActorRotation(NewRotation);
+		}
+		else
+		{
+			SetActorRotation(TargetRotation);
+
+		}
+
+		FVector ForwardDirection = FVector(DestInfo->d_x(), DestInfo->d_y(), DestInfo->d_z());
+		AddMovementInput(ForwardDirection);
+	}
+	else if (Move_State == Protocol::MoveState::MOVE_STATE_JUMP)
+	{
+		Jump();
+		FRotator NewRotation = FMath::RInterpTo(NowRotation, TargetRotation, DeltaTime, YawInterpValue);
+		if (NewRotation.Equals(TargetRotation, 1.0f) == false)
+		{
+			SetActorRotation(NewRotation);
+		}
+		else
+		{
+			SetActorRotation(TargetRotation);
+
+		}
+
+		FVector ForwardDirection = FVector(DestInfo->d_x(), DestInfo->d_y(), DestInfo->d_z());
+		AddMovementInput(ForwardDirection);
+	}
+
+	float Distance = FVector::Dist(GetActorLocation(), FVector(DestInfo->x(), DestInfo->y(), DestInfo->z()));
+	if (Distance >= 200.f)
+	{
+
+		SetActorLocation(FVector(DestInfo->x(), DestInfo->y(), DestInfo->z()));
+		SetActorRotation(TargetRotation);
 	}
 }

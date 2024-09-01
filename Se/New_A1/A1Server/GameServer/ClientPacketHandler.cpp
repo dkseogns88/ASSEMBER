@@ -33,9 +33,10 @@ bool Handle_C_ENTER_GAME(PacketSessionRef& session, Protocol::C_ENTER_GAME& pkt)
 	player->objectInfo->set_player_type(Protocol::PLAYER_TYPE_NONE);
 
 	// TODO: 플레이어 스탯 정의
-	player->statInfo->set_hp(1000);
-	player->statInfo->set_max_hp(1000);
-	player->statInfo->set_damage(100);
+	player->statInfo->set_object_id(player->objectInfo->object_id());
+	player->statInfo->set_hp(100);
+	player->statInfo->set_max_hp(100);
+	player->statInfo->set_damage(10);
 
 	GRoom->DoAsync(&Room::HandleEnterPlayer, player);
 

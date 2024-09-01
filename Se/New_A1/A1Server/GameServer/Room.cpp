@@ -163,6 +163,17 @@ void Room::HandleAttack(Protocol::C_ATTACK pkt)
 	if (_objects.find(objectId) == _objects.end())
 		return;
 
+	cout << "공격 ID: " << pkt.info().attack_object_id() << endl;
+	cout << "피격 ID: " << pkt.info().hit_object_id() << endl;
+	cout << "공격 Damage: " << _objects[objectId]->statInfo->damage() << endl;
+
+	float BeforeHp = _objects[pkt.info().hit_object_id()]->statInfo->hp();
+	_objects[pkt.info().hit_object_id()]->statInfo->set_hp(BeforeHp - _objects[objectId]->statInfo->damage());
+	
+	
+	cout << "피격전 HP: " << BeforeHp << endl;
+	cout << "피격후 HP: " << _objects[pkt.info().hit_object_id()]->statInfo->hp() << endl;
+
 	{
 		Protocol::S_ATTACK attackPkt;
 		{
@@ -174,8 +185,6 @@ void Room::HandleAttack(Protocol::C_ATTACK pkt)
 		Broadcast(sendBuffer);
 	}
 }
-
-
 
 RoomRef Room::GetRoomRef()
 {

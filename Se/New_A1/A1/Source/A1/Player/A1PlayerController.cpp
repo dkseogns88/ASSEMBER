@@ -197,10 +197,8 @@ void AA1PlayerController::Input_Move(const FInputActionValue& InputValue)
 	const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 	const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 
-
 	A1MyPlayer->AddMovementInput(ForwardDirection, MovementVector.X);
 	A1MyPlayer->AddMovementInput(RightDirection, MovementVector.Y);
-
 
 	// Cache
 	{
@@ -216,11 +214,7 @@ void AA1PlayerController::Input_Move(const FInputActionValue& InputValue)
 		//DesiredYaw = Rotator.Yaw;
 		
 		DesiredYaw = YawRotation.Yaw;
-
-
-	
 	}
-
 }
 
 void AA1PlayerController::Input_Turn(const FInputActionValue& InputValue)

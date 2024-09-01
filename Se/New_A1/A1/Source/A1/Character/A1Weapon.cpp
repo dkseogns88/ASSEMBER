@@ -58,7 +58,7 @@ void AA1Weapon::FireON()
 	if (!GetWorld()->GetTimerManager().IsTimerActive(FireTimerHandle))
 	{
 		Fire();
-		GetWorld()->GetTimerManager().SetTimer(FireTimerHandle, FireRate, false);
+		GetWorld()->GetTimerManager().SetTimer(FireTimerHandle, FireRate, false); // TODO: ÃÑ ¹ß»ç ¹æ½Ä ¹Ù²ã¾ß ÇÔ
 	}
 }
 
@@ -69,8 +69,6 @@ void AA1Weapon::FireOFF()
 
 void AA1Weapon::Fire()
 {
-	AA1Character* WeaponOwner = Cast<AA1Character>(GetOwner());
-
 	if (WeaponSound) {
 		UGameplayStatics::PlaySoundAtLocation(this, WeaponSound, GetActorLocation());
 		UGameplayStatics::SpawnEmitterAttached(FlashEmitter, SkeletalMesh, TEXT("TIP"));
@@ -78,66 +76,67 @@ void AA1Weapon::Fire()
 		AActor* HitActor;
 		UPrimitiveComponent* HitComponent;
 		FName BoneName;
-		FVector ReturnVector;
-		ReturnVector = TraceCamera(Range, Location, HitActor, HitComponent, BoneName);
+		FVector Impulse;
+		TraceCamera(Range, Location, HitActor, HitComponent, BoneName, Impulse);
 
-		FVector ImpactPoint;
-		UPrimitiveComponent* SocketComponent;
-		TraceSocket(Location, ImpactPoint, SocketComponent);
+		FVector OutLocation;
+		AActor* OutHitActor;
+		UPrimitiveComponent* OutHitComponent;
+		FName OutBoneName;
+		FVector OutImpulse;
+		TraceSocket(Location, HitActor, HitComponent, BoneName, Impulse, OutLocation, OutHitActor, OutHitComponent, OutBoneName, OutImpulse);
+		
 		FTransform SpawnEmitterTransform;
+		SpawnEmitterTransform.SetLocation(OutLocation);
 
-		if (WeaponOwner->IsMyPlayer() == false)
-		{
-			SpawnEmitterTransform.SetLocation(ImpactLocationFromServer);
-		}
-		else {
-			if ((HitComponent != SocketComponent) && (ImpactPoint != FVector(0.f, 0.f, 0.f)))
-			{
-				SpawnEmitterTransform.SetLocation(ImpactPoint);
-			}
-			else
-			{
-				SpawnEmitterTransform.SetLocation(Location);
-			}
-		}
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactEmitter, SpawnEmitterTransform, true, EPSCPoolMethod::None, true);
-	
-		// ToServer
-		if (WeaponOwner->IsMyPlayer())
-		{
-			if (AA1MyPlayer* MyPlayer = Cast<AA1MyPlayer>(WeaponOwner)) {
-				Protocol::C_ATTACK AttackPkt;
-				Protocol::AttackInfo* Info = AttackPkt.mutable_info();
-				Info->set_attack_object_id(MyPlayer->GetObjectInfo()->object_id());
-				Info->set_impact_location_x(SpawnEmitterTransform.GetLocation().X);
-				Info->set_impact_location_y(SpawnEmitterTransform.GetLocation().Y);
-				Info->set_impact_location_z(SpawnEmitterTransform.GetLocation().Z);
+		// ApplyPhysics(OutLocation, OutImpulse, OutHitComponent, OutBoneName);
 
-				MyPlayer->GetNetworkManager()->SendPacket(AttackPkt);
-			}
-		}
+		AA1Character* WeaponOwner = Cast<AA1Character>(GetOwner());
+		if (WeaponOwner->IsMyPlayer() == false) return;
+
+		UGameplayStatics::ApplyDamage(OutHitActor, 10.f, nullptr, this, nullptr);
+
+		
 	}
 }
 
-FVector AA1Weapon::TraceCamera(float WeaponRange, FVector& Location, AActor*& HitActor, UPrimitiveComponent*& HitComponent, FName& BoneName)
+void AA1Weapon::TraceCamera(float WeaponRange, FVector& Location, AActor*& HitActor, UPrimitiveComponent*& HitComponent, FName& BoneName, FVector& Impulse)
 {
+	AA1Character* WeaponOwner = Cast<AA1Character>(GetOwner());
+
 	FVector WorldLocation;
-	FVector ForwardVector; 
+	FVector ForwardVector;
 	if (OverlapActor->GetClass()->ImplementsInterface(UA1PickupInterface::StaticClass()))
 	{
 		IA1PickupInterface* PickupInterface = Cast<IA1PickupInterface>(OverlapActor);
 		if (PickupInterface)
 		{
-			PickupInterface->GetCamera(WorldLocation, ForwardVector);
+			// ToServer
+			if (WeaponOwner->IsMyPlayer()) {
+				if (AA1MyPlayer* MyPlayer = Cast<AA1MyPlayer>(WeaponOwner)) {
+					PickupInterface->GetCamera(WorldLocation, ForwardVector);
+
+					WorldLocationToServer = WorldLocation;
+					ForwardVectorToServer = ForwardVector;
+
+				}
+				
+			}
+			else { // FromServer
+				WorldLocation = WorldLocationFromServer;
+				ForwardVector = ForwardVectorFromServer;
+			}
+			
 		}
 	}
 	
 	FVector End = (ForwardVector * WeaponRange) + WorldLocation;
 
 	FHitResult HitResult;
-	ETraceTypeQuery TraceChannel = UEngineTypes::ConvertToTraceType(ECC_Visibility);
+	ETraceTypeQuery TraceChannel = UEngineTypes::ConvertToTraceType(ECollisionChannel::ECC_GameTraceChannel1);
 	TArray<AActor*> ActorsToIgnore;
-
+	ActorsToIgnore.Add(OverlapActor);
 	bool bHit = UKismetSystemLibrary::LineTraceSingle(
 		GetWorld(),
 		WorldLocation,
@@ -160,21 +159,24 @@ FVector AA1Weapon::TraceCamera(float WeaponRange, FVector& Location, AActor*& Hi
 	HitActor = HitResult.GetActor();
 	HitComponent = HitResult.GetComponent();
 	BoneName = HitResult.BoneName;
-	return ForwardVector * WeaponRange;
+	Impulse = ForwardVector * WeaponRange;
 
 }
 
-void AA1Weapon::TraceSocket(FVector End, FVector& ImpactPoint, UPrimitiveComponent*& HitComponent)
+void AA1Weapon::TraceSocket(FVector Location, AActor* HitActor, UPrimitiveComponent* HitComponent, FName BoneName, FVector Impulse,
+	FVector& OutLocation, AActor*& OutHitActor, UPrimitiveComponent*& OutHitComponent, FName& OutBoneName, FVector& OutImpulse)
 {
-	FVector Start = SkeletalMesh->GetSocketLocation(FName());
-	ETraceTypeQuery TraceChannel = UEngineTypes::ConvertToTraceType(ECC_Visibility);
+	FVector Start = SkeletalMesh->GetSocketLocation(FName("TIP"));
+	ETraceTypeQuery TraceChannel = UEngineTypes::ConvertToTraceType(ECollisionChannel::ECC_GameTraceChannel1); // TODO: ±ÇÃÑ Error..
 	TArray<AActor*> ActorsToIgnore;
+	ActorsToIgnore.Add(OverlapActor);
+	ActorsToIgnore.Add(this);
 	FHitResult HitResult;
 
 	UKismetSystemLibrary::LineTraceSingle(
 		GetWorld(),
 		Start,
-		End,
+		Location,
 		TraceChannel,
 		false,
 		ActorsToIgnore,
@@ -186,15 +188,48 @@ void AA1Weapon::TraceSocket(FVector End, FVector& ImpactPoint, UPrimitiveCompone
 		1.f
 	);
 
-	ImpactPoint = HitResult.ImpactPoint;
+	if ((HitResult.ImpactPoint != FVector(0.f, 0.f, 0.f)) && (HitComponent != HitResult.GetComponent()))
+	{
+		OutLocation = HitResult.ImpactPoint;
+		OutHitActor = HitResult.GetActor();   
+		OutHitComponent = HitResult.GetComponent();
+		OutBoneName = HitResult.BoneName;
+		OutImpulse = Impulse;
+	}
+	else
+	{
+		OutLocation = Location;
+		OutHitActor = HitActor;
+		OutHitComponent = HitComponent;
+		OutBoneName = BoneName;
+		OutImpulse = Impulse;
+	}
+
+	Impulse = HitResult.ImpactPoint;
 	HitComponent = HitResult.GetComponent();
 }
 
-void AA1Weapon::SetImpacLocation(float x, float y, float z)
+void AA1Weapon::ApplyPhysics(FVector Location, FVector Impulse, UPrimitiveComponent* HitComponent, FName BoneName)
 {
-	ImpactLocationFromServer.X = x;
-	ImpactLocationFromServer.Y = y;
-	ImpactLocationFromServer.Z = z;
+	if (HitComponent) {
+		bool IsSimulate = HitComponent->IsSimulatingPhysics(BoneName);
+		if (IsSimulate) {
+			FVector AddImpulse = Impulse * 2.f;
+			HitComponent->AddImpulseAtLocation(AddImpulse, Location, BoneName);
+		}
+	}
 }
 
+void AA1Weapon::SetWorldLocation(float x, float y, float z)
+{
+	WorldLocationFromServer.X = x;
+	WorldLocationFromServer.Y = y;
+	WorldLocationFromServer.Z = z;
+}
 
+void AA1Weapon::SetForwardVector(float x, float y, float z)
+{
+	ForwardVectorFromServer.X = x;
+	ForwardVectorFromServer.Y = y;
+	ForwardVectorFromServer.Z = z;
+}

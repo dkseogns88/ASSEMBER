@@ -26,7 +26,8 @@ protected:
 
 public:	
 	virtual void Tick(float DeltaTime) override;
-
+  
+    virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 public:
 
     UFUNCTION()
@@ -109,4 +110,8 @@ protected:
     class Protocol::StatInfo* StatInfo;
     class Protocol::StateInfo* StateInfo;
 
+
+private:
+    void CurrentToDest(float);
+    void CurrentToDirection(float);
 };
