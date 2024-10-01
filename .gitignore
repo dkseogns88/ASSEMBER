@@ -16,5 +16,6 @@ Saved/
 *.bak
 Re/Server/GameServer/x64/Debug/GameServer.pch
 A1/A1Server/GameServer/x64/Debug/GameServer.pch
-Se/A1/Server/GameServer/x64/Debug/GameServer.pch
-Se/New_A1/A1Server/GameServer/x64/Debug/GameServer.pch
+Se/GameServer/GameServer/x64/Debug/GameServer.pch
+Se/혹시 몰라서 남겨둠/New_A1/A1Server/GameServer/x64/Debug/GameServer.pch
+Se/혹시 몰라서 남겨둠/A1/Server/GameServer/x64/Debug/GameServer.pch
