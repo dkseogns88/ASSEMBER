@@ -289,4 +289,5 @@ void UGradNetworkComponent::SetPosInfo(const Protocol::PosInfo& Info)
 	}
 
 	PosInfo->CopyFrom(Info);
+	SetMoveState(Info.move_state());
 }

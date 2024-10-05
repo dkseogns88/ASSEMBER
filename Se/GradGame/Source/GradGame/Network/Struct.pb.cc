@@ -29,11 +29,11 @@ PROTOBUF_CONSTEXPR PosInfo::PosInfo(
   , /*decltype(_impl_.y_)*/0
   , /*decltype(_impl_.z_)*/0
   , /*decltype(_impl_.yaw_)*/0
+  , /*decltype(_impl_.pitch_)*/0
+  , /*decltype(_impl_.roll_)*/0
   , /*decltype(_impl_.d_x_)*/0
   , /*decltype(_impl_.d_y_)*/0
   , /*decltype(_impl_.d_z_)*/0
-  , /*decltype(_impl_.aim_pitch_)*/0
-  , /*decltype(_impl_.aim_yaw_)*/0
   , /*decltype(_impl_._cached_size_)*/{}} {}
 struct PosInfoDefaultTypeInternal {
   PROTOBUF_CONSTEXPR PosInfoDefaultTypeInternal()
@@ -78,11 +78,11 @@ const uint32_t TableStruct_Struct_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(p
   PROTOBUF_FIELD_OFFSET(::Protocol::PosInfo, _impl_.y_),
   PROTOBUF_FIELD_OFFSET(::Protocol::PosInfo, _impl_.z_),
   PROTOBUF_FIELD_OFFSET(::Protocol::PosInfo, _impl_.yaw_),
+  PROTOBUF_FIELD_OFFSET(::Protocol::PosInfo, _impl_.pitch_),
+  PROTOBUF_FIELD_OFFSET(::Protocol::PosInfo, _impl_.roll_),
   PROTOBUF_FIELD_OFFSET(::Protocol::PosInfo, _impl_.d_x_),
   PROTOBUF_FIELD_OFFSET(::Protocol::PosInfo, _impl_.d_y_),
   PROTOBUF_FIELD_OFFSET(::Protocol::PosInfo, _impl_.d_z_),
-  PROTOBUF_FIELD_OFFSET(::Protocol::PosInfo, _impl_.aim_pitch_),
-  PROTOBUF_FIELD_OFFSET(::Protocol::PosInfo, _impl_.aim_yaw_),
   ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::Protocol::ObjectInfo, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -105,23 +105,23 @@ static const ::_pb::Message* const file_default_instances[] = {
 };
 
 const char descriptor_table_protodef_Struct_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
-  "\n\014Struct.proto\022\010Protocol\032\nEnum.proto\"\276\001\n"
+  "\n\014Struct.proto\022\010Protocol\032\nEnum.proto\"\267\001\n"
   "\007PosInfo\022\021\n\tobject_id\030\001 \001(\004\022\'\n\nmove_stat"
   "e\030\002 \001(\0162\023.Protocol.MoveState\022\t\n\001x\030\003 \001(\002\022"
-  "\t\n\001y\030\004 \001(\002\022\t\n\001z\030\005 \001(\002\022\013\n\003yaw\030\006 \001(\002\022\013\n\003d_"
-  "x\030\007 \001(\002\022\013\n\003d_y\030\010 \001(\002\022\013\n\003d_z\030\t \001(\002\022\021\n\taim"
-  "_pitch\030\n \001(\002\022\017\n\007aim_yaw\030\013 \001(\002\"\232\001\n\nObject"
-  "Info\022\021\n\tobject_id\030\001 \001(\004\022)\n\013object_type\030\002"
-  " \001(\0162\024.Protocol.ObjectType\022)\n\013player_typ"
-  "e\030\003 \001(\0162\024.Protocol.PlayerType\022#\n\010pos_Inf"
-  "o\030\004 \001(\0132\021.Protocol.PosInfob\006proto3"
+  "\t\n\001y\030\004 \001(\002\022\t\n\001z\030\005 \001(\002\022\013\n\003yaw\030\006 \001(\002\022\r\n\005pi"
+  "tch\030\007 \001(\002\022\014\n\004roll\030\010 \001(\002\022\013\n\003d_x\030\t \001(\002\022\013\n\003"
+  "d_y\030\n \001(\002\022\013\n\003d_z\030\013 \001(\002\"\232\001\n\nObjectInfo\022\021\n"
+  "\tobject_id\030\001 \001(\004\022)\n\013object_type\030\002 \001(\0162\024."
+  "Protocol.ObjectType\022)\n\013player_type\030\003 \001(\016"
+  "2\024.Protocol.PlayerType\022#\n\010pos_Info\030\004 \001(\013"
+  "2\021.Protocol.PosInfob\006proto3"
   ;
 static const ::_pbi::DescriptorTable* const descriptor_table_Struct_2eproto_deps[1] = {
   &::descriptor_table_Enum_2eproto,
 };
 static ::_pbi::once_flag descriptor_table_Struct_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_Struct_2eproto = {
-    false, false, 394, descriptor_table_protodef_Struct_2eproto,
+    false, false, 387, descriptor_table_protodef_Struct_2eproto,
     "Struct.proto",
     &descriptor_table_Struct_2eproto_once, descriptor_table_Struct_2eproto_deps, 1, 2,
     schemas, file_default_instances, TableStruct_Struct_2eproto::offsets,
@@ -158,17 +158,17 @@ PosInfo::PosInfo(const PosInfo& from)
     , decltype(_impl_.y_){}
     , decltype(_impl_.z_){}
     , decltype(_impl_.yaw_){}
+    , decltype(_impl_.pitch_){}
+    , decltype(_impl_.roll_){}
     , decltype(_impl_.d_x_){}
     , decltype(_impl_.d_y_){}
     , decltype(_impl_.d_z_){}
-    , decltype(_impl_.aim_pitch_){}
-    , decltype(_impl_.aim_yaw_){}
     , /*decltype(_impl_._cached_size_)*/{}};
 
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   ::memcpy(&_impl_.object_id_, &from._impl_.object_id_,
-    static_cast<size_t>(reinterpret_cast<char*>(&_impl_.aim_yaw_) -
-    reinterpret_cast<char*>(&_impl_.object_id_)) + sizeof(_impl_.aim_yaw_));
+    static_cast<size_t>(reinterpret_cast<char*>(&_impl_.d_z_) -
+    reinterpret_cast<char*>(&_impl_.object_id_)) + sizeof(_impl_.d_z_));
   // @@protoc_insertion_point(copy_constructor:Protocol.PosInfo)
 }
 
@@ -183,11 +183,11 @@ inline void PosInfo::SharedCtor(
     , decltype(_impl_.y_){0}
     , decltype(_impl_.z_){0}
     , decltype(_impl_.yaw_){0}
+    , decltype(_impl_.pitch_){0}
+    , decltype(_impl_.roll_){0}
     , decltype(_impl_.d_x_){0}
     , decltype(_impl_.d_y_){0}
     , decltype(_impl_.d_z_){0}
-    , decltype(_impl_.aim_pitch_){0}
-    , decltype(_impl_.aim_yaw_){0}
     , /*decltype(_impl_._cached_size_)*/{}
   };
 }
@@ -216,8 +216,8 @@ void PosInfo::Clear() {
   (void) cached_has_bits;
 
   ::memset(&_impl_.object_id_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&_impl_.aim_yaw_) -
-      reinterpret_cast<char*>(&_impl_.object_id_)) + sizeof(_impl_.aim_yaw_));
+      reinterpret_cast<char*>(&_impl_.d_z_) -
+      reinterpret_cast<char*>(&_impl_.object_id_)) + sizeof(_impl_.d_z_));
   _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
@@ -276,42 +276,42 @@ const char* PosInfo::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) 
         } else
           goto handle_unusual;
         continue;
-      // float d_x = 7;
+      // float pitch = 7;
       case 7:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 61)) {
+          _impl_.pitch_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      // float roll = 8;
+      case 8:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 69)) {
+          _impl_.roll_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      // float d_x = 9;
+      case 9:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 77)) {
           _impl_.d_x_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
           ptr += sizeof(float);
         } else
           goto handle_unusual;
         continue;
-      // float d_y = 8;
-      case 8:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 69)) {
+      // float d_y = 10;
+      case 10:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 85)) {
           _impl_.d_y_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
           ptr += sizeof(float);
         } else
           goto handle_unusual;
         continue;
-      // float d_z = 9;
-      case 9:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 77)) {
-          _impl_.d_z_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
-          ptr += sizeof(float);
-        } else
-          goto handle_unusual;
-        continue;
-      // float aim_pitch = 10;
-      case 10:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 85)) {
-          _impl_.aim_pitch_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
-          ptr += sizeof(float);
-        } else
-          goto handle_unusual;
-        continue;
-      // float aim_yaw = 11;
+      // float d_z = 11;
       case 11:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 93)) {
-          _impl_.aim_yaw_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          _impl_.d_z_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
           ptr += sizeof(float);
         } else
           goto handle_unusual;
@@ -398,54 +398,54 @@ uint8_t* PosInfo::_InternalSerialize(
     target = ::_pbi::WireFormatLite::WriteFloatToArray(6, this->_internal_yaw(), target);
   }
 
-  // float d_x = 7;
+  // float pitch = 7;
+  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  float tmp_pitch = this->_internal_pitch();
+  uint32_t raw_pitch;
+  memcpy(&raw_pitch, &tmp_pitch, sizeof(tmp_pitch));
+  if (raw_pitch != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(7, this->_internal_pitch(), target);
+  }
+
+  // float roll = 8;
+  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  float tmp_roll = this->_internal_roll();
+  uint32_t raw_roll;
+  memcpy(&raw_roll, &tmp_roll, sizeof(tmp_roll));
+  if (raw_roll != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(8, this->_internal_roll(), target);
+  }
+
+  // float d_x = 9;
   static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
   float tmp_d_x = this->_internal_d_x();
   uint32_t raw_d_x;
   memcpy(&raw_d_x, &tmp_d_x, sizeof(tmp_d_x));
   if (raw_d_x != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteFloatToArray(7, this->_internal_d_x(), target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(9, this->_internal_d_x(), target);
   }
 
-  // float d_y = 8;
+  // float d_y = 10;
   static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
   float tmp_d_y = this->_internal_d_y();
   uint32_t raw_d_y;
   memcpy(&raw_d_y, &tmp_d_y, sizeof(tmp_d_y));
   if (raw_d_y != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteFloatToArray(8, this->_internal_d_y(), target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(10, this->_internal_d_y(), target);
   }
 
-  // float d_z = 9;
+  // float d_z = 11;
   static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
   float tmp_d_z = this->_internal_d_z();
   uint32_t raw_d_z;
   memcpy(&raw_d_z, &tmp_d_z, sizeof(tmp_d_z));
   if (raw_d_z != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteFloatToArray(9, this->_internal_d_z(), target);
-  }
-
-  // float aim_pitch = 10;
-  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
-  float tmp_aim_pitch = this->_internal_aim_pitch();
-  uint32_t raw_aim_pitch;
-  memcpy(&raw_aim_pitch, &tmp_aim_pitch, sizeof(tmp_aim_pitch));
-  if (raw_aim_pitch != 0) {
-    target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteFloatToArray(10, this->_internal_aim_pitch(), target);
-  }
-
-  // float aim_yaw = 11;
-  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
-  float tmp_aim_yaw = this->_internal_aim_yaw();
-  uint32_t raw_aim_yaw;
-  memcpy(&raw_aim_yaw, &tmp_aim_yaw, sizeof(tmp_aim_yaw));
-  if (raw_aim_yaw != 0) {
-    target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteFloatToArray(11, this->_internal_aim_yaw(), target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(11, this->_internal_d_z(), target);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -511,7 +511,25 @@ size_t PosInfo::ByteSizeLong() const {
     total_size += 1 + 4;
   }
 
-  // float d_x = 7;
+  // float pitch = 7;
+  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  float tmp_pitch = this->_internal_pitch();
+  uint32_t raw_pitch;
+  memcpy(&raw_pitch, &tmp_pitch, sizeof(tmp_pitch));
+  if (raw_pitch != 0) {
+    total_size += 1 + 4;
+  }
+
+  // float roll = 8;
+  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  float tmp_roll = this->_internal_roll();
+  uint32_t raw_roll;
+  memcpy(&raw_roll, &tmp_roll, sizeof(tmp_roll));
+  if (raw_roll != 0) {
+    total_size += 1 + 4;
+  }
+
+  // float d_x = 9;
   static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
   float tmp_d_x = this->_internal_d_x();
   uint32_t raw_d_x;
@@ -520,7 +538,7 @@ size_t PosInfo::ByteSizeLong() const {
     total_size += 1 + 4;
   }
 
-  // float d_y = 8;
+  // float d_y = 10;
   static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
   float tmp_d_y = this->_internal_d_y();
   uint32_t raw_d_y;
@@ -529,30 +547,12 @@ size_t PosInfo::ByteSizeLong() const {
     total_size += 1 + 4;
   }
 
-  // float d_z = 9;
+  // float d_z = 11;
   static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
   float tmp_d_z = this->_internal_d_z();
   uint32_t raw_d_z;
   memcpy(&raw_d_z, &tmp_d_z, sizeof(tmp_d_z));
   if (raw_d_z != 0) {
-    total_size += 1 + 4;
-  }
-
-  // float aim_pitch = 10;
-  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
-  float tmp_aim_pitch = this->_internal_aim_pitch();
-  uint32_t raw_aim_pitch;
-  memcpy(&raw_aim_pitch, &tmp_aim_pitch, sizeof(tmp_aim_pitch));
-  if (raw_aim_pitch != 0) {
-    total_size += 1 + 4;
-  }
-
-  // float aim_yaw = 11;
-  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
-  float tmp_aim_yaw = this->_internal_aim_yaw();
-  uint32_t raw_aim_yaw;
-  memcpy(&raw_aim_yaw, &tmp_aim_yaw, sizeof(tmp_aim_yaw));
-  if (raw_aim_yaw != 0) {
     total_size += 1 + 4;
   }
 
@@ -609,6 +609,20 @@ void PosInfo::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOB
     _this->_internal_set_yaw(from._internal_yaw());
   }
   static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  float tmp_pitch = from._internal_pitch();
+  uint32_t raw_pitch;
+  memcpy(&raw_pitch, &tmp_pitch, sizeof(tmp_pitch));
+  if (raw_pitch != 0) {
+    _this->_internal_set_pitch(from._internal_pitch());
+  }
+  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  float tmp_roll = from._internal_roll();
+  uint32_t raw_roll;
+  memcpy(&raw_roll, &tmp_roll, sizeof(tmp_roll));
+  if (raw_roll != 0) {
+    _this->_internal_set_roll(from._internal_roll());
+  }
+  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
   float tmp_d_x = from._internal_d_x();
   uint32_t raw_d_x;
   memcpy(&raw_d_x, &tmp_d_x, sizeof(tmp_d_x));
@@ -629,20 +643,6 @@ void PosInfo::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOB
   if (raw_d_z != 0) {
     _this->_internal_set_d_z(from._internal_d_z());
   }
-  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
-  float tmp_aim_pitch = from._internal_aim_pitch();
-  uint32_t raw_aim_pitch;
-  memcpy(&raw_aim_pitch, &tmp_aim_pitch, sizeof(tmp_aim_pitch));
-  if (raw_aim_pitch != 0) {
-    _this->_internal_set_aim_pitch(from._internal_aim_pitch());
-  }
-  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
-  float tmp_aim_yaw = from._internal_aim_yaw();
-  uint32_t raw_aim_yaw;
-  memcpy(&raw_aim_yaw, &tmp_aim_yaw, sizeof(tmp_aim_yaw));
-  if (raw_aim_yaw != 0) {
-    _this->_internal_set_aim_yaw(from._internal_aim_yaw());
-  }
   _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
 }
 
@@ -661,8 +661,8 @@ void PosInfo::InternalSwap(PosInfo* other) {
   using std::swap;
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
   ::PROTOBUF_NAMESPACE_ID::internal::memswap<
-      PROTOBUF_FIELD_OFFSET(PosInfo, _impl_.aim_yaw_)
-      + sizeof(PosInfo::_impl_.aim_yaw_)
+      PROTOBUF_FIELD_OFFSET(PosInfo, _impl_.d_z_)
+      + sizeof(PosInfo::_impl_.d_z_)
       - PROTOBUF_FIELD_OFFSET(PosInfo, _impl_.object_id_)>(
           reinterpret_cast<char*>(&_impl_.object_id_),
           reinterpret_cast<char*>(&other->_impl_.object_id_));

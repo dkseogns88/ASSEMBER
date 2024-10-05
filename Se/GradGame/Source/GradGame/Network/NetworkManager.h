@@ -31,7 +31,7 @@ public:
 	void SendPacket(T packet) const;
 
 public:
-	void SendMove();
+
 
 public:
 	void HandleSpawn(const Protocol::ObjectInfo& ObjectInfo, bool IsMine);
@@ -42,6 +42,8 @@ public:
 	void HandleDespawn(const Protocol::S_DESPAWN& DespawnPkt);
 
 	void HandleLeave(const Protocol::S_LEAVE_GAME& LeavePkt);
+
+	void HandleMove(const Protocol::S_MOVE& MovePkt);
 
 private:
 	void SpawnPlayer(const Protocol::ObjectInfo& ObjectInfo, bool IsMine);
@@ -61,7 +63,7 @@ public:
 	TObjectPtr<AGradCharacter> MyPlayer;
 
 	UPROPERTY()
-	TMap<uint64, TObjectPtr<AGradNetCharacter>> Objects;
+	TMap<uint64, TObjectPtr<ACharacter>> Objects;
 };
 
 template <typename T> 

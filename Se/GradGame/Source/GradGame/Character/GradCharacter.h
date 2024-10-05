@@ -37,4 +37,5 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Grad|Character")
 	TObjectPtr<UGradCameraComponent> CameraComponent;
+
 };

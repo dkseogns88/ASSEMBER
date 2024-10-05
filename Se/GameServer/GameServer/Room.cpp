@@ -107,6 +107,27 @@ bool Room::HandleLeavePlayer(PlayerRef player)
 	return true;
 }
 
+void Room::HandleMove(Protocol::C_MOVE pkt)
+{
+	const uint64 objectId = pkt.info().object_id();
+	if (_objects.find(objectId) == _objects.end())
+		return;
+
+	PlayerRef player = dynamic_pointer_cast<Player>(_objects[objectId]);
+	player->posInfo->CopyFrom(pkt.info());
+
+	{
+		Protocol::S_MOVE movePkt;
+		{
+			Protocol::PosInfo* info = movePkt.mutable_info();
+			info->CopyFrom(pkt.info());
+		}
+
+		SendBufferRef sendBuffer = ClientPacketHandler::MakeSendBuffer(movePkt);
+		Broadcast(sendBuffer);
+	}
+}
+
 
 
 RoomRef Room::GetRoomRef()

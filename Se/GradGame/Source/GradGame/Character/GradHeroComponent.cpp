@@ -14,7 +14,6 @@
 #include "GradGame/Camera/GradCameraComponent.h"
 #include "GradGame/Player/GradPlayerController.h"
 #include "GradGame/Player/GradPlayerState.h"
-#include "GradGame/Network/NetworkManager.h"
 
 /** FeatureName 정의: static member variable 초기화 */
 const FName UGradHeroComponent::NAME_ActorFeatureName("Hero");
@@ -251,6 +250,7 @@ void UGradHeroComponent::InitializePlayerInput(UInputComponent* PlayerInputCompo
 					// InputTag_Move와 InputTag_Look_Mouse에 대해 각각 Input_Move()와 Input_LookMouse() 멤버 함수에 바인딩시킨다:
 					// - 바인딩한 이후, Input 이벤트에 따라 멤버 함수가 트리거된다
 					GradIC->BindNativeAction(InputConfig, GameplayTags.InputTag_Move, ETriggerEvent::Triggered, this, &ThisClass::Input_Move, false);
+					GradIC->BindNativeAction(InputConfig, GameplayTags.InputTag_Move, ETriggerEvent::Completed, this, &ThisClass::Input_Move, false);
 					GradIC->BindNativeAction(InputConfig, GameplayTags.InputTag_Look_Mouse, ETriggerEvent::Triggered, this, &ThisClass::Input_LookMouse, false);
 				}
 			}
@@ -268,30 +268,28 @@ void UGradHeroComponent::Input_Move(const FInputActionValue& InputActionValue)
 	if (Controller)
 	{
 		const FVector2D Value = InputActionValue.Get<FVector2D>();
+
 		const FRotator MovementRotation(0.0f, Controller->GetControlRotation().Yaw, 0.0f);
 
-		if (Value.X != 0.0f)
-		{
-			// Left/Right -> X 값에 들어있음:
-			// MovementDirection은 현재 카메라의 RightVector를 의미함 (World-Space)
-			const FVector MovementDirection = MovementRotation.RotateVector(FVector::RightVector);
+		const FVector ForwardDirection = MovementRotation.RotateVector(FVector::RightVector);
+		const FVector RightDirection = MovementRotation.RotateVector(FVector::ForwardVector);
 
-			// AddMovementInput 함수를 한번 보자:
-			// - 내부적으로 MovementDirection * Value.X를 MovementComponent에 적용(더하기)해준다
-			Pawn->AddMovementInput(MovementDirection, Value.X);
-		}
+		Pawn->AddMovementInput(ForwardDirection, Value.X);
+		Pawn->AddMovementInput(RightDirection, Value.Y);
 
-		if (Value.Y != 0.0f) // 앞서 우리는 Forward 적용을 위해 swizzle input modifier를 사용했다~
-		{
-			// 앞서 Left/Right와 마찬가지로 Forward/Backward를 적용한다
-			const FVector MovementDirection = MovementRotation.RotateVector(FVector::ForwardVector);
-			Pawn->AddMovementInput(MovementDirection, Value.Y);
-		}
 
-		/*if (UNetworkManager* NetCmp = Pawn->GetGameInstance()->GetSubsystem<UNetworkManager>())
+		// TODO: 서버에 연결이 안될 경우에는 이걸 실행 하면 안되게 바꾸자.
+		if (AGradPlayerController* GradPlayerController = Cast<AGradPlayerController>(Controller))
 		{
+			GradPlayerController->DesiredInput = Value;
+
+			GradPlayerController->DesiredMoveDirection = FVector::ZeroVector;
+			GradPlayerController->DesiredMoveDirection += ForwardDirection * Value.X;
+			GradPlayerController->DesiredMoveDirection += RightDirection * Value.Y;
+			GradPlayerController->DesiredMoveDirection.Normalize();
 			
-		}*/
+			GradPlayerController->DesiredYaw = MovementRotation.Yaw;
+		}
 	}
 }
 void UGradHeroComponent::Input_LookMouse(const FInputActionValue& InputActionValue)
@@ -301,6 +299,7 @@ void UGradHeroComponent::Input_LookMouse(const FInputActionValue& InputActionVal
 	{
 		return;
 	}
+
 
 	const FVector2D Value = InputActionValue.Get<FVector2D>();
 	if (Value.X != 0.0f)
@@ -315,5 +314,12 @@ void UGradHeroComponent::Input_LookMouse(const FInputActionValue& InputActionVal
 		// Y에는 Pitch 값!
 		double AimInversionValue = -Value.Y;
 		Pawn->AddControllerPitchInput(AimInversionValue);
+
+		if (AGradPlayerController* GradPlayerController = Cast<AGradPlayerController>(Pawn->GetController()))
+		{
+			GradPlayerController->DesiredPitch = GradPlayerController->GetControlRotation().Pitch;
+			//GradPlayerController->DesiredRoll = GradPlayerController->GetControlRotation().Roll;
+			//GradPlayerController->DesiredPitch = AimInversionValue;
+		}
 	}
 }

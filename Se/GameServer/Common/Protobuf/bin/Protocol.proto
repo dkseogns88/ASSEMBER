@@ -48,3 +48,13 @@ message S_DESPAWN
 {
 	repeated uint64 object_ids = 1;
 }
+
+message C_MOVE
+{
+	PosInfo info = 1;
+}
+
+message S_MOVE
+{
+	PosInfo info = 1;
+}

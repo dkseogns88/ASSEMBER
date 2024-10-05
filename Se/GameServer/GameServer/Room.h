@@ -10,6 +10,8 @@ public:
 	bool HandleEnterPlayer(PlayerRef player);
 	bool HandleLeavePlayer(PlayerRef player);
 
+	void HandleMove(Protocol::C_MOVE pkt);
+
 
 public:
 	RoomRef GetRoomRef();

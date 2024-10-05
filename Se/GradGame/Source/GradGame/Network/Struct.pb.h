@@ -188,11 +188,11 @@ class PosInfo final :
     kYFieldNumber = 4,
     kZFieldNumber = 5,
     kYawFieldNumber = 6,
-    kDXFieldNumber = 7,
-    kDYFieldNumber = 8,
-    kDZFieldNumber = 9,
-    kAimPitchFieldNumber = 10,
-    kAimYawFieldNumber = 11,
+    kPitchFieldNumber = 7,
+    kRollFieldNumber = 8,
+    kDXFieldNumber = 9,
+    kDYFieldNumber = 10,
+    kDZFieldNumber = 11,
   };
   // uint64 object_id = 1;
   void clear_object_id();
@@ -248,7 +248,25 @@ class PosInfo final :
   void _internal_set_yaw(float value);
   public:
 
-  // float d_x = 7;
+  // float pitch = 7;
+  void clear_pitch();
+  float pitch() const;
+  void set_pitch(float value);
+  private:
+  float _internal_pitch() const;
+  void _internal_set_pitch(float value);
+  public:
+
+  // float roll = 8;
+  void clear_roll();
+  float roll() const;
+  void set_roll(float value);
+  private:
+  float _internal_roll() const;
+  void _internal_set_roll(float value);
+  public:
+
+  // float d_x = 9;
   void clear_d_x();
   float d_x() const;
   void set_d_x(float value);
@@ -257,7 +275,7 @@ class PosInfo final :
   void _internal_set_d_x(float value);
   public:
 
-  // float d_y = 8;
+  // float d_y = 10;
   void clear_d_y();
   float d_y() const;
   void set_d_y(float value);
@@ -266,31 +284,13 @@ class PosInfo final :
   void _internal_set_d_y(float value);
   public:
 
-  // float d_z = 9;
+  // float d_z = 11;
   void clear_d_z();
   float d_z() const;
   void set_d_z(float value);
   private:
   float _internal_d_z() const;
   void _internal_set_d_z(float value);
-  public:
-
-  // float aim_pitch = 10;
-  void clear_aim_pitch();
-  float aim_pitch() const;
-  void set_aim_pitch(float value);
-  private:
-  float _internal_aim_pitch() const;
-  void _internal_set_aim_pitch(float value);
-  public:
-
-  // float aim_yaw = 11;
-  void clear_aim_yaw();
-  float aim_yaw() const;
-  void set_aim_yaw(float value);
-  private:
-  float _internal_aim_yaw() const;
-  void _internal_set_aim_yaw(float value);
   public:
 
   // @@protoc_insertion_point(class_scope:Protocol.PosInfo)
@@ -307,11 +307,11 @@ class PosInfo final :
     float y_;
     float z_;
     float yaw_;
+    float pitch_;
+    float roll_;
     float d_x_;
     float d_y_;
     float d_z_;
-    float aim_pitch_;
-    float aim_yaw_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   };
   union { Impl_ _impl_; };
@@ -638,7 +638,47 @@ inline void PosInfo::set_yaw(float value) {
   // @@protoc_insertion_point(field_set:Protocol.PosInfo.yaw)
 }
 
-// float d_x = 7;
+// float pitch = 7;
+inline void PosInfo::clear_pitch() {
+  _impl_.pitch_ = 0;
+}
+inline float PosInfo::_internal_pitch() const {
+  return _impl_.pitch_;
+}
+inline float PosInfo::pitch() const {
+  // @@protoc_insertion_point(field_get:Protocol.PosInfo.pitch)
+  return _internal_pitch();
+}
+inline void PosInfo::_internal_set_pitch(float value) {
+  
+  _impl_.pitch_ = value;
+}
+inline void PosInfo::set_pitch(float value) {
+  _internal_set_pitch(value);
+  // @@protoc_insertion_point(field_set:Protocol.PosInfo.pitch)
+}
+
+// float roll = 8;
+inline void PosInfo::clear_roll() {
+  _impl_.roll_ = 0;
+}
+inline float PosInfo::_internal_roll() const {
+  return _impl_.roll_;
+}
+inline float PosInfo::roll() const {
+  // @@protoc_insertion_point(field_get:Protocol.PosInfo.roll)
+  return _internal_roll();
+}
+inline void PosInfo::_internal_set_roll(float value) {
+  
+  _impl_.roll_ = value;
+}
+inline void PosInfo::set_roll(float value) {
+  _internal_set_roll(value);
+  // @@protoc_insertion_point(field_set:Protocol.PosInfo.roll)
+}
+
+// float d_x = 9;
 inline void PosInfo::clear_d_x() {
   _impl_.d_x_ = 0;
 }
@@ -658,7 +698,7 @@ inline void PosInfo::set_d_x(float value) {
   // @@protoc_insertion_point(field_set:Protocol.PosInfo.d_x)
 }
 
-// float d_y = 8;
+// float d_y = 10;
 inline void PosInfo::clear_d_y() {
   _impl_.d_y_ = 0;
 }
@@ -678,7 +718,7 @@ inline void PosInfo::set_d_y(float value) {
   // @@protoc_insertion_point(field_set:Protocol.PosInfo.d_y)
 }
 
-// float d_z = 9;
+// float d_z = 11;
 inline void PosInfo::clear_d_z() {
   _impl_.d_z_ = 0;
 }
@@ -696,46 +736,6 @@ inline void PosInfo::_internal_set_d_z(float value) {
 inline void PosInfo::set_d_z(float value) {
   _internal_set_d_z(value);
   // @@protoc_insertion_point(field_set:Protocol.PosInfo.d_z)
-}
-
-// float aim_pitch = 10;
-inline void PosInfo::clear_aim_pitch() {
-  _impl_.aim_pitch_ = 0;
-}
-inline float PosInfo::_internal_aim_pitch() const {
-  return _impl_.aim_pitch_;
-}
-inline float PosInfo::aim_pitch() const {
-  // @@protoc_insertion_point(field_get:Protocol.PosInfo.aim_pitch)
-  return _internal_aim_pitch();
-}
-inline void PosInfo::_internal_set_aim_pitch(float value) {
-  
-  _impl_.aim_pitch_ = value;
-}
-inline void PosInfo::set_aim_pitch(float value) {
-  _internal_set_aim_pitch(value);
-  // @@protoc_insertion_point(field_set:Protocol.PosInfo.aim_pitch)
-}
-
-// float aim_yaw = 11;
-inline void PosInfo::clear_aim_yaw() {
-  _impl_.aim_yaw_ = 0;
-}
-inline float PosInfo::_internal_aim_yaw() const {
-  return _impl_.aim_yaw_;
-}
-inline float PosInfo::aim_yaw() const {
-  // @@protoc_insertion_point(field_get:Protocol.PosInfo.aim_yaw)
-  return _internal_aim_yaw();
-}
-inline void PosInfo::_internal_set_aim_yaw(float value) {
-  
-  _impl_.aim_yaw_ = value;
-}
-inline void PosInfo::set_aim_yaw(float value) {
-  _internal_set_aim_yaw(value);
-  // @@protoc_insertion_point(field_set:Protocol.PosInfo.aim_yaw)
 }
 
 // -------------------------------------------------------------------

@@ -89,3 +89,14 @@ bool Handle_S_DESPAWN(PacketSessionRef& session, Protocol::S_DESPAWN& pkt)
 
 	return false;
 }
+
+bool Handle_S_MOVE(PacketSessionRef& session, Protocol::S_MOVE& pkt)
+{
+	if (UNetworkManager* GameNetwork = GetWorldNetwork(session))
+	{
+		GameNetwork->HandleMove(pkt);
+		return true;
+	}
+
+	return false;
+}

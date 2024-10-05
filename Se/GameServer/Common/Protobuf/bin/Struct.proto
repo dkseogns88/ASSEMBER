@@ -12,13 +12,13 @@ message PosInfo
 	float y				= 4;
 	float z				= 5;
 	float yaw			= 6;
+	float pitch			= 7;
+	float roll			= 8;
 
-	float d_x			= 7; // 캐릭터 방향 벡터
-	float d_y			= 8;
-	float d_z			= 9;
+	float d_x			= 9; // 캐릭터 방향 벡터
+	float d_y			= 10;
+	float d_z			= 11;
 
-	float aim_pitch		= 10;
-	float aim_yaw		= 11;
 }
 
 message ObjectInfo

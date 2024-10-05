@@ -79,11 +79,6 @@ void UNetworkManager::SendPacket(SendBufferRef SendBuffer)
 	GameServerSession->SendPacket(SendBuffer);
 }
 
-void UNetworkManager::SendMove()
-{
-
-}
-
 void UNetworkManager::HandleSpawn(const Protocol::ObjectInfo& ObjectInfo, bool IsMine)
 {
 	if (Socket == nullptr || GameServerSession == nullptr)
@@ -130,6 +125,30 @@ void UNetworkManager::HandleLeave(const Protocol::S_LEAVE_GAME& LeavePkt)
 {
 }
 
+void UNetworkManager::HandleMove(const Protocol::S_MOVE& MovePkt)
+{
+	const uint64 ObjectId = MovePkt.info().object_id();
+	
+	if (Socket == nullptr || GameServerSession == nullptr)
+		return;
+
+	auto* World = GetWorld();
+	if (World == nullptr)
+		return;
+
+	TObjectPtr<ACharacter>* FindActor = Objects.Find(ObjectId);
+	if (FindActor == nullptr)
+		return;
+
+	if (MyPlayer == (*FindActor)) return;
+
+	const Protocol::PosInfo& Info = MovePkt.info();
+	if (UGradNetworkComponent* PawnNetComp = (*FindActor)->FindComponentByClass<UGradNetworkComponent>())
+	{
+		PawnNetComp->SetPosInfo(Info);
+	}
+}
+
 PRAGMA_DISABLE_OPTIMIZATION
 void UNetworkManager::SpawnPlayer(const Protocol::ObjectInfo& ObjectInfo, bool IsMine)
 {
@@ -157,6 +176,7 @@ void UNetworkManager::SpawnPlayer(const Protocol::ObjectInfo& ObjectInfo, bool I
 		}
 
 		MyPlayer = Player;
+		Objects.Add(ObjectInfo.object_id(), Player);
 	}
 	else
 	{

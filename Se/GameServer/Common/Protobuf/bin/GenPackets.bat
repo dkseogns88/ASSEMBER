@@ -16,13 +16,13 @@ XCOPY /Y Protocol.pb.h "../../../GameServer"
 XCOPY /Y Protocol.pb.cc "../../../GameServer"
 XCOPY /Y ClientPacketHandler.h "../../../GameServer"
 
-XCOPY /Y Enum.pb.h "../../../../GradGame_School/Source/GradGame/Network"
-XCOPY /Y Enum.pb.cc "../../../../GradGame_School/Source/GradGame/Network"
-XCOPY /Y Struct.pb.h "../../../../GradGame_School/Source/GradGame/Network"
-XCOPY /Y Struct.pb.cc "../../../../GradGame_School/Source/GradGame/Network"
-XCOPY /Y Protocol.pb.h "../../../../GradGame_School/Source/GradGame/Network"
-XCOPY /Y Protocol.pb.cc "../../../../GradGame_School/Source/GradGame/Network"
-XCOPY /Y ServerPacketHandler.h "../../../../GradGame_School/Source/GradGame/Network"
+XCOPY /Y Enum.pb.h "../../../../GradGame/Source/GradGame/Network"
+XCOPY /Y Enum.pb.cc "../../../../GradGame/Source/GradGame/Network"
+XCOPY /Y Struct.pb.h "../../../../GradGame/Source/GradGame/Network"
+XCOPY /Y Struct.pb.cc "../../../../GradGame/Source/GradGame/Network"
+XCOPY /Y Protocol.pb.h "../../../../GradGame/Source/GradGame/Network"
+XCOPY /Y Protocol.pb.cc "../../../../GradGame/Source/GradGame/Network"
+XCOPY /Y ServerPacketHandler.h "../../../../GradGame/Source/GradGame/Network"
 
 
 DEL /Q /F *.pb.h
