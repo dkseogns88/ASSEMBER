@@ -11,6 +11,7 @@ public:
 	bool HandleLeavePlayer(PlayerRef player);
 
 	void HandleMove(Protocol::C_MOVE pkt);
+	void HandleAttack(Protocol::C_ATTACK pkt);
 
 
 public:

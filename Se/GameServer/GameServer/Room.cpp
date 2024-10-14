@@ -79,7 +79,6 @@ bool Room::HandleLeavePlayer(PlayerRef player)
 	if (player == nullptr)
 		return false;
 
-
 	const uint64 objectId = player->objectInfo->object_id();
 	bool success = RemoveObject(objectId);
 
@@ -103,7 +102,6 @@ bool Room::HandleLeavePlayer(PlayerRef player)
 			session->Send(sendBuffer);
 	}
 
-
 	return true;
 }
 
@@ -125,6 +123,26 @@ void Room::HandleMove(Protocol::C_MOVE pkt)
 
 		SendBufferRef sendBuffer = ClientPacketHandler::MakeSendBuffer(movePkt);
 		Broadcast(sendBuffer);
+	}
+}
+
+void Room::HandleAttack(Protocol::C_ATTACK pkt)
+{
+	const uint64 objectId = pkt.info().object_id();
+	if (_objects.find(objectId) == _objects.end())
+		return;
+	
+	{
+		Protocol::S_ATTACK attackPkt;
+		{
+			Protocol::AttackInfo* info = attackPkt.mutable_info();
+			info->CopyFrom(pkt.info());
+		}
+
+		SendBufferRef sendBuffer = ClientPacketHandler::MakeSendBuffer(attackPkt);
+		Broadcast(sendBuffer);
+
+		cout << "플레이어 ID: " << pkt.info().object_id() << "  AttackType: " << pkt.info().attack_type() << endl;
 	}
 }
 

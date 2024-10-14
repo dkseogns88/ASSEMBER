@@ -9,6 +9,7 @@
 
 class UGradPawnExtensionComponent;
 class UGradCameraComponent;
+class UGradAbilitySystemComponent;
 
 
 UCLASS()
@@ -31,6 +32,7 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	UGradAbilitySystemComponent* GetGradAbilitySystemComponent() const { return AbilitySystemComponent; }
 public:
 	UPROPERTY(VisibleAnywhere, BluePrintReadOnly, Category = "Grad|Character")
 	TObjectPtr<UGradPawnExtensionComponent> PawnExtComponent;
@@ -38,4 +40,6 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Grad|Character")
 	TObjectPtr<UGradCameraComponent> CameraComponent;
 
+	UPROPERTY(VisibleAnywhere, Category = "Grad|Character")
+	TObjectPtr<UGradAbilitySystemComponent> AbilitySystemComponent;
 };

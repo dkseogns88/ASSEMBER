@@ -14,6 +14,8 @@ public class GradGame : ModuleRules
 			"Engine",
 			// GAS
 			"GameplayTags",
+			"GameplayTasks",
+            "GameplayAbilities",
 			// Game Features
 			"ModularGameplay",
 			"GameFeatures",

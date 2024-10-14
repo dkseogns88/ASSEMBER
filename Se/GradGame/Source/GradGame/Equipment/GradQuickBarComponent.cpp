@@ -1,6 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "GradQuickBarComponent.h"
 #include "GradEquipmentDefinition.h"
 #include "GradEquipmentInstance.h"
@@ -32,7 +29,7 @@ UGradEquipmentManagerComponent* UGradQuickBarComponent::FindEquipmentManager() c
 		{
 			return Pawn->FindComponentByClass<UGradEquipmentManagerComponent>();
 		}
-	}
+	}	
 
 	return nullptr;
 }
@@ -58,7 +55,7 @@ void UGradQuickBarComponent::EquipItemInSlot()
 {
 	check(Slots.IsValidIndex(ActiveSlotIndex));
 	check(EquippedItem == nullptr);
-
+	
 	// 현재 활성화된 ActiveSlotIndex를 활용하여 활성화된 InventoryItemInstance를 찾는다
 	if (UGradInventoryItemInstance* SlotItem = Slots[ActiveSlotIndex])
 	{

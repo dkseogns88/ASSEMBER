@@ -1,17 +1,21 @@
 
 #include "GradNetCharacter.h"
 #include "GradNetworkComponent.h"
+#include "GradGame/AbilitySystem/GradAbilitySystemComponent.h"
+#include "GradGame/AbilitySystem/Abilities/GradGameplayAbility.h"
 
 AGradNetCharacter::AGradNetCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
+	// AbilitySystemComponent »ý¼º
+	AbilitySystemComponent = CreateDefaultSubobject<UGradAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
 }
 
 void AGradNetCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	AbilitySystemComponent->InitAbilityActorInfo(this, this);
 }
 
 PRAGMA_DISABLE_OPTIMIZATION
@@ -69,8 +73,17 @@ void AGradNetCharacter::Tick(float DeltaTime)
 			SetActorRotation(TargetRotation);
 		}
 	}
+}
 
-
-
+void AGradNetCharacter::WeaponFire(const FGameplayTag& InputTag)
+{
+	for (const FGameplayAbilitySpec& AbilitySpec : AbilitySystemComponent->GetActivatableAbilities())
+	{
+		if (AbilitySpec.Ability && (AbilitySpec.DynamicAbilityTags.HasTagExact(InputTag)))
+		{
+			const UGradGameplayAbility* GradAbilityCDO = CastChecked<UGradGameplayAbility>(AbilitySpec.Ability);
+			AbilitySystemComponent->TryActivateAbility(AbilitySpec.Handle);
+		}
+	}
 }
 PRAGMA_ENABLE_OPTIMIZATION

@@ -7,17 +7,18 @@
 #include "ServerPacketHandler.h"
 #include "Kismet/GameplayStatics.h"
 #include "GradGame/GradLogChannels.h"
+#include "GradGame/GameModes/GradExperienceManagerComponent.h"
+#include "GradGame/GameModes/GradGameModeBase.h"
+#include "GradGame/GameModes/GradExperienceDefinition.h"
+#include "GradGame/Character/GradPawnData.h"
 #include "GradGame/Character/GradCharacter.h"
 #include "GradGame/Network/GradNetCharacter.h"
 #include "GradNetworkComponent.h"
-#include "GradGame/GameModes/GradGameState.h"
-#include "GradGame/GameModes/GradExperienceManagerComponent.h"
-#include "GradGame/GameModes/GradExperienceDefinition.h"
-#include "GradGame/Character/GradPawnData.h"
-#include "GradGame/Player/GradPlayerController.h"
-#include "GradGame/Cosmetics/GradControllerComponent_CharacterParts.h"
-#include "GradGame/Cosmetics/GradPawnComponent_CharacterParts.h"
-#include "GradGame/Network/GradNetworkControllerComponent.h"
+
+void UNetworkManager::Deinitialize()
+{
+	// DisconnectFromGameServer();
+}
 
 void UNetworkManager::ConnectToGameServer()
 {
@@ -35,8 +36,6 @@ void UNetworkManager::ConnectToGameServer()
 
 	if (Connected)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Connection Success")));
-
 		// Session
 		GameServerSession = MakeShared<PacketSession>(Socket);
 		GameServerSession->Run();
@@ -59,8 +58,15 @@ void UNetworkManager::DisconnectFromGameServer()
 	if (Socket == nullptr || GameServerSession == nullptr)
 		return;
 
-	Protocol::C_LEAVE_GAME LeavePkt;
-	SendPacket(LeavePkt);
+	if (MyPlayer == nullptr) return;
+	UGradNetworkComponent* NetComponent = MyPlayer->FindComponentByClass<UGradNetworkComponent>();
+	
+	if (NetComponent) {
+		Protocol::C_LEAVE_GAME LeavePkt;
+		Protocol::PosInfo* Info = LeavePkt.mutable_info();
+		Info->CopyFrom(*(NetComponent->GetPosInfo()));
+		SendPacket(LeavePkt);
+	}
 }
 
 void UNetworkManager::HandleRecvPackets()
@@ -136,7 +142,7 @@ void UNetworkManager::HandleMove(const Protocol::S_MOVE& MovePkt)
 	if (World == nullptr)
 		return;
 
-	TObjectPtr<ACharacter>* FindActor = Objects.Find(ObjectId);
+	TObjectPtr<APawn>* FindActor = Objects.Find(ObjectId);
 	if (FindActor == nullptr)
 		return;
 
@@ -146,6 +152,56 @@ void UNetworkManager::HandleMove(const Protocol::S_MOVE& MovePkt)
 	if (UGradNetworkComponent* PawnNetComp = (*FindActor)->FindComponentByClass<UGradNetworkComponent>())
 	{
 		PawnNetComp->SetPosInfo(Info);
+	}
+}
+
+void UNetworkManager::HandleAttack(const Protocol::S_ATTACK& AttackPkt)
+{
+	const uint64 ObjectId = AttackPkt.info().object_id();
+	Protocol::AttackType AttackType = AttackPkt.info().attack_type();
+
+	float camrot_x = AttackPkt.info().camrot_x();
+	float camrot_y = AttackPkt.info().camrot_y();
+	float camrot_z = AttackPkt.info().camrot_z();
+
+	float finalcamloc_x = AttackPkt.info().finalcamloc_x();
+	float finalcamloc_y = AttackPkt.info().finalcamloc_y();
+	float finalcamloc_z = AttackPkt.info().finalcamloc_z();
+
+	FRotator CamRot(camrot_x, camrot_y, camrot_z);
+	FVector FinalCamLoc(finalcamloc_x, finalcamloc_y, finalcamloc_z);
+
+	if (Socket == nullptr || GameServerSession == nullptr)
+		return;
+
+	auto* World = GetWorld();
+	if (World == nullptr)
+		return;
+
+	TObjectPtr<APawn>* FindActor = Objects.Find(ObjectId);
+	if (FindActor == nullptr)
+		return;
+
+	if (MyPlayer == (*FindActor)) return;
+	
+
+	const FGradGameplayTags& GameplayTags = FGradGameplayTags::Get();
+	if (AGradNetCharacter* NetPawn = Cast<AGradNetCharacter>(*FindActor))
+	{
+		NetPawn->WeaponTransform = FTransform(CamRot, FinalCamLoc);
+		
+		FVector AimDir = CamRot.Vector().GetSafeNormal();
+
+		DrawDebugLine(GetWorld(), NetPawn->GetActorLocation(), FinalCamLoc, FColor::Red, false, 60.0f, 0, 2.0f);
+		DrawDebugLine(GetWorld(), FinalCamLoc, FinalCamLoc + (AimDir * 1024.0f), FColor::Blue, false, 60.0f, 0, 2.0f);
+
+
+		switch (AttackType)
+		{
+			case Protocol::AttackType::ATTACK_TYPE_RIFLE:
+			NetPawn->WeaponFire(GameplayTags.InputTag_Weapon_Fire);
+			break;
+		}
 	}
 }
 
@@ -162,7 +218,7 @@ void UNetworkManager::SpawnPlayer(const Protocol::ObjectInfo& ObjectInfo, bool I
 	{
 		auto* PC = UGameplayStatics::GetPlayerController(this, 0);
 		check(PC);
-		TObjectPtr<AGradCharacter> Player = Cast<AGradCharacter>(PC->GetPawn());
+		TObjectPtr<APawn> Player = PC->GetPawn();
 		if (Player == nullptr)
 			return;
 
@@ -171,8 +227,7 @@ void UNetworkManager::SpawnPlayer(const Protocol::ObjectInfo& ObjectInfo, bool I
 			PawnNetComp->SetObjectInfo(ObjectInfo);
 			PawnNetComp->SetPosInfo(ObjectInfo.pos_info());
 
-			FVector Location(ObjectInfo.pos_info().x(), ObjectInfo.pos_info().y(), ObjectInfo.pos_info().z());
-			Player->SetActorLocation(Location);
+			Player->SetActorLocation(SpawnLocation);
 		}
 
 		MyPlayer = Player;
@@ -180,35 +235,23 @@ void UNetworkManager::SpawnPlayer(const Protocol::ObjectInfo& ObjectInfo, bool I
 	}
 	else
 	{
-		// 내가 플레이하는 컨트롤러 가지고 오기
-		APlayerController* PlayerController = Cast<AGradPlayerController>(GetWorld()->GetFirstPlayerController());
-		UGradNetworkControllerComponent* NetControllCmp = PlayerController->FindComponentByClass<UGradNetworkControllerComponent>();
-		UGradControllerComponent_CharacterParts* ControllCmp = PlayerController->FindComponentByClass<UGradControllerComponent_CharacterParts>();
+		const AGameStateBase* GameState = GetWorld()->GetGameState();
+		check(GameState);
 
-		check(NetControllCmp);
-		check(ControllCmp);
+		UGradExperienceManagerComponent* ExperienceManagerComponent = GameState->FindComponentByClass<UGradExperienceManagerComponent>();
+		check(ExperienceManagerComponent);
 
-		// 캐릭터 생성
-		TObjectPtr<AGradNetCharacter> Player = Cast<AGradNetCharacter>(World->SpawnActor(NetControllCmp->PawnClass, &SpawnLocation));
+		UClass* NetClass = ExperienceManagerComponent->CurrentExperience->DefaultPawnData->NetPawnClass;
+		TObjectPtr<AGradNetCharacter> Player = Cast<AGradNetCharacter>(World->SpawnActor(NetClass, &SpawnLocation));
 
-		UGradPawnComponent_CharacterParts* PawnCustom = Player->FindComponentByClass<UGradPawnComponent_CharacterParts>();
-		check(PawnCustom);
-
-		// 캐릭터 메쉬 부착
-		ControllCmp->K2_AddPartsNetwork(PawnCustom);
-
-		// 캐릭터 무기와 애니메이션 설정
-		Player->K2_NetOnEquipped();
-
-		// 네트워크 변수들 생성
 		if (UGradNetworkComponent* PawnNetComp = Player->FindComponentByClass<UGradNetworkComponent>())
 		{
-			PawnNetComp->CreateVariables();
 			PawnNetComp->SetObjectInfo(ObjectInfo);
 			PawnNetComp->SetPosInfo(ObjectInfo.pos_info());
+
+			Player->K2_NetOnEquipped();
 		}
 
-		// 오브젝트 추가
 		Objects.Add(ObjectInfo.object_id(), Player);
 	}
 }

@@ -16,6 +16,9 @@ class GRADGAME_API UNetworkManager : public UGameInstanceSubsystem
 {
 	GENERATED_BODY()
 public:
+	virtual void Deinitialize() override;
+
+public:
 	UFUNCTION(BlueprintCallable)
 	void ConnectToGameServer();
 
@@ -30,8 +33,6 @@ public:
 	template<typename T>
 	void SendPacket(T packet) const;
 
-public:
-
 
 public:
 	void HandleSpawn(const Protocol::ObjectInfo& ObjectInfo, bool IsMine);
@@ -44,11 +45,11 @@ public:
 	void HandleLeave(const Protocol::S_LEAVE_GAME& LeavePkt);
 
 	void HandleMove(const Protocol::S_MOVE& MovePkt);
+	void HandleAttack(const Protocol::S_ATTACK& AttackPkt);
+
 
 private:
 	void SpawnPlayer(const Protocol::ObjectInfo& ObjectInfo, bool IsMine);
-
-
 
 
 public:
@@ -60,10 +61,10 @@ public:
 
 public:
 	UPROPERTY()
-	TObjectPtr<AGradCharacter> MyPlayer;
+	TObjectPtr<APawn> MyPlayer;
 
 	UPROPERTY()
-	TMap<uint64, TObjectPtr<ACharacter>> Objects;
+	TMap<uint64, TObjectPtr<APawn>> Objects;
 };
 
 template <typename T> 

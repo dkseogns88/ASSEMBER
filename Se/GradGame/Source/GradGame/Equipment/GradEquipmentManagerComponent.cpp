@@ -7,6 +7,7 @@
 #include "GradEquipmentInstance.h"
 #include "GradGame/Character/GradCharacter.h"
 #include "GradGame/Network/GradNetCharacter.h"
+#include "GradGame/AbilitySystem/GradAbilitySystemComponent.h"
 
 UGradEquipmentInstance* FGradEquipmentList::AddEntry(TSubclassOf<UGradEquipmentDefinition> EquipmentDefinition)
 {
@@ -30,6 +31,15 @@ UGradEquipmentInstance* FGradEquipmentList::AddEntry(TSubclassOf<UGradEquipmentD
 	NewEntry.Instance = NewObject<UGradEquipmentInstance>(OwnerComponent->GetOwner(), InstanceType);
 	Result = NewEntry.Instance;
 
+	UGradAbilitySystemComponent* ASC = GetAbilitySystemComponent();
+	if(ASC)
+	{
+		for (const TObjectPtr<UGradAbilitySet> AbilitySet : EquipmentCDO->AbilitySetsToGrant)
+		{
+			AbilitySet->GiveToAbilitySystem(ASC, &NewEntry.GrantedHandles, Result);
+		}
+	}
+
 	// ActorsToSpawn을 통해, Actor들을 인스턴스화 해주자
 	// - 어디에? EquipmentInstance에!
 	Result->SpawnEquipmentActors(EquipmentCDO->ActorsToSpawn);
@@ -45,11 +55,30 @@ void FGradEquipmentList::RemoveEntry(UGradEquipmentInstance* Instance)
 		FGradAppliedEquipmentEntry& Entry = *EntryIt;
 		if (Entry.Instance == Instance)
 		{
+			UGradAbilitySystemComponent* ASC = GetAbilitySystemComponent();
+			check(ASC);
+			{
+				// TakeFromAbilitySystem은 GiveToAbilitySystem 반대 역활로, ActivatableAbilities에서 제거한다
+				Entry.GrantedHandles.TakeFromAbilitySystem(ASC);
+			}
+
 			// Actor 제거 작업 및 iterator를 통한 안전하게 Array에서 제거 진행
 			Instance->DestroyEquipmentActors();
 			EntryIt.RemoveCurrent();
 		}
 	}
+}
+
+UGradAbilitySystemComponent* FGradEquipmentList::GetAbilitySystemComponent() const
+{
+	check(OwnerComponent);
+	AActor* OwningActor = OwnerComponent->GetOwner();
+	if (UGradAbilitySystemComponent* ASC = OwningActor->FindComponentByClass<UGradAbilitySystemComponent>())
+	{
+		return ASC;
+	}
+
+	return nullptr;
 }
 
 UGradEquipmentManagerComponent::UGradEquipmentManagerComponent(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
@@ -65,12 +94,6 @@ UGradEquipmentInstance* UGradEquipmentManagerComponent::EquipItem(TSubclassOf<UG
 		Result = EquipmentList.AddEntry(EquipmentDefinition);
 		if (Result)
 		{
-			/*if (Cast<AGradCharacter>(GetOwner()))
-			{
-
-			}
-			else if(Cast<AGradNetCharacter>(GetOwner()))*/
-
 			Result->OnEquipped();
 		}
 	}
@@ -88,4 +111,24 @@ void UGradEquipmentManagerComponent::UnequipItem(UGradEquipmentInstance* ItemIns
 		// - 제거하는 과정을 통해 추가되었던 Actor Instance를 제거를 진행한다
 		EquipmentList.RemoveEntry(ItemInstance);
 	}
+}
+
+TArray<UGradEquipmentInstance*> UGradEquipmentManagerComponent::GetEquipmentInstancesOfType(TSubclassOf<UGradEquipmentInstance> InstanceType) const
+{
+	TArray<UGradEquipmentInstance*> Results;
+
+	// EquipmentList를 순회하며
+	for (const FGradAppliedEquipmentEntry& Entry : EquipmentList.Entries)
+	{
+		if (UGradEquipmentInstance* Instance = Entry.Instance)
+		{
+			// InstanceType에 맞는 Class이면 Results에 추가하여 반환
+			// - 우리의 경우, GradRangedWeaponInstance가 될거임
+			if (Instance->IsA(InstanceType))
+			{
+				Results.Add(Instance);
+			}
+		}
+	}
+	return Results;
 }

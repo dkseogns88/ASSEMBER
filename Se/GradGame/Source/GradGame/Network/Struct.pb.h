@@ -46,6 +46,9 @@ struct TableStruct_Struct_2eproto {
 };
 extern const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_Struct_2eproto;
 namespace Protocol {
+class AttackInfo;
+struct AttackInfoDefaultTypeInternal;
+extern AttackInfoDefaultTypeInternal _AttackInfo_default_instance_;
 class ObjectInfo;
 struct ObjectInfoDefaultTypeInternal;
 extern ObjectInfoDefaultTypeInternal _ObjectInfo_default_instance_;
@@ -54,6 +57,7 @@ struct PosInfoDefaultTypeInternal;
 extern PosInfoDefaultTypeInternal _PosInfo_default_instance_;
 }  // namespace Protocol
 PROTOBUF_NAMESPACE_OPEN
+template<> ::Protocol::AttackInfo* Arena::CreateMaybeMessage<::Protocol::AttackInfo>(Arena*);
 template<> ::Protocol::ObjectInfo* Arena::CreateMaybeMessage<::Protocol::ObjectInfo>(Arena*);
 template<> ::Protocol::PosInfo* Arena::CreateMaybeMessage<::Protocol::PosInfo>(Arena*);
 PROTOBUF_NAMESPACE_CLOSE
@@ -507,6 +511,231 @@ class ObjectInfo final :
   union { Impl_ _impl_; };
   friend struct ::TableStruct_Struct_2eproto;
 };
+// -------------------------------------------------------------------
+
+class AttackInfo final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:Protocol.AttackInfo) */ {
+ public:
+  inline AttackInfo() : AttackInfo(nullptr) {}
+  ~AttackInfo() override;
+  explicit PROTOBUF_CONSTEXPR AttackInfo(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+
+  AttackInfo(const AttackInfo& from);
+  AttackInfo(AttackInfo&& from) noexcept
+    : AttackInfo() {
+    *this = ::std::move(from);
+  }
+
+  inline AttackInfo& operator=(const AttackInfo& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline AttackInfo& operator=(AttackInfo&& from) noexcept {
+    if (this == &from) return *this;
+    if (GetOwningArena() == from.GetOwningArena()
+  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
+        && GetOwningArena() != nullptr
+  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
+    ) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const AttackInfo& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const AttackInfo* internal_default_instance() {
+    return reinterpret_cast<const AttackInfo*>(
+               &_AttackInfo_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    2;
+
+  friend void swap(AttackInfo& a, AttackInfo& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(AttackInfo* other) {
+    if (other == this) return;
+  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() != nullptr &&
+        GetOwningArena() == other->GetOwningArena()) {
+   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() == other->GetOwningArena()) {
+  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
+      InternalSwap(other);
+    } else {
+      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(AttackInfo* other) {
+    if (other == this) return;
+    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  AttackInfo* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
+    return CreateMaybeMessage<AttackInfo>(arena);
+  }
+  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
+  void CopyFrom(const AttackInfo& from);
+  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
+  void MergeFrom( const AttackInfo& from) {
+    AttackInfo::MergeImpl(*this, from);
+  }
+  private:
+  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg);
+  public:
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  uint8_t* _InternalSerialize(
+      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena, bool is_message_owned);
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(AttackInfo* other);
+
+  private:
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "Protocol.AttackInfo";
+  }
+  protected:
+  explicit AttackInfo(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                       bool is_message_owned = false);
+  public:
+
+  static const ClassData _class_data_;
+  const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetClassData() const final;
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kObjectIdFieldNumber = 1,
+    kAttackTypeFieldNumber = 2,
+    kFinalcamlocXFieldNumber = 3,
+    kFinalcamlocYFieldNumber = 4,
+    kFinalcamlocZFieldNumber = 5,
+    kCamrotXFieldNumber = 6,
+    kCamrotYFieldNumber = 7,
+    kCamrotZFieldNumber = 8,
+  };
+  // uint64 object_id = 1;
+  void clear_object_id();
+  uint64_t object_id() const;
+  void set_object_id(uint64_t value);
+  private:
+  uint64_t _internal_object_id() const;
+  void _internal_set_object_id(uint64_t value);
+  public:
+
+  // .Protocol.AttackType attack_type = 2;
+  void clear_attack_type();
+  ::Protocol::AttackType attack_type() const;
+  void set_attack_type(::Protocol::AttackType value);
+  private:
+  ::Protocol::AttackType _internal_attack_type() const;
+  void _internal_set_attack_type(::Protocol::AttackType value);
+  public:
+
+  // float finalcamloc_x = 3;
+  void clear_finalcamloc_x();
+  float finalcamloc_x() const;
+  void set_finalcamloc_x(float value);
+  private:
+  float _internal_finalcamloc_x() const;
+  void _internal_set_finalcamloc_x(float value);
+  public:
+
+  // float finalcamloc_y = 4;
+  void clear_finalcamloc_y();
+  float finalcamloc_y() const;
+  void set_finalcamloc_y(float value);
+  private:
+  float _internal_finalcamloc_y() const;
+  void _internal_set_finalcamloc_y(float value);
+  public:
+
+  // float finalcamloc_z = 5;
+  void clear_finalcamloc_z();
+  float finalcamloc_z() const;
+  void set_finalcamloc_z(float value);
+  private:
+  float _internal_finalcamloc_z() const;
+  void _internal_set_finalcamloc_z(float value);
+  public:
+
+  // float camrot_x = 6;
+  void clear_camrot_x();
+  float camrot_x() const;
+  void set_camrot_x(float value);
+  private:
+  float _internal_camrot_x() const;
+  void _internal_set_camrot_x(float value);
+  public:
+
+  // float camrot_y = 7;
+  void clear_camrot_y();
+  float camrot_y() const;
+  void set_camrot_y(float value);
+  private:
+  float _internal_camrot_y() const;
+  void _internal_set_camrot_y(float value);
+  public:
+
+  // float camrot_z = 8;
+  void clear_camrot_z();
+  float camrot_z() const;
+  void set_camrot_z(float value);
+  private:
+  float _internal_camrot_z() const;
+  void _internal_set_camrot_z(float value);
+  public:
+
+  // @@protoc_insertion_point(class_scope:Protocol.AttackInfo)
+ private:
+  class _Internal;
+
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  typedef void InternalArenaConstructable_;
+  typedef void DestructorSkippable_;
+  struct Impl_ {
+    uint64_t object_id_;
+    int attack_type_;
+    float finalcamloc_x_;
+    float finalcamloc_y_;
+    float finalcamloc_z_;
+    float camrot_x_;
+    float camrot_y_;
+    float camrot_z_;
+    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_Struct_2eproto;
+};
 // ===================================================================
 
 
@@ -892,9 +1121,175 @@ inline void ObjectInfo::set_allocated_pos_info(::Protocol::PosInfo* pos_info) {
   // @@protoc_insertion_point(field_set_allocated:Protocol.ObjectInfo.pos_Info)
 }
 
+// -------------------------------------------------------------------
+
+// AttackInfo
+
+// uint64 object_id = 1;
+inline void AttackInfo::clear_object_id() {
+  _impl_.object_id_ = uint64_t{0u};
+}
+inline uint64_t AttackInfo::_internal_object_id() const {
+  return _impl_.object_id_;
+}
+inline uint64_t AttackInfo::object_id() const {
+  // @@protoc_insertion_point(field_get:Protocol.AttackInfo.object_id)
+  return _internal_object_id();
+}
+inline void AttackInfo::_internal_set_object_id(uint64_t value) {
+  
+  _impl_.object_id_ = value;
+}
+inline void AttackInfo::set_object_id(uint64_t value) {
+  _internal_set_object_id(value);
+  // @@protoc_insertion_point(field_set:Protocol.AttackInfo.object_id)
+}
+
+// .Protocol.AttackType attack_type = 2;
+inline void AttackInfo::clear_attack_type() {
+  _impl_.attack_type_ = 0;
+}
+inline ::Protocol::AttackType AttackInfo::_internal_attack_type() const {
+  return static_cast< ::Protocol::AttackType >(_impl_.attack_type_);
+}
+inline ::Protocol::AttackType AttackInfo::attack_type() const {
+  // @@protoc_insertion_point(field_get:Protocol.AttackInfo.attack_type)
+  return _internal_attack_type();
+}
+inline void AttackInfo::_internal_set_attack_type(::Protocol::AttackType value) {
+  
+  _impl_.attack_type_ = value;
+}
+inline void AttackInfo::set_attack_type(::Protocol::AttackType value) {
+  _internal_set_attack_type(value);
+  // @@protoc_insertion_point(field_set:Protocol.AttackInfo.attack_type)
+}
+
+// float finalcamloc_x = 3;
+inline void AttackInfo::clear_finalcamloc_x() {
+  _impl_.finalcamloc_x_ = 0;
+}
+inline float AttackInfo::_internal_finalcamloc_x() const {
+  return _impl_.finalcamloc_x_;
+}
+inline float AttackInfo::finalcamloc_x() const {
+  // @@protoc_insertion_point(field_get:Protocol.AttackInfo.finalcamloc_x)
+  return _internal_finalcamloc_x();
+}
+inline void AttackInfo::_internal_set_finalcamloc_x(float value) {
+  
+  _impl_.finalcamloc_x_ = value;
+}
+inline void AttackInfo::set_finalcamloc_x(float value) {
+  _internal_set_finalcamloc_x(value);
+  // @@protoc_insertion_point(field_set:Protocol.AttackInfo.finalcamloc_x)
+}
+
+// float finalcamloc_y = 4;
+inline void AttackInfo::clear_finalcamloc_y() {
+  _impl_.finalcamloc_y_ = 0;
+}
+inline float AttackInfo::_internal_finalcamloc_y() const {
+  return _impl_.finalcamloc_y_;
+}
+inline float AttackInfo::finalcamloc_y() const {
+  // @@protoc_insertion_point(field_get:Protocol.AttackInfo.finalcamloc_y)
+  return _internal_finalcamloc_y();
+}
+inline void AttackInfo::_internal_set_finalcamloc_y(float value) {
+  
+  _impl_.finalcamloc_y_ = value;
+}
+inline void AttackInfo::set_finalcamloc_y(float value) {
+  _internal_set_finalcamloc_y(value);
+  // @@protoc_insertion_point(field_set:Protocol.AttackInfo.finalcamloc_y)
+}
+
+// float finalcamloc_z = 5;
+inline void AttackInfo::clear_finalcamloc_z() {
+  _impl_.finalcamloc_z_ = 0;
+}
+inline float AttackInfo::_internal_finalcamloc_z() const {
+  return _impl_.finalcamloc_z_;
+}
+inline float AttackInfo::finalcamloc_z() const {
+  // @@protoc_insertion_point(field_get:Protocol.AttackInfo.finalcamloc_z)
+  return _internal_finalcamloc_z();
+}
+inline void AttackInfo::_internal_set_finalcamloc_z(float value) {
+  
+  _impl_.finalcamloc_z_ = value;
+}
+inline void AttackInfo::set_finalcamloc_z(float value) {
+  _internal_set_finalcamloc_z(value);
+  // @@protoc_insertion_point(field_set:Protocol.AttackInfo.finalcamloc_z)
+}
+
+// float camrot_x = 6;
+inline void AttackInfo::clear_camrot_x() {
+  _impl_.camrot_x_ = 0;
+}
+inline float AttackInfo::_internal_camrot_x() const {
+  return _impl_.camrot_x_;
+}
+inline float AttackInfo::camrot_x() const {
+  // @@protoc_insertion_point(field_get:Protocol.AttackInfo.camrot_x)
+  return _internal_camrot_x();
+}
+inline void AttackInfo::_internal_set_camrot_x(float value) {
+  
+  _impl_.camrot_x_ = value;
+}
+inline void AttackInfo::set_camrot_x(float value) {
+  _internal_set_camrot_x(value);
+  // @@protoc_insertion_point(field_set:Protocol.AttackInfo.camrot_x)
+}
+
+// float camrot_y = 7;
+inline void AttackInfo::clear_camrot_y() {
+  _impl_.camrot_y_ = 0;
+}
+inline float AttackInfo::_internal_camrot_y() const {
+  return _impl_.camrot_y_;
+}
+inline float AttackInfo::camrot_y() const {
+  // @@protoc_insertion_point(field_get:Protocol.AttackInfo.camrot_y)
+  return _internal_camrot_y();
+}
+inline void AttackInfo::_internal_set_camrot_y(float value) {
+  
+  _impl_.camrot_y_ = value;
+}
+inline void AttackInfo::set_camrot_y(float value) {
+  _internal_set_camrot_y(value);
+  // @@protoc_insertion_point(field_set:Protocol.AttackInfo.camrot_y)
+}
+
+// float camrot_z = 8;
+inline void AttackInfo::clear_camrot_z() {
+  _impl_.camrot_z_ = 0;
+}
+inline float AttackInfo::_internal_camrot_z() const {
+  return _impl_.camrot_z_;
+}
+inline float AttackInfo::camrot_z() const {
+  // @@protoc_insertion_point(field_get:Protocol.AttackInfo.camrot_z)
+  return _internal_camrot_z();
+}
+inline void AttackInfo::_internal_set_camrot_z(float value) {
+  
+  _impl_.camrot_z_ = value;
+}
+inline void AttackInfo::set_camrot_z(float value) {
+  _internal_set_camrot_z(value);
+  // @@protoc_insertion_point(field_set:Protocol.AttackInfo.camrot_z)
+}
+
 #ifdef __GNUC__
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 

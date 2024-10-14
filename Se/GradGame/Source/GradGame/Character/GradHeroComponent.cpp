@@ -14,6 +14,7 @@
 #include "GradGame/Camera/GradCameraComponent.h"
 #include "GradGame/Player/GradPlayerController.h"
 #include "GradGame/Player/GradPlayerState.h"
+#include "GradGame/AbilitySystem/GradAbilitySystemComponent.h"
 
 /** FeatureName 정의: static member variable 초기화 */
 const FName UGradHeroComponent::NAME_ActorFeatureName("Hero");
@@ -142,6 +143,19 @@ void UGradHeroComponent::HandleChangeInitState(UGameFrameworkComponentManager* M
 
 		const bool bIsLocallyControlled = Pawn->IsLocallyControlled();
 		const UGradPawnData* PawnData = nullptr;
+
+		if (UGradPawnExtensionComponent* PawnExtComp = UGradPawnExtensionComponent::FindPawnExtensionComponent(Pawn))
+		{
+			PawnData = PawnExtComp->GetPawnData<UGradPawnData>();
+
+			UGradAbilitySystemComponent* AbliltyComponent = Pawn->FindComponentByClass<UGradAbilitySystemComponent>();
+			if (AbliltyComponent)
+			{
+				PawnExtComp->InitializeAbilitySystem(AbliltyComponent, Pawn);
+			}
+		}
+
+
 		if (UGradPawnExtensionComponent* PawnExtComp = UGradPawnExtensionComponent::FindPawnExtensionComponent(Pawn))
 		{
 			PawnData = PawnExtComp->GetPawnData<UGradPawnData>();
@@ -249,6 +263,13 @@ void UGradHeroComponent::InitializePlayerInput(UInputComponent* PlayerInputCompo
 				{
 					// InputTag_Move와 InputTag_Look_Mouse에 대해 각각 Input_Move()와 Input_LookMouse() 멤버 함수에 바인딩시킨다:
 					// - 바인딩한 이후, Input 이벤트에 따라 멤버 함수가 트리거된다
+					{
+						TArray<uint32> BindHandles;
+						GradIC->BindAbilityActions(InputConfig, this, &ThisClass::Input_AbilityInputTagPressed, &ThisClass::Input_AbilityInputTagReleased, BindHandles);
+					}
+
+					// InputTag_Move와 InputTag_Look_Mouse에 대해 각각 Input_Move()와 Input_LookMouse() 멤버 함수에 바인딩시킨다:
+					// - 바인딩한 이후, Input 이벤트에 따라 멤버 함수가 트리거된다
 					GradIC->BindNativeAction(InputConfig, GameplayTags.InputTag_Move, ETriggerEvent::Triggered, this, &ThisClass::Input_Move, false);
 					GradIC->BindNativeAction(InputConfig, GameplayTags.InputTag_Move, ETriggerEvent::Completed, this, &ThisClass::Input_Move, false);
 					GradIC->BindNativeAction(InputConfig, GameplayTags.InputTag_Look_Mouse, ETriggerEvent::Triggered, this, &ThisClass::Input_LookMouse, false);
@@ -320,6 +341,34 @@ void UGradHeroComponent::Input_LookMouse(const FInputActionValue& InputActionVal
 			GradPlayerController->DesiredPitch = GradPlayerController->GetControlRotation().Pitch;
 			//GradPlayerController->DesiredRoll = GradPlayerController->GetControlRotation().Roll;
 			//GradPlayerController->DesiredPitch = AimInversionValue;
+		}
+	}
+}
+
+void UGradHeroComponent::Input_AbilityInputTagPressed(FGameplayTag InputTag)
+{
+	if (const APawn* Pawn = GetPawn<APawn>())
+	{
+		if (const UGradPawnExtensionComponent* PawnExtComp = UGradPawnExtensionComponent::FindPawnExtensionComponent(Pawn))
+		{
+			if (UGradAbilitySystemComponent* GradASC = PawnExtComp->GetGradAbilitySystemComponent())
+			{
+				GradASC->AbilityInputTagPressed(InputTag);
+			}
+		}
+	}
+}
+
+void UGradHeroComponent::Input_AbilityInputTagReleased(FGameplayTag InputTag)
+{
+	if (const APawn* Pawn = GetPawn<APawn>())
+	{
+		if (const UGradPawnExtensionComponent* PawnExtComp = UGradPawnExtensionComponent::FindPawnExtensionComponent(Pawn))
+		{
+			if (UGradAbilitySystemComponent* GradASC = PawnExtComp->GetGradAbilitySystemComponent())
+			{
+				GradASC->AbilityInputTagReleased(InputTag);
+			}
 		}
 	}
 }

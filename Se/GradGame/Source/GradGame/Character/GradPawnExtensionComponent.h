@@ -8,6 +8,8 @@
 #include "GradPawnExtensionComponent.generated.h"
 
 class UGradPawnData;
+class UGradAbilitySystemComponent;
+
 /**
  * 초기화 전반을 조정하는 컴포넌트
  * - 전체적인 모든 컴포넌트 초기화에 관련된 중재를 하준다.
@@ -31,6 +33,11 @@ class GRADGAME_API UGradPawnExtensionComponent : public UPawnComponent, public I
 	const T* GetPawnData() const { return Cast<T>(PawnData); }
 	void SetPawnData(const UGradPawnData* InPawnData);
 	void SetupPlayerInputComponent();
+	UGradAbilitySystemComponent* GetGradAbilitySystemComponent() const { return AbilitySystemComponent; }
+
+	/** AbilitySystemComponent의 AvatorActor 대상 초기화/해제 호출 */
+	void InitializeAbilitySystem(UGradAbilitySystemComponent* InASC, AActor* InOwnerActor);
+	void UninitializeAbilitySystem();
 
 	/**
 	* UPawnComponent interfaces
@@ -52,4 +59,8 @@ class GRADGAME_API UGradPawnExtensionComponent : public UPawnComponent, public I
 	 */
 	UPROPERTY(EditInstanceOnly, Category = "Grad|Pawn")
 	TObjectPtr<const UGradPawnData> PawnData;
+
+	/** AbilitySystemComponent 캐싱 */
+	UPROPERTY()
+	TObjectPtr<UGradAbilitySystemComponent> AbilitySystemComponent;
 };

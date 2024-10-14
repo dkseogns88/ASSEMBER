@@ -100,3 +100,13 @@ bool Handle_S_MOVE(PacketSessionRef& session, Protocol::S_MOVE& pkt)
 
 	return false;
 }
+
+bool Handle_S_ATTACK(PacketSessionRef& session, Protocol::S_ATTACK& pkt)
+{
+	if (UNetworkManager* GameNetwork = GetWorldNetwork(session))
+	{
+		GameNetwork->HandleAttack(pkt);
+		return true;
+	}
+	return false;
+}

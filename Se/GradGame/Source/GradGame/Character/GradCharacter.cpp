@@ -4,6 +4,7 @@
 #include "GradCharacter.h"
 #include "GradPawnExtensionComponent.h"
 #include "GradGame/Camera/GradCameraComponent.h"
+#include "GradGame/AbilitySystem/GradAbilitySystemComponent.h"
 
 // Sets default values
 AGradCharacter::AGradCharacter()
@@ -22,6 +23,13 @@ AGradCharacter::AGradCharacter()
 		CameraComponent = CreateDefaultSubobject<UGradCameraComponent>(TEXT("CameraComponent"));
 		CameraComponent->SetRelativeLocation(FVector(-300.0f, 0.0f, 75.0f));
 	}
+
+	// AbilitySystemComponent 생성
+	AbilitySystemComponent = CreateDefaultSubobject<UGradAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
+
+	// Ability System Component는 소유자가 누구고 아바타가 누구인지를 설정을 해줘야 한다.
+	//AbilitySystemComponent->InitAbilityActorInfo(this, this);
+
 }
 
 // Called when the game starts or when spawned

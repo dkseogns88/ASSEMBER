@@ -41,6 +41,13 @@ struct FGradGameplayTags
 	FGameplayTag InputTag_Move;
 	FGameplayTag InputTag_Look_Mouse;
 
+
+	/**
+	 * Ability Input Tags
+	 */
+	FGameplayTag InputTag_Weapon_Fire;
+
+
 private:
 	// static 변수 초기화는 .cpp에 해주는 것을 잊지 말기!
 	static FGradGameplayTags GameplayTags;

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/PawnComponent.h"
+#include "GradGame/AbilitySystem/GradAbilitySet.h"
 #include "GradEquipmentManagerComponent.generated.h"
 
 /** forward declarations */
@@ -22,6 +23,10 @@ struct FGradAppliedEquipmentEntry
 	/** EquipmentDefinition을 통해 생성된 인스턴스 */
 	UPROPERTY()
 	TObjectPtr<UGradEquipmentInstance> Instance = nullptr;
+
+	/** 무기에 할당된 허용가능한 GameplayAbility */
+	UPROPERTY()
+	FGradAbilitySet_GrantedHandles GrantedHandles;
 };
 
 /**
@@ -39,6 +44,8 @@ struct FGradEquipmentList
 
 	UGradEquipmentInstance* AddEntry(TSubclassOf<UGradEquipmentDefinition> EquipmentDefinition);
 	void RemoveEntry(UGradEquipmentInstance* Instance);
+
+	UGradAbilitySystemComponent* GetAbilitySystemComponent() const;
 
 	/** 장착물에 대한 관리 리스트 */
 	UPROPERTY()
@@ -63,9 +70,11 @@ public:
 	*/
 	static UGradEquipmentManagerComponent* FindEquipManagerComponent(const AActor* Actor) { return (Actor ? Actor->FindComponentByClass<UGradEquipmentManagerComponent>() : nullptr); }
 
-
 	UGradEquipmentInstance* EquipItem(TSubclassOf<UGradEquipmentDefinition> EquipmentDefinition);
 	void UnequipItem(UGradEquipmentInstance* ItemInstance);
+
+	UFUNCTION(BlueprintCallable)
+	TArray<UGradEquipmentInstance*> GetEquipmentInstancesOfType(TSubclassOf<UGradEquipmentInstance> InstanceType) const;
 
 	UPROPERTY()
 	FGradEquipmentList EquipmentList;

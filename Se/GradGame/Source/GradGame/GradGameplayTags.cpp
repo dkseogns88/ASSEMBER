@@ -28,5 +28,6 @@ void FGradGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	AddTag(InputTag_Move, "InputTag.Move", "");
 	AddTag(InputTag_Look_Mouse, "InputTag.Look.Mouse", "");
 
+	AddTag(InputTag_Weapon_Fire, "InputTag.Weapon.Fire", "");
 }
 

@@ -5,7 +5,10 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "ModularCharacter.h"
+#include "GradGame/GradGameplayTags.h"
 #include "GradNetCharacter.generated.h"
+
+class UGradAbilitySystemComponent;
 
 UCLASS()
 class GRADGAME_API AGradNetCharacter : public AModularCharacter
@@ -14,10 +17,8 @@ class GRADGAME_API AGradNetCharacter : public AModularCharacter
 
 public:
 	AGradNetCharacter();
-	/**
-	* Blueprint 정의를 위한 Equip/Unequip 함수
-	*/
-	UFUNCTION(BlueprintImplementableEvent, Category = Equipment, meta = (DisplayName = "NetEquipped"))
+
+	UFUNCTION(BlueprintImplementableEvent, Category = Equipment, meta = (DisplayName = "NetOnEquipped"))
 	void K2_NetOnEquipped();
 
 protected:
@@ -26,4 +27,13 @@ protected:
 public:	
 	virtual void Tick(float DeltaTime) override;
 
+	void WeaponFire(const FGameplayTag& InputTag);
+
+	UGradAbilitySystemComponent* GetGradAbilitySystemComponent() const { return AbilitySystemComponent; }
+public:
+	UPROPERTY(VisibleAnywhere, Category = "Grad|NetCharacter")
+	TObjectPtr<UGradAbilitySystemComponent> AbilitySystemComponent;
+
+public:
+	FTransform WeaponTransform = FTransform();
 };

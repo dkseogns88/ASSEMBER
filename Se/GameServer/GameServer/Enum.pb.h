@@ -147,6 +147,31 @@ inline bool MoveState_Parse(
   return ::PROTOBUF_NAMESPACE_ID::internal::ParseNamedEnum<MoveState>(
     MoveState_descriptor(), name, value);
 }
+enum AttackType : int {
+  ATTACK_TYPE_NONE = 0,
+  ATTACK_TYPE_RIFLE = 1,
+  AttackType_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
+  AttackType_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
+};
+bool AttackType_IsValid(int value);
+constexpr AttackType AttackType_MIN = ATTACK_TYPE_NONE;
+constexpr AttackType AttackType_MAX = ATTACK_TYPE_RIFLE;
+constexpr int AttackType_ARRAYSIZE = AttackType_MAX + 1;
+
+const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* AttackType_descriptor();
+template<typename T>
+inline const std::string& AttackType_Name(T enum_t_value) {
+  static_assert(::std::is_same<T, AttackType>::value ||
+    ::std::is_integral<T>::value,
+    "Incorrect type passed to function AttackType_Name.");
+  return ::PROTOBUF_NAMESPACE_ID::internal::NameOfEnum(
+    AttackType_descriptor(), enum_t_value);
+}
+inline bool AttackType_Parse(
+    ::PROTOBUF_NAMESPACE_ID::ConstStringParam name, AttackType* value) {
+  return ::PROTOBUF_NAMESPACE_ID::internal::ParseNamedEnum<AttackType>(
+    AttackType_descriptor(), name, value);
+}
 // ===================================================================
 
 
@@ -188,6 +213,11 @@ template <> struct is_proto_enum< ::Protocol::MoveState> : ::std::true_type {};
 template <>
 inline const EnumDescriptor* GetEnumDescriptor< ::Protocol::MoveState>() {
   return ::Protocol::MoveState_descriptor();
+}
+template <> struct is_proto_enum< ::Protocol::AttackType> : ::std::true_type {};
+template <>
+inline const EnumDescriptor* GetEnumDescriptor< ::Protocol::AttackType>() {
+  return ::Protocol::AttackType_descriptor();
 }
 
 PROTOBUF_NAMESPACE_CLOSE

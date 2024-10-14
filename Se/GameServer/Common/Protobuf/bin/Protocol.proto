@@ -58,3 +58,13 @@ message S_MOVE
 {
 	PosInfo info = 1;
 }
+
+message C_ATTACK
+{
+	AttackInfo info = 1;
+}
+
+message S_ATTACK
+{
+	AttackInfo info = 1;
+}
