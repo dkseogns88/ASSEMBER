@@ -27,5 +27,18 @@ message ObjectInfo
 	ObjectType object_type		= 2;
 	PlayerType player_type		= 3;
 	PosInfo pos_Info			= 4;
+}
 
+message AttackInfo
+{
+	uint64	object_id		= 1;
+	AttackType attack_type	= 2;
+
+	float finalcamloc_x		= 3;
+	float finalcamloc_y		= 4;
+	float finalcamloc_z		= 5;
+
+	float camrot_x			= 6;
+	float camrot_y			= 7;
+	float camrot_z			= 8;
 }

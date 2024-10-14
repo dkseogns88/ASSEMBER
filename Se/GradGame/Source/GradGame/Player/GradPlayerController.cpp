@@ -7,7 +7,7 @@
 #include "GradGame/Network/GradNetworkComponent.h"
 #include "GradGame/Character/GradCharacter.h"
 #include "GradGame/Network/NetworkManager.h"
-
+#include "GradGame/AbilitySystem/GradAbilitySystemComponent.h"
 
 AGradPlayerController::AGradPlayerController(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -76,4 +76,20 @@ void AGradPlayerController::PlayerTick(float DeltaTime)
 		GetGameInstance()->GetSubsystem<UNetworkManager>()->SendPacket(MovePkt);
 
 	}
+}
+
+void AGradPlayerController::PostProcessInput(const float DeltaTime, const bool bGamePaused)
+{
+	if (UGradAbilitySystemComponent* GradASC = GetGradAbilitySystemComponent())
+	{
+		GradASC->ProcessAbilityInput(DeltaTime, bGamePaused);
+	}
+
+	Super::PostProcessInput(DeltaTime, bGamePaused);
+}
+
+UGradAbilitySystemComponent* AGradPlayerController::GetGradAbilitySystemComponent() const
+{
+	AGradCharacter* GradPawn = Cast<AGradCharacter>(GetPawn());
+	return (GradPawn ? GradPawn->GetGradAbilitySystemComponent() : nullptr);
 }

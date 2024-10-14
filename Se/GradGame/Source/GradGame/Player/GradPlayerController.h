@@ -7,6 +7,7 @@
 #include "GradPlayerController.generated.h"
 
 class AGradCharacter;
+class UGradAbilitySystemComponent;
 
 UCLASS()
 class GRADGAME_API AGradPlayerController : public AModularPlayerController
@@ -19,6 +20,9 @@ public:
 	virtual void BeginPlay() override;
 	virtual void PlayerTick(float DeltaTime) override;
 
+	virtual void PostProcessInput(const float DeltaTime, const bool bGamePaused) override;
+
+	UGradAbilitySystemComponent* GetGradAbilitySystemComponent() const;
 protected:
 	const float MOVE_PACKET_SEND_DELAY = 0.04f;
 	float MovePacketSendTimer = MOVE_PACKET_SEND_DELAY;

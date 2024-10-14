@@ -4,6 +4,10 @@
 #include "GradPlayerState.h"
 #include "GradGame/GameModes/GradExperienceManagerComponent.h"
 #include "GradGame/GameModes/GradGameModeBase.h"
+#include "GradGame/Character/GradCharacter.h"
+#include "GradGame/Character/GradPawnData.h"
+#include "GradGame/AbilitySystem/GradAbilitySystemComponent.h"
+#include "GradGame/AbilitySystem/GradAbilitySet.h"
 
 void AGradPlayerState::PostInitializeComponents()
 {
@@ -44,4 +48,24 @@ void AGradPlayerState::SetPawnData(const UGradPawnData* InPawnData)
 	check(!PawnData);
 
 	PawnData = InPawnData;
+
+	AController* Controller = GetOwner<AController>();
+	if (Controller)
+	{
+		APawn* PlayerPawn = Controller->GetPawn();
+		if (PlayerPawn)
+		{
+			AGradCharacter* Pawn= Cast<AGradCharacter>(PlayerPawn);
+			if (UGradAbilitySystemComponent* AbilitySystemComponent = Pawn->FindComponentByClass<UGradAbilitySystemComponent>())
+			{
+				for (UGradAbilitySet* AbilitySet : PawnData->AbilitySets)
+				{
+					if (AbilitySet)
+					{
+						AbilitySet->GiveToAbilitySystem(AbilitySystemComponent, nullptr);
+					}
+				}
+			}
+		}
+	}
 }

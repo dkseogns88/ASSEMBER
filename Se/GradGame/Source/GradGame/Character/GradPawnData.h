@@ -6,6 +6,7 @@
 #include "Engine/DataAsset.h"
 #include "GradPawnData.generated.h"
 
+class UGradAbilitySet;
 class UGradInputConfig;
 class UGradCameraMode;
 
@@ -28,4 +29,12 @@ public:
 	/** input configuration used by player controlled pawns to create input mappings and bind input actions */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Grad|InputConfig")
 	TObjectPtr<UGradInputConfig> InputConfig;
+
+	/** Pawn의 NetClass */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Grad|NetPawn")
+	TSubclassOf<APawn> NetPawnClass;
+
+	/** 해당 Pawn의 Ability System에 허용할 AbilitySet */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Grad|Abilities")
+	TArray<TObjectPtr<UGradAbilitySet>> AbilitySets;
 };

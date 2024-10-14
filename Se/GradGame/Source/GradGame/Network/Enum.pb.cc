@@ -22,7 +22,7 @@ namespace _pbi = _pb::internal;
 
 namespace Protocol {
 }  // namespace Protocol
-static const ::_pb::EnumDescriptor* file_level_enum_descriptors_Enum_2eproto[4];
+static const ::_pb::EnumDescriptor* file_level_enum_descriptors_Enum_2eproto[5];
 static constexpr ::_pb::ServiceDescriptor const** file_level_service_descriptors_Enum_2eproto = nullptr;
 const uint32_t TableStruct_Enum_2eproto::offsets[1] = {};
 static constexpr ::_pbi::MigrationSchema* schemas = nullptr;
@@ -35,11 +35,13 @@ const char descriptor_table_protodef_Enum_2eproto[] PROTOBUF_SECTION_VARIABLE(pr
   "e\022\024\n\020PLAYER_TYPE_NONE\020\000*$\n\013MonsterType\022\025"
   "\n\021MONSTER_TYPE_NONE\020\000*I\n\tMoveState\022\023\n\017MO"
   "VE_STATE_NONE\020\000\022\023\n\017MOVE_STATE_IDLE\020\001\022\022\n\016"
-  "MOVE_STATE_RUN\020\002b\006proto3"
+  "MOVE_STATE_RUN\020\002*9\n\nAttackType\022\024\n\020ATTACK"
+  "_TYPE_NONE\020\000\022\025\n\021ATTACK_TYPE_RIFLE\020\001b\006pro"
+  "to3"
   ;
 static ::_pbi::once_flag descriptor_table_Enum_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_Enum_2eproto = {
-    false, false, 264, descriptor_table_protodef_Enum_2eproto,
+    false, false, 323, descriptor_table_protodef_Enum_2eproto,
     "Enum.proto",
     &descriptor_table_Enum_2eproto_once, nullptr, 0, 0,
     schemas, file_default_instances, TableStruct_Enum_2eproto::offsets,
@@ -103,6 +105,20 @@ bool MoveState_IsValid(int value) {
     case 0:
     case 1:
     case 2:
+      return true;
+    default:
+      return false;
+  }
+}
+
+const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* AttackType_descriptor() {
+  ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(&descriptor_table_Enum_2eproto);
+  return file_level_enum_descriptors_Enum_2eproto[4];
+}
+bool AttackType_IsValid(int value) {
+  switch (value) {
+    case 0:
+    case 1:
       return true;
     default:
       return false;

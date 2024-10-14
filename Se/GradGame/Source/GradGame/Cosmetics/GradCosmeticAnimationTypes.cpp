@@ -26,6 +26,6 @@ USkeletalMesh* FGradAnimBodyStyleSelectionSet::SelectBestBodyStyle(const FGamepl
 			return Rule.Mesh;
 		}
 	}
-
+	
 	return DefaultMesh;
 }

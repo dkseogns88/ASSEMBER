@@ -35,10 +35,6 @@
 			"Enabled": true
 		},
 		{
-			"Name": "ShooterCore",
-			"Enabled": true
-		},
-		{
 			"Name": "AnimationWarping",
 			"Enabled": true
 		},
@@ -46,8 +42,9 @@
 			"Name": "AnimationLocomotionLibrary",
 			"Enabled": true
 		},
+
 		{
-			"Name": "Sewer",
+			"Name": "SewerCore",
 			"Enabled": true
 		}
 	]

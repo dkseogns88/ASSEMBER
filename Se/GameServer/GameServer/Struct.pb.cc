@@ -60,8 +60,28 @@ struct ObjectInfoDefaultTypeInternal {
   };
 };
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 ObjectInfoDefaultTypeInternal _ObjectInfo_default_instance_;
+PROTOBUF_CONSTEXPR AttackInfo::AttackInfo(
+    ::_pbi::ConstantInitialized): _impl_{
+    /*decltype(_impl_.object_id_)*/uint64_t{0u}
+  , /*decltype(_impl_.attack_type_)*/0
+  , /*decltype(_impl_.finalcamloc_x_)*/0
+  , /*decltype(_impl_.finalcamloc_y_)*/0
+  , /*decltype(_impl_.finalcamloc_z_)*/0
+  , /*decltype(_impl_.camrot_x_)*/0
+  , /*decltype(_impl_.camrot_y_)*/0
+  , /*decltype(_impl_.camrot_z_)*/0
+  , /*decltype(_impl_._cached_size_)*/{}} {}
+struct AttackInfoDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR AttackInfoDefaultTypeInternal()
+      : _instance(::_pbi::ConstantInitialized{}) {}
+  ~AttackInfoDefaultTypeInternal() {}
+  union {
+    AttackInfo _instance;
+  };
+};
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 AttackInfoDefaultTypeInternal _AttackInfo_default_instance_;
 }  // namespace Protocol
-static ::_pb::Metadata file_level_metadata_Struct_2eproto[2];
+static ::_pb::Metadata file_level_metadata_Struct_2eproto[3];
 static constexpr ::_pb::EnumDescriptor const** file_level_enum_descriptors_Struct_2eproto = nullptr;
 static constexpr ::_pb::ServiceDescriptor const** file_level_service_descriptors_Struct_2eproto = nullptr;
 
@@ -93,15 +113,31 @@ const uint32_t TableStruct_Struct_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(p
   PROTOBUF_FIELD_OFFSET(::Protocol::ObjectInfo, _impl_.object_type_),
   PROTOBUF_FIELD_OFFSET(::Protocol::ObjectInfo, _impl_.player_type_),
   PROTOBUF_FIELD_OFFSET(::Protocol::ObjectInfo, _impl_.pos_info_),
+  ~0u,  // no _has_bits_
+  PROTOBUF_FIELD_OFFSET(::Protocol::AttackInfo, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::Protocol::AttackInfo, _impl_.object_id_),
+  PROTOBUF_FIELD_OFFSET(::Protocol::AttackInfo, _impl_.attack_type_),
+  PROTOBUF_FIELD_OFFSET(::Protocol::AttackInfo, _impl_.finalcamloc_x_),
+  PROTOBUF_FIELD_OFFSET(::Protocol::AttackInfo, _impl_.finalcamloc_y_),
+  PROTOBUF_FIELD_OFFSET(::Protocol::AttackInfo, _impl_.finalcamloc_z_),
+  PROTOBUF_FIELD_OFFSET(::Protocol::AttackInfo, _impl_.camrot_x_),
+  PROTOBUF_FIELD_OFFSET(::Protocol::AttackInfo, _impl_.camrot_y_),
+  PROTOBUF_FIELD_OFFSET(::Protocol::AttackInfo, _impl_.camrot_z_),
 };
 static const ::_pbi::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
   { 0, -1, -1, sizeof(::Protocol::PosInfo)},
   { 17, -1, -1, sizeof(::Protocol::ObjectInfo)},
+  { 27, -1, -1, sizeof(::Protocol::AttackInfo)},
 };
 
 static const ::_pb::Message* const file_default_instances[] = {
   &::Protocol::_PosInfo_default_instance_._instance,
   &::Protocol::_ObjectInfo_default_instance_._instance,
+  &::Protocol::_AttackInfo_default_instance_._instance,
 };
 
 const char descriptor_table_protodef_Struct_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
@@ -114,16 +150,21 @@ const char descriptor_table_protodef_Struct_2eproto[] PROTOBUF_SECTION_VARIABLE(
   "\tobject_id\030\001 \001(\004\022)\n\013object_type\030\002 \001(\0162\024."
   "Protocol.ObjectType\022)\n\013player_type\030\003 \001(\016"
   "2\024.Protocol.PlayerType\022#\n\010pos_Info\030\004 \001(\013"
-  "2\021.Protocol.PosInfob\006proto3"
+  "2\021.Protocol.PosInfo\"\305\001\n\nAttackInfo\022\021\n\tob"
+  "ject_id\030\001 \001(\004\022)\n\013attack_type\030\002 \001(\0162\024.Pro"
+  "tocol.AttackType\022\025\n\rfinalcamloc_x\030\003 \001(\002\022"
+  "\025\n\rfinalcamloc_y\030\004 \001(\002\022\025\n\rfinalcamloc_z\030"
+  "\005 \001(\002\022\020\n\010camrot_x\030\006 \001(\002\022\020\n\010camrot_y\030\007 \001("
+  "\002\022\020\n\010camrot_z\030\010 \001(\002b\006proto3"
   ;
 static const ::_pbi::DescriptorTable* const descriptor_table_Struct_2eproto_deps[1] = {
   &::descriptor_table_Enum_2eproto,
 };
 static ::_pbi::once_flag descriptor_table_Struct_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_Struct_2eproto = {
-    false, false, 387, descriptor_table_protodef_Struct_2eproto,
+    false, false, 587, descriptor_table_protodef_Struct_2eproto,
     "Struct.proto",
-    &descriptor_table_Struct_2eproto_once, descriptor_table_Struct_2eproto_deps, 1, 2,
+    &descriptor_table_Struct_2eproto_once, descriptor_table_Struct_2eproto_deps, 1, 3,
     schemas, file_default_instances, TableStruct_Struct_2eproto::offsets,
     file_level_metadata_Struct_2eproto, file_level_enum_descriptors_Struct_2eproto,
     file_level_service_descriptors_Struct_2eproto,
@@ -956,6 +997,436 @@ void ObjectInfo::InternalSwap(ObjectInfo* other) {
       file_level_metadata_Struct_2eproto[1]);
 }
 
+// ===================================================================
+
+class AttackInfo::_Internal {
+ public:
+};
+
+AttackInfo::AttackInfo(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                         bool is_message_owned)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
+  SharedCtor(arena, is_message_owned);
+  // @@protoc_insertion_point(arena_constructor:Protocol.AttackInfo)
+}
+AttackInfo::AttackInfo(const AttackInfo& from)
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  AttackInfo* const _this = this; (void)_this;
+  new (&_impl_) Impl_{
+      decltype(_impl_.object_id_){}
+    , decltype(_impl_.attack_type_){}
+    , decltype(_impl_.finalcamloc_x_){}
+    , decltype(_impl_.finalcamloc_y_){}
+    , decltype(_impl_.finalcamloc_z_){}
+    , decltype(_impl_.camrot_x_){}
+    , decltype(_impl_.camrot_y_){}
+    , decltype(_impl_.camrot_z_){}
+    , /*decltype(_impl_._cached_size_)*/{}};
+
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  ::memcpy(&_impl_.object_id_, &from._impl_.object_id_,
+    static_cast<size_t>(reinterpret_cast<char*>(&_impl_.camrot_z_) -
+    reinterpret_cast<char*>(&_impl_.object_id_)) + sizeof(_impl_.camrot_z_));
+  // @@protoc_insertion_point(copy_constructor:Protocol.AttackInfo)
+}
+
+inline void AttackInfo::SharedCtor(
+    ::_pb::Arena* arena, bool is_message_owned) {
+  (void)arena;
+  (void)is_message_owned;
+  new (&_impl_) Impl_{
+      decltype(_impl_.object_id_){uint64_t{0u}}
+    , decltype(_impl_.attack_type_){0}
+    , decltype(_impl_.finalcamloc_x_){0}
+    , decltype(_impl_.finalcamloc_y_){0}
+    , decltype(_impl_.finalcamloc_z_){0}
+    , decltype(_impl_.camrot_x_){0}
+    , decltype(_impl_.camrot_y_){0}
+    , decltype(_impl_.camrot_z_){0}
+    , /*decltype(_impl_._cached_size_)*/{}
+  };
+}
+
+AttackInfo::~AttackInfo() {
+  // @@protoc_insertion_point(destructor:Protocol.AttackInfo)
+  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
+  (void)arena;
+    return;
+  }
+  SharedDtor();
+}
+
+inline void AttackInfo::SharedDtor() {
+  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+}
+
+void AttackInfo::SetCachedSize(int size) const {
+  _impl_._cached_size_.Set(size);
+}
+
+void AttackInfo::Clear() {
+// @@protoc_insertion_point(message_clear_start:Protocol.AttackInfo)
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  ::memset(&_impl_.object_id_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&_impl_.camrot_z_) -
+      reinterpret_cast<char*>(&_impl_.object_id_)) + sizeof(_impl_.camrot_z_));
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+}
+
+const char* AttackInfo::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  while (!ctx->Done(&ptr)) {
+    uint32_t tag;
+    ptr = ::_pbi::ReadTag(ptr, &tag);
+    switch (tag >> 3) {
+      // uint64 object_id = 1;
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 8)) {
+          _impl_.object_id_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // .Protocol.AttackType attack_type = 2;
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 16)) {
+          uint64_t val = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+          CHK_(ptr);
+          _internal_set_attack_type(static_cast<::Protocol::AttackType>(val));
+        } else
+          goto handle_unusual;
+        continue;
+      // float finalcamloc_x = 3;
+      case 3:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 29)) {
+          _impl_.finalcamloc_x_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      // float finalcamloc_y = 4;
+      case 4:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 37)) {
+          _impl_.finalcamloc_y_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      // float finalcamloc_z = 5;
+      case 5:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 45)) {
+          _impl_.finalcamloc_z_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      // float camrot_x = 6;
+      case 6:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 53)) {
+          _impl_.camrot_x_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      // float camrot_y = 7;
+      case 7:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 61)) {
+          _impl_.camrot_y_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      // float camrot_z = 8;
+      case 8:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 69)) {
+          _impl_.camrot_z_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      default:
+        goto handle_unusual;
+    }  // switch
+  handle_unusual:
+    if ((tag == 0) || ((tag & 7) == 4)) {
+      CHK_(ptr);
+      ctx->SetLastTag(tag);
+      goto message_done;
+    }
+    ptr = UnknownFieldParse(
+        tag,
+        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+        ptr, ctx);
+    CHK_(ptr != nullptr);
+  }  // while
+message_done:
+  return ptr;
+failure:
+  ptr = nullptr;
+  goto message_done;
+#undef CHK_
+}
+
+uint8_t* AttackInfo::_InternalSerialize(
+    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+  // @@protoc_insertion_point(serialize_to_array_start:Protocol.AttackInfo)
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // uint64 object_id = 1;
+  if (this->_internal_object_id() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteUInt64ToArray(1, this->_internal_object_id(), target);
+  }
+
+  // .Protocol.AttackType attack_type = 2;
+  if (this->_internal_attack_type() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteEnumToArray(
+      2, this->_internal_attack_type(), target);
+  }
+
+  // float finalcamloc_x = 3;
+  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  float tmp_finalcamloc_x = this->_internal_finalcamloc_x();
+  uint32_t raw_finalcamloc_x;
+  memcpy(&raw_finalcamloc_x, &tmp_finalcamloc_x, sizeof(tmp_finalcamloc_x));
+  if (raw_finalcamloc_x != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(3, this->_internal_finalcamloc_x(), target);
+  }
+
+  // float finalcamloc_y = 4;
+  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  float tmp_finalcamloc_y = this->_internal_finalcamloc_y();
+  uint32_t raw_finalcamloc_y;
+  memcpy(&raw_finalcamloc_y, &tmp_finalcamloc_y, sizeof(tmp_finalcamloc_y));
+  if (raw_finalcamloc_y != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(4, this->_internal_finalcamloc_y(), target);
+  }
+
+  // float finalcamloc_z = 5;
+  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  float tmp_finalcamloc_z = this->_internal_finalcamloc_z();
+  uint32_t raw_finalcamloc_z;
+  memcpy(&raw_finalcamloc_z, &tmp_finalcamloc_z, sizeof(tmp_finalcamloc_z));
+  if (raw_finalcamloc_z != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(5, this->_internal_finalcamloc_z(), target);
+  }
+
+  // float camrot_x = 6;
+  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  float tmp_camrot_x = this->_internal_camrot_x();
+  uint32_t raw_camrot_x;
+  memcpy(&raw_camrot_x, &tmp_camrot_x, sizeof(tmp_camrot_x));
+  if (raw_camrot_x != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(6, this->_internal_camrot_x(), target);
+  }
+
+  // float camrot_y = 7;
+  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  float tmp_camrot_y = this->_internal_camrot_y();
+  uint32_t raw_camrot_y;
+  memcpy(&raw_camrot_y, &tmp_camrot_y, sizeof(tmp_camrot_y));
+  if (raw_camrot_y != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(7, this->_internal_camrot_y(), target);
+  }
+
+  // float camrot_z = 8;
+  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  float tmp_camrot_z = this->_internal_camrot_z();
+  uint32_t raw_camrot_z;
+  memcpy(&raw_camrot_z, &tmp_camrot_z, sizeof(tmp_camrot_z));
+  if (raw_camrot_z != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(8, this->_internal_camrot_z(), target);
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:Protocol.AttackInfo)
+  return target;
+}
+
+size_t AttackInfo::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:Protocol.AttackInfo)
+  size_t total_size = 0;
+
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  // uint64 object_id = 1;
+  if (this->_internal_object_id() != 0) {
+    total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(this->_internal_object_id());
+  }
+
+  // .Protocol.AttackType attack_type = 2;
+  if (this->_internal_attack_type() != 0) {
+    total_size += 1 +
+      ::_pbi::WireFormatLite::EnumSize(this->_internal_attack_type());
+  }
+
+  // float finalcamloc_x = 3;
+  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  float tmp_finalcamloc_x = this->_internal_finalcamloc_x();
+  uint32_t raw_finalcamloc_x;
+  memcpy(&raw_finalcamloc_x, &tmp_finalcamloc_x, sizeof(tmp_finalcamloc_x));
+  if (raw_finalcamloc_x != 0) {
+    total_size += 1 + 4;
+  }
+
+  // float finalcamloc_y = 4;
+  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  float tmp_finalcamloc_y = this->_internal_finalcamloc_y();
+  uint32_t raw_finalcamloc_y;
+  memcpy(&raw_finalcamloc_y, &tmp_finalcamloc_y, sizeof(tmp_finalcamloc_y));
+  if (raw_finalcamloc_y != 0) {
+    total_size += 1 + 4;
+  }
+
+  // float finalcamloc_z = 5;
+  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  float tmp_finalcamloc_z = this->_internal_finalcamloc_z();
+  uint32_t raw_finalcamloc_z;
+  memcpy(&raw_finalcamloc_z, &tmp_finalcamloc_z, sizeof(tmp_finalcamloc_z));
+  if (raw_finalcamloc_z != 0) {
+    total_size += 1 + 4;
+  }
+
+  // float camrot_x = 6;
+  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  float tmp_camrot_x = this->_internal_camrot_x();
+  uint32_t raw_camrot_x;
+  memcpy(&raw_camrot_x, &tmp_camrot_x, sizeof(tmp_camrot_x));
+  if (raw_camrot_x != 0) {
+    total_size += 1 + 4;
+  }
+
+  // float camrot_y = 7;
+  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  float tmp_camrot_y = this->_internal_camrot_y();
+  uint32_t raw_camrot_y;
+  memcpy(&raw_camrot_y, &tmp_camrot_y, sizeof(tmp_camrot_y));
+  if (raw_camrot_y != 0) {
+    total_size += 1 + 4;
+  }
+
+  // float camrot_z = 8;
+  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  float tmp_camrot_z = this->_internal_camrot_z();
+  uint32_t raw_camrot_z;
+  memcpy(&raw_camrot_z, &tmp_camrot_z, sizeof(tmp_camrot_z));
+  if (raw_camrot_z != 0) {
+    total_size += 1 + 4;
+  }
+
+  return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
+}
+
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData AttackInfo::_class_data_ = {
+    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
+    AttackInfo::MergeImpl
+};
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*AttackInfo::GetClassData() const { return &_class_data_; }
+
+
+void AttackInfo::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
+  auto* const _this = static_cast<AttackInfo*>(&to_msg);
+  auto& from = static_cast<const AttackInfo&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:Protocol.AttackInfo)
+  GOOGLE_DCHECK_NE(&from, _this);
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  if (from._internal_object_id() != 0) {
+    _this->_internal_set_object_id(from._internal_object_id());
+  }
+  if (from._internal_attack_type() != 0) {
+    _this->_internal_set_attack_type(from._internal_attack_type());
+  }
+  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  float tmp_finalcamloc_x = from._internal_finalcamloc_x();
+  uint32_t raw_finalcamloc_x;
+  memcpy(&raw_finalcamloc_x, &tmp_finalcamloc_x, sizeof(tmp_finalcamloc_x));
+  if (raw_finalcamloc_x != 0) {
+    _this->_internal_set_finalcamloc_x(from._internal_finalcamloc_x());
+  }
+  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  float tmp_finalcamloc_y = from._internal_finalcamloc_y();
+  uint32_t raw_finalcamloc_y;
+  memcpy(&raw_finalcamloc_y, &tmp_finalcamloc_y, sizeof(tmp_finalcamloc_y));
+  if (raw_finalcamloc_y != 0) {
+    _this->_internal_set_finalcamloc_y(from._internal_finalcamloc_y());
+  }
+  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  float tmp_finalcamloc_z = from._internal_finalcamloc_z();
+  uint32_t raw_finalcamloc_z;
+  memcpy(&raw_finalcamloc_z, &tmp_finalcamloc_z, sizeof(tmp_finalcamloc_z));
+  if (raw_finalcamloc_z != 0) {
+    _this->_internal_set_finalcamloc_z(from._internal_finalcamloc_z());
+  }
+  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  float tmp_camrot_x = from._internal_camrot_x();
+  uint32_t raw_camrot_x;
+  memcpy(&raw_camrot_x, &tmp_camrot_x, sizeof(tmp_camrot_x));
+  if (raw_camrot_x != 0) {
+    _this->_internal_set_camrot_x(from._internal_camrot_x());
+  }
+  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  float tmp_camrot_y = from._internal_camrot_y();
+  uint32_t raw_camrot_y;
+  memcpy(&raw_camrot_y, &tmp_camrot_y, sizeof(tmp_camrot_y));
+  if (raw_camrot_y != 0) {
+    _this->_internal_set_camrot_y(from._internal_camrot_y());
+  }
+  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  float tmp_camrot_z = from._internal_camrot_z();
+  uint32_t raw_camrot_z;
+  memcpy(&raw_camrot_z, &tmp_camrot_z, sizeof(tmp_camrot_z));
+  if (raw_camrot_z != 0) {
+    _this->_internal_set_camrot_z(from._internal_camrot_z());
+  }
+  _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void AttackInfo::CopyFrom(const AttackInfo& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:Protocol.AttackInfo)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool AttackInfo::IsInitialized() const {
+  return true;
+}
+
+void AttackInfo::InternalSwap(AttackInfo* other) {
+  using std::swap;
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  ::PROTOBUF_NAMESPACE_ID::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(AttackInfo, _impl_.camrot_z_)
+      + sizeof(AttackInfo::_impl_.camrot_z_)
+      - PROTOBUF_FIELD_OFFSET(AttackInfo, _impl_.object_id_)>(
+          reinterpret_cast<char*>(&_impl_.object_id_),
+          reinterpret_cast<char*>(&other->_impl_.object_id_));
+}
+
+::PROTOBUF_NAMESPACE_ID::Metadata AttackInfo::GetMetadata() const {
+  return ::_pbi::AssignDescriptors(
+      &descriptor_table_Struct_2eproto_getter, &descriptor_table_Struct_2eproto_once,
+      file_level_metadata_Struct_2eproto[2]);
+}
+
 // @@protoc_insertion_point(namespace_scope)
 }  // namespace Protocol
 PROTOBUF_NAMESPACE_OPEN
@@ -966,6 +1437,10 @@ Arena::CreateMaybeMessage< ::Protocol::PosInfo >(Arena* arena) {
 template<> PROTOBUF_NOINLINE ::Protocol::ObjectInfo*
 Arena::CreateMaybeMessage< ::Protocol::ObjectInfo >(Arena* arena) {
   return Arena::CreateMessageInternal< ::Protocol::ObjectInfo >(arena);
+}
+template<> PROTOBUF_NOINLINE ::Protocol::AttackInfo*
+Arena::CreateMaybeMessage< ::Protocol::AttackInfo >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::Protocol::AttackInfo >(arena);
 }
 PROTOBUF_NAMESPACE_CLOSE
 

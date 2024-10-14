@@ -7,6 +7,7 @@
 #include "GradEquipmentDefinition.generated.h"
 
 class UGradEquipmentInstance;
+class UGradAbilitySet;
 
 USTRUCT()
 struct FGradEquipmentActorToSpawn
@@ -44,4 +45,8 @@ public:
 	/** - 하나의 아이템을 장착해도 여러 개가 소환될 수 있어서 Array 형태다 */
 	UPROPERTY(EditDefaultsOnly, Category = Equipment)
 	TArray<FGradEquipmentActorToSpawn> ActorsToSpawn;
+
+	/** 장착을 통해 부여 가능한 Ability Set */
+	UPROPERTY(EditDefaultsOnly, Category = Equipment)
+	TArray<TObjectPtr<UGradAbilitySet>> AbilitySetsToGrant;
 };
