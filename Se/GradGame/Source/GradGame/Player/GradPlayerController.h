@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ModularPlayerController.h"
+#include "CommonPlayerController.h"
 #include "GradPlayerController.generated.h"
 
 class AGradCharacter;
 class UGradAbilitySystemComponent;
 
 UCLASS()
-class GRADGAME_API AGradPlayerController : public AModularPlayerController
+class GRADGAME_API AGradPlayerController : public ACommonPlayerController
 {
 	GENERATED_BODY()
 public:

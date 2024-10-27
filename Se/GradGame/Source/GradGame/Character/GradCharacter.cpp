@@ -5,6 +5,9 @@
 #include "GradPawnExtensionComponent.h"
 #include "GradGame/Camera/GradCameraComponent.h"
 #include "GradGame/AbilitySystem/GradAbilitySystemComponent.h"
+#include "GradGame/AbilitySystem/Attributes/GradCombatSet.h"
+#include "GradGame/AbilitySystem/Attributes/GradHealthSet.h"
+#include "GradHealthComponent.h"
 
 // Sets default values
 AGradCharacter::AGradCharacter()
@@ -17,6 +20,10 @@ AGradCharacter::AGradCharacter()
 
 	// PawnExtComponent 생성
 	PawnExtComponent = CreateDefaultSubobject<UGradPawnExtensionComponent>(TEXT("PawnExtensionComponent"));
+	{
+		PawnExtComponent->OnAbilitySystemInitialized_RegisterAndCall(FSimpleMulticastDelegate::FDelegate::CreateUObject(this, &ThisClass::OnAbilitySystemInitialized));
+		PawnExtComponent->OnAbilitySystemUninitialized_Register(FSimpleMulticastDelegate::FDelegate::CreateUObject(this, &ThisClass::OnAbilitySystemUninitialized));
+	}
 
 	// CameraComponent 생성
 	{
@@ -26,10 +33,26 @@ AGradCharacter::AGradCharacter()
 
 	// AbilitySystemComponent 생성
 	AbilitySystemComponent = CreateDefaultSubobject<UGradAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
+	CreateDefaultSubobject<UGradHealthSet>(TEXT("HealthSet"));
+	CreateDefaultSubobject<UGradCombatSet>(TEXT("CombatSet"));
 
-	// Ability System Component는 소유자가 누구고 아바타가 누구인지를 설정을 해줘야 한다.
-	//AbilitySystemComponent->InitAbilityActorInfo(this, this);
+	// HealthComponent 생성
+	{
+		HealthComponent = CreateDefaultSubobject<UGradHealthComponent>(TEXT("HealthComponent"));
+	}
+}
 
+void AGradCharacter::OnAbilitySystemInitialized()
+{
+	check(AbilitySystemComponent);
+
+	// HealthComponent의 ASC를 통한 초기화
+	HealthComponent->InitializeWithAbilitySystem(AbilitySystemComponent);
+}
+
+void AGradCharacter::OnAbilitySystemUninitialized()
+{
+	HealthComponent->UninitializeWithAbilitySystem();
 }
 
 // Called when the game starts or when spawned

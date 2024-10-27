@@ -110,3 +110,13 @@ bool Handle_S_ATTACK(PacketSessionRef& session, Protocol::S_ATTACK& pkt)
 	}
 	return false;
 }
+
+bool Handle_S_RELOAD(PacketSessionRef& session, Protocol::S_RELOAD& pkt)
+{
+	if (UNetworkManager* GameNetwork = GetWorldNetwork(session))
+	{
+		GameNetwork->HandleReload(pkt);
+		return true;
+	}
+	return false;
+}

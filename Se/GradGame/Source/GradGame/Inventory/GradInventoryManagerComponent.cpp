@@ -18,6 +18,15 @@ UGradInventoryItemInstance* FGradInventoryList::AddEntry(TSubclassOf<UGradInvent
 	NewEntry.Instance = NewObject<UGradInventoryItemInstance>(OwningActor);
 	NewEntry.Instance->ItemDef = ItemDef;
 
+	// iterating fragments and call callback to OnInstanceCreated()
+	for (const UGradInventoryItemFragment* Fragment : GetDefault<UGradInventoryItemDefinition>(ItemDef)->Fragments)
+	{
+		if (Fragment)
+		{
+			Fragment->OnInstanceCreated(NewEntry.Instance);
+		}
+	}
+
 	Result = NewEntry.Instance;
 	return Result;
 }

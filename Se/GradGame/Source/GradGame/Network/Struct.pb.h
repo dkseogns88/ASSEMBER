@@ -639,9 +639,9 @@ class AttackInfo final :
     kFinalcamlocXFieldNumber = 3,
     kFinalcamlocYFieldNumber = 4,
     kFinalcamlocZFieldNumber = 5,
-    kCamrotXFieldNumber = 6,
-    kCamrotYFieldNumber = 7,
-    kCamrotZFieldNumber = 8,
+    kCamrotPitchFieldNumber = 6,
+    kCamrotYawFieldNumber = 7,
+    kCamrotRollFieldNumber = 8,
   };
   // uint64 object_id = 1;
   void clear_object_id();
@@ -688,31 +688,31 @@ class AttackInfo final :
   void _internal_set_finalcamloc_z(float value);
   public:
 
-  // float camrot_x = 6;
-  void clear_camrot_x();
-  float camrot_x() const;
-  void set_camrot_x(float value);
+  // float camrot_pitch = 6;
+  void clear_camrot_pitch();
+  float camrot_pitch() const;
+  void set_camrot_pitch(float value);
   private:
-  float _internal_camrot_x() const;
-  void _internal_set_camrot_x(float value);
+  float _internal_camrot_pitch() const;
+  void _internal_set_camrot_pitch(float value);
   public:
 
-  // float camrot_y = 7;
-  void clear_camrot_y();
-  float camrot_y() const;
-  void set_camrot_y(float value);
+  // float camrot_yaw = 7;
+  void clear_camrot_yaw();
+  float camrot_yaw() const;
+  void set_camrot_yaw(float value);
   private:
-  float _internal_camrot_y() const;
-  void _internal_set_camrot_y(float value);
+  float _internal_camrot_yaw() const;
+  void _internal_set_camrot_yaw(float value);
   public:
 
-  // float camrot_z = 8;
-  void clear_camrot_z();
-  float camrot_z() const;
-  void set_camrot_z(float value);
+  // float camrot_roll = 8;
+  void clear_camrot_roll();
+  float camrot_roll() const;
+  void set_camrot_roll(float value);
   private:
-  float _internal_camrot_z() const;
-  void _internal_set_camrot_z(float value);
+  float _internal_camrot_roll() const;
+  void _internal_set_camrot_roll(float value);
   public:
 
   // @@protoc_insertion_point(class_scope:Protocol.AttackInfo)
@@ -728,9 +728,9 @@ class AttackInfo final :
     float finalcamloc_x_;
     float finalcamloc_y_;
     float finalcamloc_z_;
-    float camrot_x_;
-    float camrot_y_;
-    float camrot_z_;
+    float camrot_pitch_;
+    float camrot_yaw_;
+    float camrot_roll_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   };
   union { Impl_ _impl_; };
@@ -1225,64 +1225,64 @@ inline void AttackInfo::set_finalcamloc_z(float value) {
   // @@protoc_insertion_point(field_set:Protocol.AttackInfo.finalcamloc_z)
 }
 
-// float camrot_x = 6;
-inline void AttackInfo::clear_camrot_x() {
-  _impl_.camrot_x_ = 0;
+// float camrot_pitch = 6;
+inline void AttackInfo::clear_camrot_pitch() {
+  _impl_.camrot_pitch_ = 0;
 }
-inline float AttackInfo::_internal_camrot_x() const {
-  return _impl_.camrot_x_;
+inline float AttackInfo::_internal_camrot_pitch() const {
+  return _impl_.camrot_pitch_;
 }
-inline float AttackInfo::camrot_x() const {
-  // @@protoc_insertion_point(field_get:Protocol.AttackInfo.camrot_x)
-  return _internal_camrot_x();
+inline float AttackInfo::camrot_pitch() const {
+  // @@protoc_insertion_point(field_get:Protocol.AttackInfo.camrot_pitch)
+  return _internal_camrot_pitch();
 }
-inline void AttackInfo::_internal_set_camrot_x(float value) {
+inline void AttackInfo::_internal_set_camrot_pitch(float value) {
   
-  _impl_.camrot_x_ = value;
+  _impl_.camrot_pitch_ = value;
 }
-inline void AttackInfo::set_camrot_x(float value) {
-  _internal_set_camrot_x(value);
-  // @@protoc_insertion_point(field_set:Protocol.AttackInfo.camrot_x)
+inline void AttackInfo::set_camrot_pitch(float value) {
+  _internal_set_camrot_pitch(value);
+  // @@protoc_insertion_point(field_set:Protocol.AttackInfo.camrot_pitch)
 }
 
-// float camrot_y = 7;
-inline void AttackInfo::clear_camrot_y() {
-  _impl_.camrot_y_ = 0;
+// float camrot_yaw = 7;
+inline void AttackInfo::clear_camrot_yaw() {
+  _impl_.camrot_yaw_ = 0;
 }
-inline float AttackInfo::_internal_camrot_y() const {
-  return _impl_.camrot_y_;
+inline float AttackInfo::_internal_camrot_yaw() const {
+  return _impl_.camrot_yaw_;
 }
-inline float AttackInfo::camrot_y() const {
-  // @@protoc_insertion_point(field_get:Protocol.AttackInfo.camrot_y)
-  return _internal_camrot_y();
+inline float AttackInfo::camrot_yaw() const {
+  // @@protoc_insertion_point(field_get:Protocol.AttackInfo.camrot_yaw)
+  return _internal_camrot_yaw();
 }
-inline void AttackInfo::_internal_set_camrot_y(float value) {
+inline void AttackInfo::_internal_set_camrot_yaw(float value) {
   
-  _impl_.camrot_y_ = value;
+  _impl_.camrot_yaw_ = value;
 }
-inline void AttackInfo::set_camrot_y(float value) {
-  _internal_set_camrot_y(value);
-  // @@protoc_insertion_point(field_set:Protocol.AttackInfo.camrot_y)
+inline void AttackInfo::set_camrot_yaw(float value) {
+  _internal_set_camrot_yaw(value);
+  // @@protoc_insertion_point(field_set:Protocol.AttackInfo.camrot_yaw)
 }
 
-// float camrot_z = 8;
-inline void AttackInfo::clear_camrot_z() {
-  _impl_.camrot_z_ = 0;
+// float camrot_roll = 8;
+inline void AttackInfo::clear_camrot_roll() {
+  _impl_.camrot_roll_ = 0;
 }
-inline float AttackInfo::_internal_camrot_z() const {
-  return _impl_.camrot_z_;
+inline float AttackInfo::_internal_camrot_roll() const {
+  return _impl_.camrot_roll_;
 }
-inline float AttackInfo::camrot_z() const {
-  // @@protoc_insertion_point(field_get:Protocol.AttackInfo.camrot_z)
-  return _internal_camrot_z();
+inline float AttackInfo::camrot_roll() const {
+  // @@protoc_insertion_point(field_get:Protocol.AttackInfo.camrot_roll)
+  return _internal_camrot_roll();
 }
-inline void AttackInfo::_internal_set_camrot_z(float value) {
+inline void AttackInfo::_internal_set_camrot_roll(float value) {
   
-  _impl_.camrot_z_ = value;
+  _impl_.camrot_roll_ = value;
 }
-inline void AttackInfo::set_camrot_z(float value) {
-  _internal_set_camrot_z(value);
-  // @@protoc_insertion_point(field_set:Protocol.AttackInfo.camrot_z)
+inline void AttackInfo::set_camrot_roll(float value) {
+  _internal_set_camrot_roll(value);
+  // @@protoc_insertion_point(field_set:Protocol.AttackInfo.camrot_roll)
 }
 
 #ifdef __GNUC__

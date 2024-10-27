@@ -15,6 +15,10 @@ class GRADGAME_API UGradExperienceActionSet : public UPrimaryDataAsset
 public:
 	UGradExperienceActionSet();
 
+#if WITH_EDITORONLY_DATA
+	virtual void UpdateAssetBundleData() override;
+#endif
+
 	/**
 	 * member variables
 	 */

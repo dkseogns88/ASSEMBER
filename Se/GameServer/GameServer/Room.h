@@ -12,6 +12,7 @@ public:
 
 	void HandleMove(Protocol::C_MOVE pkt);
 	void HandleAttack(Protocol::C_ATTACK pkt);
+	void HandleReload(Protocol::C_RELOAD pkt);
 
 
 public:

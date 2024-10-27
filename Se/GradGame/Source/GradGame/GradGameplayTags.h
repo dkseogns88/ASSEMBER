@@ -46,6 +46,7 @@ struct FGradGameplayTags
 	 * Ability Input Tags
 	 */
 	FGameplayTag InputTag_Weapon_Fire;
+	FGameplayTag InputTag_Weapon_Reload;
 
 
 private:

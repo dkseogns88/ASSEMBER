@@ -11,6 +11,7 @@
 #include "GradGame/Character/GradPawnData.h"
 #include "GradExperienceDefinition.h"
 #include "GradGame/Character/GradPawnExtensionComponent.h"
+#include "GradGame/UI/GradHUD.h"
 #include "Kismet/GameplayStatics.h"
 
 AGradGameModeBase::AGradGameModeBase()
@@ -19,7 +20,7 @@ AGradGameModeBase::AGradGameModeBase()
 	PlayerControllerClass = AGradPlayerController::StaticClass();
 	PlayerStateClass = AGradPlayerState::StaticClass();
 	DefaultPawnClass = AGradCharacter::StaticClass();
-
+	HUDClass = AGradHUD::StaticClass();
 }
 
 void AGradGameModeBase::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)

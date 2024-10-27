@@ -155,20 +155,22 @@ void UNetworkManager::HandleMove(const Protocol::S_MOVE& MovePkt)
 	}
 }
 
+PRAGMA_DISABLE_OPTIMIZATION
 void UNetworkManager::HandleAttack(const Protocol::S_ATTACK& AttackPkt)
 {
 	const uint64 ObjectId = AttackPkt.info().object_id();
+	// TODO: 어택 타입이 아니라 스킬 타입으로 교체
 	Protocol::AttackType AttackType = AttackPkt.info().attack_type();
 
-	float camrot_x = AttackPkt.info().camrot_x();
-	float camrot_y = AttackPkt.info().camrot_y();
-	float camrot_z = AttackPkt.info().camrot_z();
+	float camrot_pitch = AttackPkt.info().camrot_pitch();
+	float camrot_yaw = AttackPkt.info().camrot_yaw();
+	float camrot_roll = AttackPkt.info().camrot_roll();
 
 	float finalcamloc_x = AttackPkt.info().finalcamloc_x();
 	float finalcamloc_y = AttackPkt.info().finalcamloc_y();
 	float finalcamloc_z = AttackPkt.info().finalcamloc_z();
 
-	FRotator CamRot(camrot_x, camrot_y, camrot_z);
+	FRotator CamRot(camrot_pitch, camrot_yaw, camrot_roll);
 	FVector FinalCamLoc(finalcamloc_x, finalcamloc_y, finalcamloc_z);
 
 	if (Socket == nullptr || GameServerSession == nullptr)
@@ -192,8 +194,8 @@ void UNetworkManager::HandleAttack(const Protocol::S_ATTACK& AttackPkt)
 		
 		FVector AimDir = CamRot.Vector().GetSafeNormal();
 
-		DrawDebugLine(GetWorld(), NetPawn->GetActorLocation(), FinalCamLoc, FColor::Red, false, 60.0f, 0, 2.0f);
-		DrawDebugLine(GetWorld(), FinalCamLoc, FinalCamLoc + (AimDir * 1024.0f), FColor::Blue, false, 60.0f, 0, 2.0f);
+		//DrawDebugLine(GetWorld(), NetPawn->GetActorLocation(), FinalCamLoc, FColor::Red, false, 60.0f, 0, 2.0f);
+		//DrawDebugLine(GetWorld(), FinalCamLoc, FinalCamLoc + (AimDir * 1024.0f), FColor::Blue, false, 60.0f, 0, 2.0f);
 
 
 		switch (AttackType)
@@ -205,7 +207,34 @@ void UNetworkManager::HandleAttack(const Protocol::S_ATTACK& AttackPkt)
 	}
 }
 
-PRAGMA_DISABLE_OPTIMIZATION
+void UNetworkManager::HandleReload(const Protocol::S_RELOAD& ReloadkPkt)
+{
+	const uint64 ObjectId = ReloadkPkt.object_id();
+	const bool Success = ReloadkPkt.success();
+
+	if (Success == false) return;
+
+	if (Socket == nullptr || GameServerSession == nullptr)
+		return;
+
+	auto* World = GetWorld();
+	if (World == nullptr)
+		return;
+
+	TObjectPtr<APawn>* FindActor = Objects.Find(ObjectId);
+	if (FindActor == nullptr)
+		return;
+
+	if (MyPlayer == (*FindActor)) return;
+
+	const FGradGameplayTags& GameplayTags = FGradGameplayTags::Get();
+	if (AGradNetCharacter* NetPawn = Cast<AGradNetCharacter>(*FindActor))
+	{
+		// TODO: 함수 이름 변경
+		NetPawn->WeaponFire(GameplayTags.InputTag_Weapon_Reload);
+	}
+}
+
 void UNetworkManager::SpawnPlayer(const Protocol::ObjectInfo& ObjectInfo, bool IsMine)
 {
 	auto* World = GetWorld();

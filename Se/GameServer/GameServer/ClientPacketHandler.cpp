@@ -88,3 +88,20 @@ bool Handle_C_ATTACK(PacketSessionRef& session, Protocol::C_ATTACK& pkt)
 
 	return false;
 }
+
+bool Handle_C_RELOAD(PacketSessionRef& session, Protocol::C_RELOAD& pkt)
+{
+	auto gameSession = static_pointer_cast<GameSession>(session);
+
+	PlayerRef player = gameSession->player.load();
+	if (player == nullptr)
+		return false;
+
+	RoomRef room = player->room.load().lock();
+	if (room == nullptr)
+		return false;
+
+	room->DoAsync(&Room::HandleReload, pkt);
+
+	return false;
+}

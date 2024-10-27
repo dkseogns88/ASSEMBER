@@ -61,6 +61,7 @@ void UGradGameplayAbility_RangedWeapon::StartRangedWeaponTargeting()
 	OnTargetDataReadyCallback(TargetData, FGameplayTag());
 }
 
+PRAGMA_DISABLE_OPTIMIZATION
 void UGradGameplayAbility_RangedWeapon::PerformLocalTargeting(TArray<FHitResult>& OutHits)
 {
 	APawn* const AvatarPawn = Cast<APawn>(GetAvatarActorFromActorInfo());
@@ -107,6 +108,7 @@ void UGradGameplayAbility_RangedWeapon::PerformLocalTargeting(TArray<FHitResult>
 		TraceBulletsInCartridge(InputData, OutHits);
 	}
 }
+PRAGMA_ENABLE_OPTIMIZATION
 
 FTransform UGradGameplayAbility_RangedWeapon::GetTargetingTransform(APawn* SourcePawn, EGradAbilityTargetingSource Source)
 {
@@ -138,7 +140,7 @@ FTransform UGradGameplayAbility_RangedWeapon::GetTargetingTransform(APawn* Sourc
 	const FVector WeaponLoc = GetWeaponTargetingSourceLocation();
 	FVector FinalCamLoc = FocalLoc + (((WeaponLoc - FocalLoc) | AimDir) * AimDir);
 
-#if 1
+#if 0
 	{
 		// WeaponLoc (»ç½Ç»ó ActorLoc)
 		DrawDebugPoint(GetWorld(), WeaponLoc, 10.0f, FColor::Red, false, 60.0f);
@@ -410,19 +412,16 @@ void UGradGameplayAbility_RangedWeapon::TestSendAttack()
 			
 			Protocol::AttackInfo* Info = AttackPkt.mutable_info();
 
-			WeaponTransform;
-
 			Info->set_object_id(PosInfo->object_id());
 			Info->set_attack_type(Protocol::ATTACK_TYPE_RIFLE);
 			Info->set_finalcamloc_x(WeaponTransform.GetTranslation().X);
 			Info->set_finalcamloc_y(WeaponTransform.GetTranslation().Y);
 			Info->set_finalcamloc_z(WeaponTransform.GetTranslation().Z);
-			Info->set_camrot_x(WeaponTransform.GetRotation().X);
-			Info->set_camrot_y(WeaponTransform.GetRotation().Y);
-			Info->set_camrot_z(WeaponTransform.GetRotation().Z);
+			Info->set_camrot_pitch(WeaponTransform.Rotator().Pitch);
+			Info->set_camrot_yaw(WeaponTransform.Rotator().Yaw);
+			Info->set_camrot_roll(WeaponTransform.Rotator().Roll);
 
 			//GetGameInstance()->GetSubsystem<UNetworkManager>()->SendPacket(AttackPkt);
-
 			for (auto World : GEngine->GetWorldContexts())
 			{
 				if (const UGameInstance* GameInstance = World.World()->GetGameInstance())

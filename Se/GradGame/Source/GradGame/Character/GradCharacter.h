@@ -10,7 +10,7 @@
 class UGradPawnExtensionComponent;
 class UGradCameraComponent;
 class UGradAbilitySystemComponent;
-
+class UGradHealthComponent;
 
 UCLASS()
 class GRADGAME_API AGradCharacter : public AModularCharacter
@@ -20,6 +20,9 @@ class GRADGAME_API AGradCharacter : public AModularCharacter
 public:
 	// Sets default values for this character's properties
 	AGradCharacter();
+
+	void OnAbilitySystemInitialized();
+	void OnAbilitySystemUninitialized();
 
 protected:
 	// Called when the game starts or when spawned
@@ -42,4 +45,7 @@ public:
 
 	UPROPERTY(VisibleAnywhere, Category = "Grad|Character")
 	TObjectPtr<UGradAbilitySystemComponent> AbilitySystemComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Grad|Character")
+	TObjectPtr<UGradHealthComponent> HealthComponent;
 };

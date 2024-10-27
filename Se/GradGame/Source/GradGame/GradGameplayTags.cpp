@@ -29,5 +29,6 @@ void FGradGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	AddTag(InputTag_Look_Mouse, "InputTag.Look.Mouse", "");
 
 	AddTag(InputTag_Weapon_Fire, "InputTag.Weapon.Fire", "");
+	AddTag(InputTag_Weapon_Reload, "InputTag.Weapon.Reload", "");
 }
 

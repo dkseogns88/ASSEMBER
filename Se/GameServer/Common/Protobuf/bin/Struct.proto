@@ -38,7 +38,7 @@ message AttackInfo
 	float finalcamloc_y		= 4;
 	float finalcamloc_z		= 5;
 
-	float camrot_x			= 6;
-	float camrot_y			= 7;
-	float camrot_z			= 8;
+	float camrot_pitch			= 6;
+	float camrot_yaw			= 7;
+	float camrot_roll			= 8;
 }

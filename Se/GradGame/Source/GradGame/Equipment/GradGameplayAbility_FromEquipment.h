@@ -16,6 +16,15 @@ class GRADGAME_API UGradGameplayAbility_FromEquipment : public UGradGameplayAbil
 {
 	GENERATED_BODY()
 public:
+
+	UFUNCTION(BlueprintCallable, Category = "Grad|Ability")
 	UGradEquipmentInstance* GetAssociatedEquipment() const;
-	//UGradInventoryItemInstance* GetAssociatedItem() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Grad|Ability")
+	UGradInventoryItemInstance* GetAssociatedItem() const;
+
+
+	// TODO: 위치 옮기자!	
+	UFUNCTION(BlueprintCallable)
+	void TestReload();
 };

@@ -10,7 +10,8 @@
 			"LoadingPhase": "Default",
 			"AdditionalDependencies": [
 				"Engine",
-				"ModularGameplay"
+				"ModularGameplay",
+				"CommonGame"
 			]
 		}
 	],
@@ -42,9 +43,12 @@
 			"Name": "AnimationLocomotionLibrary",
 			"Enabled": true
 		},
-
 		{
 			"Name": "SewerCore",
+			"Enabled": true
+		},
+		{
+			"Name": "CommonUI",
 			"Enabled": true
 		}
 	]

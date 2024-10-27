@@ -25,6 +25,17 @@ public class GradGame : ModuleRules
             "EnhancedInput",
 			// CommonUser
             "CommonUser",
+			// CommonGame
+            "CommonGame",
+            // CommonUI
+            "CommonUI",
+            // UMG
+            "UMG",
+			// UIExtension
+            "UIExtension",
+			// Slate
+            "Slate",
+            "SlateCore",
 			// Network
             "Sockets",
             "Networking",

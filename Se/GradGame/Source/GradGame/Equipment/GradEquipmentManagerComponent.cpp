@@ -113,6 +113,21 @@ void UGradEquipmentManagerComponent::UnequipItem(UGradEquipmentInstance* ItemIns
 	}
 }
 
+UGradEquipmentInstance* UGradEquipmentManagerComponent::GetFirstInstanceOfType(TSubclassOf<UGradEquipmentInstance> InstanceType)
+{
+	for (FGradAppliedEquipmentEntry& Entry : EquipmentList.Entries)
+	{
+		if (UGradEquipmentInstance* Instance = Entry.Instance)
+		{
+			if (Instance->IsA(InstanceType))
+			{
+				return Instance;
+			}
+		}
+	}
+	return nullptr;
+}
+
 TArray<UGradEquipmentInstance*> UGradEquipmentManagerComponent::GetEquipmentInstancesOfType(TSubclassOf<UGradEquipmentInstance> InstanceType) const
 {
 	TArray<UGradEquipmentInstance*> Results;

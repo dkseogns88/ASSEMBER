@@ -20,6 +20,10 @@ class GRADGAME_API UGradExperienceDefinition : public UPrimaryDataAsset
 public:
 	UGradExperienceDefinition(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
+#if WITH_EDITORONLY_DATA
+	virtual void UpdateAssetBundleData() override;
+#endif
+
 	/**
 	 * member variables
 	 */

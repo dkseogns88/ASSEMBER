@@ -33,8 +33,8 @@ public:
 	/**
 	* UGameplayAbility interfaces
 	*/
-	//virtual bool CheckCost(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, OUT FGameplayTagContainer* OptionalRelevantTags = nullptr) const override;
-	//virtual void ApplyCost(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) const override;
+	virtual bool CheckCost(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, OUT FGameplayTagContainer* OptionalRelevantTags = nullptr) const override;
+	virtual void ApplyCost(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) const override;
 
 
 	/** 언제 GA가 활성화될지 정책 */
@@ -42,6 +42,6 @@ public:
 	EGradAbilityActivationPolicy ActivationPolicy;
 
 	/** ability costs to apply GradGameplayAbility separately */
-	//UPROPERTY(EditDefaultsOnly, Instanced, Category = "Grad|Costs")
-	//TArray<TObjectPtr<UGradAbilityCost>> AdditionalCosts;
+	UPROPERTY(EditDefaultsOnly, Instanced, Category = "Grad|Costs")
+	TArray<TObjectPtr<UGradAbilityCost>> AdditionalCosts;
 };

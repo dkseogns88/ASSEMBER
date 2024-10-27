@@ -141,11 +141,29 @@ void Room::HandleAttack(Protocol::C_ATTACK pkt)
 
 		SendBufferRef sendBuffer = ClientPacketHandler::MakeSendBuffer(attackPkt);
 		Broadcast(sendBuffer);
-
-		cout << "플레이어 ID: " << pkt.info().object_id() << "  AttackType: " << pkt.info().attack_type() << endl;
 	}
 }
 
+void Room::HandleReload(Protocol::C_RELOAD pkt)
+{
+	const uint64 objectId = pkt.object_id();
+	if (_objects.find(objectId) == _objects.end())
+		return;
+
+	{
+		Protocol::S_RELOAD reloadPkt;
+		{
+			reloadPkt.set_object_id(objectId);
+			
+			// TODO: 서버에서 탄창 검사 후 전송
+			reloadPkt.set_success(true);
+		}
+
+		SendBufferRef sendBuffer = ClientPacketHandler::MakeSendBuffer(reloadPkt);
+		Broadcast(sendBuffer);
+	}
+
+}
 
 
 RoomRef Room::GetRoomRef()
