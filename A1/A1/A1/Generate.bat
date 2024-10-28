@@ -1,1 +1,0 @@
-"C:/Program Files/Epic Games/UE_5.4/Engine/Build/BatchFiles/Build.bat"  -projectfiles -project="%~dp0/A1.uproject" -game -rocket -progress -log="C:\Users\SeongGyu\Desktop\levelup\A1\A1\A1/Saved/Logs/UnrealVersionSelector-2024.06.19-07.42.44.log"
