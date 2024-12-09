@@ -73,21 +73,28 @@ Plugins/*/Intermediate/*
 # Cache files for the editor to use
 DerivedDataCache/*
 
-Re/Server/GameServer/x64/Debug/GameServer.pch
-A1/A1Server/GameServer/x64/Debug/GameServer.pch
-Se/GameServer/GameServer/x64/Debug/GameServer.pch
-Se/혹시 몰라서 남겨둠/New_A1/A1Server/GameServer/x64/Debug/GameServer.pch
-Se/혹시 몰라서 남겨둠/A1/Server/GameServer/x64/Debug/GameServer.pch
 
-Game/GameServer/DummyClient/Enum.pb.cc
-Game/GameServer/DummyClient/Enum.pb.h
-Game/GameServer/DummyClient/Protocol.pb.cc
-Game/GameServer/DummyClient/Protocol.pb.h
-Game/GameServer/DummyClient/Struct.pb.cc
-Game/GameServer/DummyClient/Struct.pb.h
-Game/GameServer/GameServer/Enum.pb.h
-Game/GameServer/GameServer/Enum.pb.cc
-Game/GameServer/GameServer/Protocol.pb.h
-Game/GameServer/GameServer/Protocol.pb.cc
-Game/GameServer/GameServer/Struct.pb.h
-Game/GameServer/GameServer/Struct.pb.cc
+
+GradGame/Content/Effects/Textures/Flipbooks/SmokeSwirl_3_Flipbook_CHANNELPACK.uasset
+
+
+GradGame/Source/GradGame/Network/Enum.pb.cc
+GradGame/Source/GradGame/Network/Enum.pb.h
+GradGame/Source/GradGame/Network/Protocol.pb.cc
+GradGame/Source/GradGame/Network/Protocol.pb.h
+GradGame/Source/GradGame/Network/Struct.pb.cc
+GradGame/Source/GradGame/Network/Struct.pb.h
+
+
+GameServer/DummyClient/Enum.pb.cc
+GameServer/DummyClient/Enum.pb.h
+GameServer/DummyClient/Protocol.pb.cc
+GameServer/DummyClient/Protocol.pb.h
+GameServer/DummyClient/Struct.pb.cc
+GameServer/DummyClient/Struct.pb.h
+GameServer/GameServer/Enum.pb.h
+GameServer/GameServer/Enum.pb.cc
+GameServer/GameServer/Protocol.pb.h
+GameServer/GameServer/Protocol.pb.cc
+GameServer/GameServer/Struct.pb.h
+GameServer/GameServer/Struct.pb.cc
